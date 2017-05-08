@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+*.tar.gz
+*.log
+.DS_Store
+.idea

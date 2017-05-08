@@ -1,0 +1,36 @@
+{
+  "name": "bproxy",
+  "version": "3.0.0",
+  "description": "a free web debugging tool for devolper",
+  "bin": {
+    "bproxy": "./bin/bproxy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zobor/bproxy"
+  },
+  "keywords": [
+    "nodejs proxy,bproxy"
+  ],
+  "author": {
+    "name": "zobor",
+    "email": "nodejs.js@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zobor/bproxy/issues"
+  },
+  "engines": {
+    "node": ">= 4.1.1"
+  },
+  "preferGlobal": true,
+  "homepage": "https://github.com/zobor/bproxy",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "fs-extra": "^3.0.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2"
+  }
+}
