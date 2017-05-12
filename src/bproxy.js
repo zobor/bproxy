@@ -1,11 +1,13 @@
 let baseConfig = require('./config')
-let fs = require('fs-extra')
-let proxyConfigTemplate = require('./config-template')
-let http = require('http')
-let server = new http.Server()
-let colors = require('colors')
-let httpMiddleware = require('./http-middleware')
-console.log(httpMiddleware)
+const fs = require('fs-extra')
+const proxyConfigTemplate = require('./config-template')
+const http = require('http')
+const server = new http.Server()
+const colors = require('colors')
+const httpMiddleware = require('./http-middleware')
+const httpsMiddleware = require('./https-middleware')
+const util = require('./common/util')
+
 class bproxy {
   constructor(config) {
     this.configFile = config.configFile || baseConfig.CONFIG_PATH
@@ -32,19 +34,20 @@ class bproxy {
       })
 
       server.on('request', (req, res) => {
-        // if (!req.__sid__) req.__sid__ = util.GUID()
-        httpMiddleware.proxy(req).then(()=>{
-          res.end(+new Date)
-        }).catch((error)=>{
+        if (!req.__sid__) req.__sid__ = util.newGuid()
+        httpMiddleware.proxy(req)
+        .catch((error)=>{
           res.end(error)
         })
-          // requestHandler(req, res)
+        .then((httpRequest)=>{
+          httpRequest.pipe(res)
+        })
       })
 
       // tunneling for https
       server.on('connect', (req, socket, head) => {
-        // if (!req.__sid__) req.__sid__ = util.GUID()
-          // connectHandler(req, socket, head)
+        if (!req.__sid__) req.__sid__ = util.newGuid()
+        httpsMiddleware.proxy(req, socket, head)
       })
 
       server.on('upgrade', (req, socket, head) => {
@@ -58,5 +61,9 @@ class bproxy {
 function terminalLog(arr){
   console.log(arr.join(''))
 }
+
+process.on('uncaughtException', (err)=>{
+  console.log(err.stack)
+})
 
 module.exports = bproxy

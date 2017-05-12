@@ -28,7 +28,10 @@
   "dependencies": {
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "fs-extra": "^3.0.1"
+    "extend": "^3.0.1",
+    "fs-extra": "^3.0.1",
+    "iconv-lite": "^0.4.17",
+    "request": "^2.81.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
