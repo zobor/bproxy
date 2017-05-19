@@ -57,8 +57,8 @@ function terminalLog(arr) {
   console.log(arr.join(''));
 }
 
-process.on('uncaughtException', err => {
-  console.log(err.stack);
-});
+// process.on('uncaughtException', (err)=>{
+//   console.log(err.stack)
+// })
 
 module.exports = bproxy;

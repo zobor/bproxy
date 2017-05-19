@@ -8,7 +8,6 @@ class httpMiddleware{
       this.options = {
         url: req.url,
         method: req.method,
-        proxy: 'http://dev-proxy.oa.com:8080',
         headers: extend({}, req.headers)
       }
       if (this.options.method.toLowerCase()==='post') {
