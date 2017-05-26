@@ -6,7 +6,7 @@ const forge = require('node-forge');
 const pki = forge.pki;
 const https = require('https');
 const fs = require('fs');
-const httpMiddleware = require('./http-middleware');
+const httpProxy = require('./http-proxy');
 
 var tls = require('tls');
 var rs = ca.init();
@@ -18,7 +18,8 @@ var localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
 class httpsMiddleware {
   constructor() {}
 
-  proxy(req, socket, head) {
+  proxy(req, socket, head, configApi) {
+    this.configApi = configApi;
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
@@ -41,7 +42,7 @@ class httpsMiddleware {
     });
     socketAgent.on('data', e => {});
     socketAgent.on('error', e => {
-      console.log(colors.red(e));
+      console.error(colors.red(e));
     });
   }
 
@@ -74,17 +75,13 @@ class httpsMiddleware {
           req.httpsURL = 'https://' + hostname + req.url;
           req.url = 'http://' + hostname + req.url;
           req.protocol = 'https';
-          httpMiddleware.proxy(req, res).catch(error => {
-            res.end(error);
-          }).then(httpRequest => {
-            httpRequest.pipe(res);
-          });
+          httpProxy(req, res);
         });
         localServer.on('error', e => {
-          console.log(colors.red(e));
+          console.error(colors.red(e));
         });
       }).catch(e => {
-        console.log(colors.red(e));
+        console.error(colors.red(e));
       });
     });
   }

@@ -35,6 +35,7 @@
     "request": "^2.81.0"
   },
   "devDependencies": {
+    "chokidar": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2"
   }

@@ -4,9 +4,10 @@ const proxyConfigTemplate = require('./config-template')
 const http = require('http')
 const server = new http.Server()
 const colors = require('colors')
-const httpMiddleware = require('./http-middleware')
+const httpProxy = require('./http-proxy')
 const httpsMiddleware = require('./https-middleware')
 const util = require('./common/util')
+const msg = require('./msg')
 
 class bproxy {
   constructor(config) {
@@ -17,6 +18,7 @@ class bproxy {
       fs.writeFileSync(this.configFile, proxyConfigTemplate)
     }
     this.init()
+    msg.emit('config-file-found', this.configFile)
   }
 
   init(){
@@ -34,14 +36,7 @@ class bproxy {
       })
 
       server.on('request', (req, res) => {
-        if (!req.__sid__) req.__sid__ = util.newGuid()
-        httpMiddleware.proxy(req)
-        .catch((error)=>{
-          res.end(error)
-        })
-        .then((httpRequest)=>{
-          httpRequest.pipe(res)
-        })
+        httpProxy(req,res)
       })
 
       // tunneling for https
@@ -51,7 +46,6 @@ class bproxy {
       })
 
       server.on('upgrade', (req, socket, head) => {
-        console.log(res.url)
           // upgradeHandler(req, socket, head, ssl);
       });
     })

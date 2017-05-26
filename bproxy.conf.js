@@ -1,5 +1,5 @@
 var host = `
-// 127.0.0.1 www.baidu.com
+# 127.0.0.1 www.baidu.com
 `
 
 var rules = [
@@ -13,6 +13,5 @@ module.exports = {
   host: host,
   rules: rules,
   disable_cache: true,
-  disable_gzip: true,
-  // pac: 'http://127.0.0.1/proxy.pac'
+  disable_gzip: true
 }
