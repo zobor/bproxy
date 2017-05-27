@@ -11,6 +11,7 @@ function proxy(req, res) {
     }).then(responseStream => {
       responseStream.pipe(res);
       httpProxy = null;
+      pattern = null;
     });
   };
   let delay = pattern && pattern.rule && pattern.rule.delay || httpProxy.config && httpProxy.config.delay;

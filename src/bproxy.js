@@ -1,4 +1,4 @@
-let baseConfig = require('./config')
+const baseConfig = require('./config')
 const fs = require('fs-extra')
 const proxyConfigTemplate = require('./config-template')
 const http = require('http')
@@ -26,7 +26,7 @@ class bproxy {
   }
 
   startServer() {
-    terminalLog([
+    util.terminalLog([
       `[app start up]`.magenta,
       'http://127.0.0.1'.blue.underline + `:${this.port}`.blue.underline
     ])
@@ -52,12 +52,8 @@ class bproxy {
   }
 }
 
-function terminalLog(arr){
-  console.log(arr.join(''))
-}
-
-// process.on('uncaughtException', (err)=>{
-//   console.log(err.stack)
-// })
+process.on('uncaughtException', (err)=>{
+  console.log(err.stack)
+})
 
 module.exports = bproxy

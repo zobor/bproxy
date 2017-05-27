@@ -2,6 +2,8 @@ const fs = require('fs-extra')
 const Readable = require('stream').Readable
 const extend = require('extend')
 const console = require('./console')
+const querystring = require('querystring')
+const url = require('url')
 
 class RulePattern{
   rulesPattern(){
@@ -36,7 +38,7 @@ class RulePattern{
 
     // response rule use local file and disable http request
     if (options.matched) {
-      'file|path|status'.split('|').map((item)=>{
+      'file|path|status|jsonp'.split('|').map((item)=>{
         if (options.disableHttpRequest) return
         if (options.rule && options.rule.hasOwnProperty(item)) {
           options.disableHttpRequest = true
@@ -71,9 +73,24 @@ class RulePattern{
         this.dataset.res.end('')
       }
     }
-    else if (options.rule.status) {
-      this.dataset.res.writeHead(options.rule.status,{})
-      this.dataset.res.end(options.rule.body||'')
+    else if (options.rule.jsonp) {
+      let stat = fs.existsSync(options.rule.jsonp)
+      if (stat) {
+        let readStream = new Readable();
+        let body = fs.readFileSync(options.rule.jsonp,'utf-8')
+        body = body.replace(/^[^\(]+\(/,'').replace(/\)$/,'')
+        let urlParam = url.parse(this.dataset.req.url)
+        let param = querystring.parse(urlParam.query)
+        let callback = options.rule.callbackParameter || 'callback'
+        body = `${param[callback]}(${body})`
+        readStream.push(body)
+        readStream.push(null)
+        this.$resolve(readStream)
+      }else{
+        this.dataset.httpStatus = 404
+        this.writeHead()
+        this.dataset.res.end('')
+      }
     }
     else if (options.rule.path) {
       let filepath = options.rule.path + options.filepath
@@ -89,6 +106,10 @@ class RulePattern{
         this.writeHead()
         this.dataset.res.end('')
       }
+    }
+    else if (options.rule.status) {
+      this.dataset.res.writeHead(options.rule.status,{})
+      this.dataset.res.end(options.rule.body||'')
     }
   }
 

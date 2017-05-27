@@ -1,7 +1,7 @@
 'use strict'
 var forge = require('node-forge')
 var pki = forge.pki
-var fs = require('fs')
+var fs = require('fs-extra')
 var path = require('path')
 var config = require('./cert')
 var _ = require('lodash')

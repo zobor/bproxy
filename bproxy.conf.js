@@ -11,7 +11,5 @@ var rules = [
 
 module.exports = {
   host: host,
-  rules: rules,
-  disable_cache: true,
-  disable_gzip: true
+  rules: rules
 }

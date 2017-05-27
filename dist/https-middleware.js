@@ -8,12 +8,12 @@ const https = require('https');
 const fs = require('fs');
 const httpProxy = require('./http-proxy');
 
-var tls = require('tls');
-var rs = ca.init();
-var certificatePem = fs.readFileSync(rs.caCertPath);
-var certificateKeyPem = fs.readFileSync(rs.caKeyPath);
-var localCertificate = forge.pki.certificateFromPem(certificatePem);
-var localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
+const tls = require('tls');
+const rs = ca.init();
+const certificatePem = fs.readFileSync(rs.caCertPath);
+const certificateKeyPem = fs.readFileSync(rs.caKeyPath);
+const localCertificate = forge.pki.certificateFromPem(certificatePem);
+const localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
 
 class httpsMiddleware {
   constructor() {}

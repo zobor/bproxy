@@ -20,7 +20,6 @@ function watchConfigFileOnChange(configFile) {
   let loadConfig = function () {
     delete require.cache[require.resolve(configFile)];
     config = parseConfig(configFile);
-    console.log(config.rules);
   };
   watcher.on('change', function () {
     loadConfig();

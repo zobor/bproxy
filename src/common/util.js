@@ -19,6 +19,10 @@ class Util {
     }
     return "";
   }
+
+  terminalLog(arr){
+    console.log(arr.join(''))
+  }
 }
 
 module.exports = new Util()
