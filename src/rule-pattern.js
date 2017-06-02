@@ -2,7 +2,6 @@ const fs = require('fs-extra')
 const Readable = require('stream').Readable
 const extend = require('extend')
 const console = require('./console')
-const querystring = require('querystring')
 const url = require('url')
 
 class RulePattern{
@@ -79,10 +78,8 @@ class RulePattern{
         let readStream = new Readable();
         let body = fs.readFileSync(options.rule.jsonp,'utf-8')
         body = body.replace(/^[^\(]+\(/,'').replace(/\)$/,'')
-        let urlParam = url.parse(this.dataset.req.url)
-        let param = querystring.parse(urlParam.query)
         let callback = options.rule.callbackParameter || 'callback'
-        body = `${param[callback]}(${body})`
+        body = `${this.dataset.query[callback]}(${body})`
         readStream.push(body)
         readStream.push(null)
         this.$resolve(readStream)

@@ -35,10 +35,18 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.7.1",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "socket.io": "^2.0.1"
   },
   "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
     "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2"
+    "gulp-babel": "^6.1.2",
+    "jsx-loader": "^0.13.2",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
   }
 }

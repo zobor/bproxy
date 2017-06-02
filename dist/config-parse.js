@@ -1,6 +1,7 @@
 const msg = require('./msg');
 const fs = require('fs-extra');
 const chokidar = require('chokidar');
+const console = require('./console');
 
 let config;
 msg.on('config-file-found', filepath => {
@@ -29,7 +30,14 @@ function watchConfigFileOnChange(configFile) {
 }
 
 function parseConfig(configFile) {
-  let conf = require(configFile);
+  var conf = {};
+  var isError = false;
+  try {
+    conf = require(configFile);
+  } catch (e) {
+    console.error(e.stack);
+    isError = true;
+  }
   let Hostrules = [];
   let filter = [];
   let hash = {};
@@ -55,7 +63,18 @@ function parseConfig(configFile) {
     hash[key] = 1;
   });
   conf.rules = filter;
+  showUpdateLogs(conf.rules);
   return conf;
+}
+
+function showUpdateLogs(list) {
+  var arr = [];
+  list.map((item, idx) => {
+    arr.push(idx + ": " + item.regx);
+  });
+  console.info('[config load success]');
+  console.info('[rule list]');
+  console.log(arr.join('\n'));
 }
 
 function getConfig() {

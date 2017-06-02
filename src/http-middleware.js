@@ -4,6 +4,7 @@ const msg = require('./msg')
 const RulePattern = require('./rule-pattern')
 const console = require('./console')
 const url = require('url')
+const querystring = require('querystring')
 
 class HttpMiddleware extends RulePattern{
   constructor(options={}){
@@ -21,6 +22,11 @@ class HttpMiddleware extends RulePattern{
   init(req, res){
     this.dataset.req = req
     this.dataset.res = res
+
+    let urlParam = url.parse(this.dataset.req.url)
+    let param = querystring.parse(urlParam.query)
+    this.dataset.query = param
+
     this.options = {
       url: req.url,
       method: req.method,
@@ -34,7 +40,8 @@ class HttpMiddleware extends RulePattern{
     return this.pattern||{}
   }
 
-  proxy(){
+  proxy(socketio){
+    this.dataset.socketio = socketio
     return new Promise((resolve, reject)=>{
       this.$resolve = resolve
       try{
@@ -109,6 +116,10 @@ class HttpMiddleware extends RulePattern{
     let httpRequest = request(this.options, (err,response, body)=>{})
     .on('response', (response)=>{
       extend(response.headers, this.dataset.responseHeaders)
+      // (this.dataset.socketio && this.dataset.socketio.emit)&& this.dataset.socketio.emit('response',{
+      //   sid: this.dataset.req.__sid__,
+      //   resHeaders: response.headers
+      // })
     })
     .on('data', (chunk)=>{})
     this.$resolve(httpRequest)

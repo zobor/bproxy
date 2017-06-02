@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Browser Settings</title>
+<link rel="stylesheet" href="css/bootstrap.css" />
+<link rel="stylesheet" href="css/xenon-core.css" />
+</head>
+<body>
+
+<h1>settings page</h1>
+
+
+<script type="text/javascript" src="lib/jquery.min.js"></script>
+<script>
+jQuery.getScript('http://127.0.0.1:9000/socket.io/socket.io.js').done(()=>{
+  var socket = io('http://localhost:9000');
+  window.debugSocket = socket
+  socket.emit('loadConfig')
+  socket.on('responseConfig', config=>{
+    document.write( JSON.stringify(config) )
+  })
+});
+</script>
+
+</body>
+</html>
