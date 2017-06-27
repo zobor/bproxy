@@ -97,6 +97,9 @@ class HttpMiddleware extends RulePattern{
       if (this.pattern.rule.proxy) {
         this.options.proxy = this.pattern.rule.proxy
       }
+      if (this.pattern.rule.useHttps && this.dataset.req.httpsURL) {
+        this.options.url = this.dataset.req.httpsURL
+      }
       // rule.redirection
       if (this.pattern.rule.redirection) {
         this.options.url = this.pattern.rule.redirection
@@ -113,7 +116,9 @@ class HttpMiddleware extends RulePattern{
     // delete this.options.headers['if-modified-since']
     // delete this.options.headers['if-none-match']
     // delete this.options.headers['accept-encoding']
-    let httpRequest = request(this.options, (err,response, body)=>{})
+    let httpRequest = request(this.options, (err,response, body)=>{
+
+    })
     .on('response', (response)=>{
       extend(response.headers, this.dataset.responseHeaders)
       // (this.dataset.socketio && this.dataset.socketio.emit)&& this.dataset.socketio.emit('response',{
