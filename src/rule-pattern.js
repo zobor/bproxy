@@ -60,15 +60,20 @@ class RulePattern{
 
   readLocalData(){
     let options = this.pattern
+    if (options.rule.responseHeaders && typeof options.rule.responseHeaders==='object') {
+      extend(this.dataset.responseHeaders,options.rule.responseHeaders)
+    }
     if (options.rule.file) {
       let stat = fs.existsSync(options.rule.file)
       if (stat) {
-        this.dataset.res.writeHead(200,{})
+        this.dataset.httpStatus = 200
+        this.writeHead()
         let readStream = fs.createReadStream(options.rule.file)
         readStream.setEncoding('utf8')
         this.$resolve(readStream)
       }else{
-        this.dataset.res.writeHead(404,{})
+        this.dataset.httpStatus = 404
+        this.writeHead()
         this.dataset.res.end('')
       }
     }
