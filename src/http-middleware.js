@@ -51,7 +51,7 @@ class HttpMiddleware extends RulePattern{
             postForm.push(chunk)
           })
           this.dataset.req.on('end', () =>{
-            this.options.form = postForm.join('')
+            this.options.postData = postForm.join('')
             this.onParamsReady();
           })
         }else{
