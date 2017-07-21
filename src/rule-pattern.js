@@ -67,13 +67,13 @@ class RulePattern{
       let stat = fs.existsSync(options.rule.file)
       if (stat) {
         this.dataset.httpStatus = 200
-        this.writeHead()
+        this.writeHead(this.dataset.httpStatus,this.dataset.responseHeaders)
         let readStream = fs.createReadStream(options.rule.file)
         readStream.setEncoding('utf8')
         this.$resolve(readStream)
       }else{
         this.dataset.httpStatus = 404
-        this.writeHead()
+        this.writeHead(this.dataset.httpStatus,this.dataset.responseHeaders)
         this.dataset.res.end('')
       }
     }
