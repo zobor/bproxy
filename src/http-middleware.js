@@ -112,19 +112,28 @@ class HttpMiddleware extends RulePattern{
         extend(this.dataset.responseHeaders,this.pattern.rule.responseHeaders)
       }
     }
-    // delete this.options.headers['cache-control']
-    // delete this.options.headers['if-modified-since']
-    // delete this.options.headers['if-none-match']
-    // delete this.options.headers['accept-encoding']
+    delete this.options.headers['cache-control']
+    delete this.options.headers['if-modified-since']
+    delete this.options.headers['if-none-match']
+    delete this.options.headers['accept-encoding']
     let httpRequest = request(this.options, (err,response, body)=>{
-
+      if (this.dataset.socketio && this.dataset.socketio.emit) {
+        this.dataset.socketio.emit('response',{
+          sid: this.dataset.req.__sid__,
+          resHeaders: response.headers,
+          body: body
+        })
+      }
     })
     .on('response', (response)=>{
       extend(response.headers, this.dataset.responseHeaders)
-      // (this.dataset.socketio && this.dataset.socketio.emit)&& this.dataset.socketio.emit('response',{
-      //   sid: this.dataset.req.__sid__,
-      //   resHeaders: response.headers
-      // })
+      // if (this.dataset.socketio && this.dataset.socketio.emit) {
+      //   this.dataset.socketio.emit('response',{
+      //     sid: this.dataset.req.__sid__,
+      //     resHeaders: response.headers,
+      //     body: response.body
+      //   })
+      // }
     })
     .on('data', (chunk)=>{})
     this.$resolve(httpRequest)

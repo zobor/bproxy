@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const Readable = require('stream').Readable;
 const extend = require('extend');
 const console = require('./console');
-const querystring = require('querystring');
 const url = require('url');
 
 class RulePattern {
@@ -61,15 +60,20 @@ class RulePattern {
 
   readLocalData() {
     let options = this.pattern;
+    if (options.rule.responseHeaders && typeof options.rule.responseHeaders === 'object') {
+      extend(this.dataset.responseHeaders, options.rule.responseHeaders);
+    }
     if (options.rule.file) {
       let stat = fs.existsSync(options.rule.file);
       if (stat) {
-        this.dataset.res.writeHead(200, {});
+        this.dataset.httpStatus = 200;
+        this.writeHead(this.dataset.httpStatus, this.dataset.responseHeaders);
         let readStream = fs.createReadStream(options.rule.file);
         readStream.setEncoding('utf8');
         this.$resolve(readStream);
       } else {
-        this.dataset.res.writeHead(404, {});
+        this.dataset.httpStatus = 404;
+        this.writeHead(this.dataset.httpStatus, this.dataset.responseHeaders);
         this.dataset.res.end('');
       }
     } else if (options.rule.jsonp) {
@@ -78,10 +82,8 @@ class RulePattern {
         let readStream = new Readable();
         let body = fs.readFileSync(options.rule.jsonp, 'utf-8');
         body = body.replace(/^[^\(]+\(/, '').replace(/\)$/, '');
-        let urlParam = url.parse(this.dataset.req.url);
-        let param = querystring.parse(urlParam.query);
         let callback = options.rule.callbackParameter || 'callback';
-        body = `${param[callback]}(${body})`;
+        body = `${this.dataset.query[callback]}(${body})`;
         readStream.push(body);
         readStream.push(null);
         this.$resolve(readStream);

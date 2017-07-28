@@ -93,7 +93,7 @@ class ResDetail extends React.Component {
 
   buildRequestHeaders(data, noPre){
     var rows = [];
-    if ( $.type(data)==='string' ) {
+    if ( $.type(data)==='string' || $.type(data)==='number' ) {
       if (noPre){
         return (
           <div dangerouslySetInnerHTML={{__html: data}} />

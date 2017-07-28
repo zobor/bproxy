@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "3.0.8",
+  "version": "3.0.10",
   "description": "a free web debugging tool for devolper",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -26,6 +26,7 @@
   "preferGlobal": true,
   "homepage": "https://github.com/zobor/bproxy",
   "dependencies": {
+    "babel-preset-stage-2": "^6.24.1",
     "chokidar": "^1.7.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",

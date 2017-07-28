@@ -4,6 +4,7 @@ const msg = require('./msg');
 const RulePattern = require('./rule-pattern');
 const console = require('./console');
 const url = require('url');
+const querystring = require('querystring');
 
 class HttpMiddleware extends RulePattern {
   constructor(options = {}) {
@@ -21,6 +22,11 @@ class HttpMiddleware extends RulePattern {
   init(req, res) {
     this.dataset.req = req;
     this.dataset.res = res;
+
+    let urlParam = url.parse(this.dataset.req.url);
+    let param = querystring.parse(urlParam.query);
+    this.dataset.query = param;
+
     this.options = {
       url: req.url,
       method: req.method,
@@ -34,7 +40,8 @@ class HttpMiddleware extends RulePattern {
     return this.pattern || {};
   }
 
-  proxy() {
+  proxy(socketio) {
+    this.dataset.socketio = socketio;
     return new Promise((resolve, reject) => {
       this.$resolve = resolve;
       try {
@@ -44,7 +51,7 @@ class HttpMiddleware extends RulePattern {
             postForm.push(chunk);
           });
           this.dataset.req.on('end', () => {
-            this.options.form = postForm.join('');
+            this.options.body = postForm.join('');
             this.onParamsReady();
           });
         } else {
@@ -90,6 +97,9 @@ class HttpMiddleware extends RulePattern {
       if (this.pattern.rule.proxy) {
         this.options.proxy = this.pattern.rule.proxy;
       }
+      if (this.pattern.rule.useHttps && this.dataset.req.httpsURL) {
+        this.options.url = this.dataset.req.httpsURL;
+      }
       // rule.redirection
       if (this.pattern.rule.redirection) {
         this.options.url = this.pattern.rule.redirection;
@@ -102,12 +112,27 @@ class HttpMiddleware extends RulePattern {
         extend(this.dataset.responseHeaders, this.pattern.rule.responseHeaders);
       }
     }
-    // delete this.options.headers['cache-control']
-    // delete this.options.headers['if-modified-since']
-    // delete this.options.headers['if-none-match']
-    // delete this.options.headers['accept-encoding']
-    let httpRequest = request(this.options, (err, response, body) => {}).on('response', response => {
+    delete this.options.headers['cache-control'];
+    delete this.options.headers['if-modified-since'];
+    delete this.options.headers['if-none-match'];
+    delete this.options.headers['accept-encoding'];
+    let httpRequest = request(this.options, (err, response, body) => {
+      if (this.dataset.socketio && this.dataset.socketio.emit) {
+        this.dataset.socketio.emit('response', {
+          sid: this.dataset.req.__sid__,
+          resHeaders: response.headers,
+          body: body
+        });
+      }
+    }).on('response', response => {
       extend(response.headers, this.dataset.responseHeaders);
+      // if (this.dataset.socketio && this.dataset.socketio.emit) {
+      //   this.dataset.socketio.emit('response',{
+      //     sid: this.dataset.req.__sid__,
+      //     resHeaders: response.headers,
+      //     body: response.body
+      //   })
+      // }
     }).on('data', chunk => {});
     this.$resolve(httpRequest);
   }

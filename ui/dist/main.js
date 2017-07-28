@@ -22801,7 +22801,7 @@
 	    key: 'buildRequestHeaders',
 	    value: function buildRequestHeaders(data, noPre) {
 	      var rows = [];
-	      if ($.type(data) === 'string') {
+	      if ($.type(data) === 'string' || $.type(data) === 'number') {
 	        if (noPre) {
 	          return _react2.default.createElement('div', { dangerouslySetInnerHTML: { __html: data } });
 	        }
