@@ -46,13 +46,13 @@ class HttpMiddleware extends RulePattern{
       this.$resolve = resolve
       try{
         if (this.options && this.options.method.toLowerCase()==='post') {
-          let postForm = []
+          let body = []
           this.dataset.req.on('data', (chunk)=>{
-            postForm.push(chunk)
+            body.push(chunk);
           })
           this.dataset.req.on('end', () =>{
-            this.options.body = postForm.join('')
-            this.onParamsReady();
+            this.options.body = Buffer.concat(body)
+            this.onParamsReady()
           })
         }else{
           this.onParamsReady()
@@ -116,6 +116,7 @@ class HttpMiddleware extends RulePattern{
     delete this.options.headers['if-modified-since']
     delete this.options.headers['if-none-match']
     delete this.options.headers['accept-encoding']
+
     let httpRequest = request(this.options, (err,response, body)=>{
       if (this.dataset.socketio && this.dataset.socketio.emit) {
         this.dataset.socketio.emit('response',{
@@ -127,13 +128,6 @@ class HttpMiddleware extends RulePattern{
     })
     .on('response', (response)=>{
       extend(response.headers, this.dataset.responseHeaders)
-      // if (this.dataset.socketio && this.dataset.socketio.emit) {
-      //   this.dataset.socketio.emit('response',{
-      //     sid: this.dataset.req.__sid__,
-      //     resHeaders: response.headers,
-      //     body: response.body
-      //   })
-      // }
     })
     .on('data', (chunk)=>{})
     this.$resolve(httpRequest)

@@ -75,9 +75,6 @@ function showUpdateLogs(list){
   list.map((item,idx)=>{
     arr.push(idx + ": " + item.regx)
   })
-  console.info('[config load success]')
-  console.info('[rule list]')
-  console.log(arr.join('\n'))
 }
 
 function getConfig(){

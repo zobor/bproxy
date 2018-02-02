@@ -7,7 +7,12 @@ const fs = require('fs')
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app)
 app.listen(9000)
-console.log('socket start up with UI panel: http:127.0.0.1:9000')
+
+util.terminalLog([
+  '[Info] '.green,
+  'bproxy UI Pannel is ',
+  `http://0.0.0.0:9000/`.underline,
+])
 var socket
 io.on('connection', function(skt) {
   socket = skt

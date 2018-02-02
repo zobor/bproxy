@@ -27,12 +27,14 @@ class bproxy {
 
   startServer() {
     util.terminalLog([
-      `[app start up]`.magenta,
-      'http://127.0.0.1'.blue.underline + `:${this.port}`.blue.underline
+      '[Info] '.green,
+      'bproxy Service is running at ',
+      `http://0.0.0.0:${this.port}/`.underline,
+      '. Press Ctrl+C to stop.'
     ])
     server.listen(this.port, () => {
       server.on('error', (e) => {
-        console.error(colors.red(e))
+        console.log(colors.red(e))
       })
 
       server.on('request', (req, res) => {
