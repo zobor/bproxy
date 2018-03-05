@@ -1,8 +1,24 @@
 # bproxy
 
-A http proxy for developer
+a free web debugging tool for devolper
 
 ----
+
+```
+$$> bproxy
+
+  Usage: bproxy [options]
+
+
+  Options:
+
+    -V, --version         output the version number
+    -s ,--start           start bproxy
+    -c, --config [value]  specifies the profile path
+    -p, --port [value]    specify the app port
+    -i, --install         install bproxy certificate
+    -h, --help            output usage information
+```
 
 ### Install
 
@@ -10,8 +26,14 @@ A http proxy for developer
 npm install bproxy -g
 ```
 
+or
 
-### bproxy.config.js
+```
+yarn global add bproxy
+```
+
+
+### example bproxy.config.js
 
 ```js
 var host = `
@@ -77,6 +99,17 @@ module.exports = {
 }
 ```
 
+#### response header rewrite
+```js
+{
+  regx: /cgi\?callback=/,
+  file: '/path/to/file/cgi.json',
+  responseHeaders:{
+    'Allow-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true'
+  }
+}
+```
 
 #### redirection
 ```js
@@ -103,6 +136,20 @@ module.exports = {
 }
 ```
 
+#### https support
+```js
+{
+  regx: /https?:\/\/v.qq.com\//,
+  host: '0.0.0.0'
+}
+```
+
+install certificate
+
+```
+sudo bproxy --install
+```
+
 #### regx usage
 
 regx can use follow type of data
@@ -123,3 +170,18 @@ regx can use follow type of data
 }
 ```
 equal to `regx.call(null, req.url)`
+
+
+### config.options
+```
+* regx {String|RegExp|Function} => match request url
+* status {Number}               => response http status code
+* file {String}                 => local file path
+* path {String}                 => local files path
+* jsonp {String}                => local json file path
+* callbackParameter {String}    => jsonp callback parameter
+* host {String}                 => request host
+* responseHeaders {Object}      => response headers
+* delay {Number}                => response delay
+* redirection {String}          => redirect to other url
+```
