@@ -1,5 +1,4 @@
 const request = require('request')
-const extend = require('extend')
 const msg = require('./msg')
 const RulePattern = require('./rule-pattern')
 const console = require('./console')
@@ -30,7 +29,7 @@ class HttpMiddleware extends RulePattern{
     this.options = {
       url: req.url,
       method: req.method,
-      headers: extend({}, req.headers)
+      headers: Object.assign({}, req.headers)
     }
     try{
       this.rulesPattern()
@@ -84,7 +83,7 @@ class HttpMiddleware extends RulePattern{
       this.options.proxy = this.config.proxy
     }
     if (this.config.requestHeaders) {
-      extend(this.options.headers, this.config.requestHeaders)
+      Object.assign(this.options.headers, this.config.requestHeaders)
     }
 
     // rule apply to request options
@@ -109,7 +108,7 @@ class HttpMiddleware extends RulePattern{
         }
       }
       if (this.pattern.rule.responseHeaders && typeof this.pattern.rule.responseHeaders==='object') {
-        extend(this.dataset.responseHeaders,this.pattern.rule.responseHeaders)
+        Object.assign(this.dataset.responseHeaders,this.pattern.rule.responseHeaders)
       }
     }
     delete this.options.headers['cache-control']
@@ -127,7 +126,7 @@ class HttpMiddleware extends RulePattern{
       }
     })
     .on('response', (response)=>{
-      extend(response.headers, this.dataset.responseHeaders)
+      Object.assign(response.headers, this.dataset.responseHeaders)
     })
     .on('data', (chunk)=>{})
     this.$resolve(httpRequest)

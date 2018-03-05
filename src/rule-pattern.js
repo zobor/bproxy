@@ -1,8 +1,8 @@
 const fs = require('fs-extra')
 const Readable = require('stream').Readable
-const extend = require('extend')
 const console = require('./console')
 const url = require('url')
+const request = require('request')
 
 class RulePattern{
   rulesPattern(){
@@ -37,7 +37,7 @@ class RulePattern{
 
     // response rule use local file and disable http request
     if (options.matched) {
-      'file|path|status|jsonp'.split('|').map((item)=>{
+      'file|path|status|jsonp|response'.split('|').map((item)=>{
         if (options.disableHttpRequest) return
         if (options.rule && options.rule.hasOwnProperty(item)) {
           options.disableHttpRequest = true
@@ -61,7 +61,7 @@ class RulePattern{
   readLocalData(){
     let options = this.pattern
     if (options.rule.responseHeaders && typeof options.rule.responseHeaders==='object') {
-      extend(this.dataset.responseHeaders,options.rule.responseHeaders)
+      Object.assign(this.dataset.responseHeaders,options.rule.responseHeaders)
     }
     if (options.rule.file) {
       let stat = fs.existsSync(options.rule.file)
@@ -112,6 +112,9 @@ class RulePattern{
     else if (options.rule.status) {
       this.dataset.res.writeHead(options.rule.status,{})
       this.dataset.res.end(options.rule.body||'')
+    }
+    else if (typeof options.rule.response=='function'){
+      options.rule.response(this.options.url,this.dataset.responseHeaders, this.dataset.res,request)
     }
   }
 

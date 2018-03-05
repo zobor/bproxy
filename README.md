@@ -136,6 +136,20 @@ module.exports = {
 }
 ```
 
+### response diy
+```js
+{
+  regx: '.html',
+  response: function(url, resHeaders, response, request){
+    url = 'http://test.m.v.qq.com/tvp/'
+    request.get(url, function(error, res, body){
+      response.writeHead(200,Object.assign(res.headers, resHeaders))
+      response.end(body)
+    })
+  }
+}
+```
+
 #### https support
 ```js
 {
@@ -184,4 +198,5 @@ equal to `regx.call(null, req.url)`
 * responseHeaders {Object}      => response headers
 * delay {Number}                => response delay
 * redirection {String}          => redirect to other url
+* response {Function}           => diy your response data
 ```
