@@ -200,3 +200,28 @@ equal to `regx.call(null, req.url)`
 * redirection {String}          => redirect to other url
 * response {Function}           => diy your response data
 ```
+
+### example for combo
+
+`url` http://vm.gtimg.cn/c/=/tencentvideo_v1/script/txv.core.js,/tencentvideo/script/fansadmin/menu.js
+```js
+var fs = require('fs')
+var menuJs = fs.readFileSync('/local/path/to/.dev/menu.js','utf-8')
+
+var rules = [
+  {
+    regx: '/tencentvideo_v1/script/txv.core.js,/tencentvideo/script/fansadmin/menu.js',
+    response: function(url, resHeader, response, request){
+      response.writeHeader(200, Object.assign({}, resHeader));
+      request.get('http://vm.gtimg.cn/tencentvideo_v1/script/txv.core.js', function(error, resp, body){
+        response.end(body + '\n' + menuJs)
+      })
+    }
+  }
+]
+
+module.exports = {
+  host: '',
+  rules: rules
+}
+```
