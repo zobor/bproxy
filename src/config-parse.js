@@ -1,12 +1,14 @@
-const msg = require('./msg')
+const message = require('./msg')
 const fs = require('fs-extra')
 const chokidar = require('chokidar')
 const console = require('./console')
+const baseConfig = require('./config')
+
 
 let config
-msg.on('config-file-found', filepath=>{
-  fs.ensureFile(filepath)
-  .then(() => {
+message.on('config-file-found', (filepath=baseConfig.CONFIG_PATH)=>{
+  filepath = filepath || baseConfig.CONFIG_PATH
+  fs.ensureFile(filepath).then(() => {
     watchConfigFileOnChange(filepath)
   })
   .catch(err => {
@@ -23,6 +25,8 @@ function watchConfigFileOnChange(configFile){
   let loadConfig = function(){
     delete require.cache[require.resolve(configFile)]
     config = parseConfig(configFile)
+    config = Object.assign({}, baseConfig, config)
+    message.emit('config:ready', config)
   }
   watcher.on('change', function() {
     loadConfig()
@@ -77,10 +81,7 @@ function showUpdateLogs(list){
   })
 }
 
-function getConfig(){
-  return config
-}
 
 module.exports = {
-  getConfig: getConfig
+  setting: config
 }

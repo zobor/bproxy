@@ -9,8 +9,8 @@ class HttpMiddleware extends RulePattern{
   constructor(options={}){
     super()
     this.config = {}
-    if (options.configApi && options.configApi.getConfig){
-      this.config = options.configApi.getConfig()
+    if (options.config){
+      this.config = options.config
     }
     this.dataset = {
       responseHeaders: {},

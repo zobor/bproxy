@@ -8,6 +8,7 @@ const https = require('https')
 const fs = require('fs')
 const httpProxy = require('./http-proxy')
 
+
 const tls                 = require('tls');
 const rs                  = ca.init();
 const certificatePem      = fs.readFileSync(rs.caCertPath);
@@ -18,8 +19,8 @@ const localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
 class httpsMiddleware {
   constructor() {}
 
-  proxy(req, socket, head,configApi) {
-    this.configApi = configApi
+  proxy(req, socket, head,config) {
+    this.config = config
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
@@ -27,9 +28,26 @@ class httpsMiddleware {
   }
 
   connect(req, socket, head, hostname, port) {
-    this.mergeCertificate(hostname, port).then(localProxyPort => {
-      this.web(req, socket, head, '127.0.0.1', localProxyPort)
-    })
+    if (this.config.enableSSLProxying==='all') {
+      this.mergeCertificate(hostname, port).then(localProxyPort => {
+        this.web(req, socket, head, '127.0.0.1', localProxyPort)
+      })
+    }
+    // disable
+    else if (!this.config.enableSSLProxying) {
+      this.web(req, socket, head, hostname, port);
+    }
+    // enable and inWhiteList
+    else if (this.config.enableSSLProxying && 
+      this.config.SSLProxyList.length &&
+      this.config.SSLProxyList.indexOf(`${hostname}:${port}`)>-1
+    ) {
+      this.mergeCertificate(hostname, port).then(localProxyPort => {
+        this.web(req, socket, head, '127.0.0.1', localProxyPort)
+      })
+    }else{
+      this.web(req, socket, head, hostname, port);
+    }
   }
 
   web(req, socket, head, hostname, port) {

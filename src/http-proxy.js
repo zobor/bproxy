@@ -1,5 +1,5 @@
 const httpMiddleware = require('./http-middleware')
-const configApi = require('./config-parse')
+// const configApi = require('./config-parse')
 const util = require('./common/util')
 const fs = require('fs')
 
@@ -54,9 +54,9 @@ function handler(req, res) {
     })
 }
 
-function proxy(req, res){
+function proxy(req, res, config){
   if (!req.__sid__) req.__sid__ = util.newGuid()
-  let httpProxy = new httpMiddleware({configApi: configApi})
+  let httpProxy = new httpMiddleware({config: config})
   let pattern = httpProxy.init(req, res)
 
   if (socket && typeof socket.emit==='function') {

@@ -201,6 +201,12 @@ equal to `regx.call(null, req.url)`
 * response {Function}           => diy your response data
 ```
 
+### global.config.options
+```
+* enableSSLProxying {Boolean|String} => switch of proxy https
+* SSLProxyList {Array} => white list of https
+```
+
 ### example for combo
 
 `url` http://vm.gtimg.cn/c/=/tencentvideo_v1/script/txv.core.js,/tencentvideo/script/fansadmin/menu.js
