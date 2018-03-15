@@ -116,7 +116,7 @@ class HttpMiddleware extends RulePattern{
     delete this.options.headers['if-none-match']
     delete this.options.headers['accept-encoding']
 
-    let httpRequest = request(this.options, (err,response, body)=>{
+    let httpRequest = request(this.options, (err={},response={}, body='')=>{
       if (this.dataset.socketio && this.dataset.socketio.emit) {
         this.dataset.socketio.emit('response',{
           sid: this.dataset.req.__sid__,

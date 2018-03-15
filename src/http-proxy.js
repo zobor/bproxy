@@ -62,7 +62,7 @@ function proxy(req, res, config){
   if (socket && typeof socket.emit==='function') {
     socket.emit('request', {
       sid: req.__sid__,
-      url: req.url,
+      url: req.httpsURL || req.url,
       reqHeaders: req.headers,
       query: httpProxy.dataset.query
     })

@@ -199,6 +199,7 @@ equal to `regx.call(null, req.url)`
 * delay {Number}                => response delay
 * redirection {String}          => redirect to other url
 * response {Function}           => diy your response data
+
 ```
 
 ### global.config.options
@@ -206,6 +207,12 @@ equal to `regx.call(null, req.url)`
 * enableSSLProxying {Boolean|String} => switch of proxy https
 * SSLProxyList {Array} => white list of https
 ```
+
+
+    SSLProxyList: [
+      'm.v.qq.com:443',
+      'y.qq.com:443'
+    ]
 
 ### example for combo
 

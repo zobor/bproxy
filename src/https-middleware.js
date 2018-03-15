@@ -97,7 +97,7 @@ class httpsMiddleware {
           req.httpsURL = 'https://' + hostname + req.url
           req.url = 'http://' + hostname + req.url
           req.protocol = 'https'
-          httpProxy(req, res)
+          httpProxy(req, res, this.config)
         });
         localServer.on('error', (e) => {
           console.error(colors.red(e));

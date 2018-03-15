@@ -18,6 +18,7 @@ class bproxy {
     //   fs.writeFileSync(this.configFile, proxyConfigTemplate)
     // }
     this.userConfig = userConfig
+    this.isProxyServerStart = false
     this.init()
     // msg.emit('config-file-found', this.configFile)
   }
@@ -49,6 +50,8 @@ class bproxy {
   }
 
   startServer() {
+    if (this.isProxyServerStart) return;
+    this.isProxyServerStart = true;
     util.terminalLog([
       '[Info] '.green,
       'bproxy Service is running at ',
