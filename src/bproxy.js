@@ -8,35 +8,25 @@ const httpsMiddleware = require('./https-middleware')
 const util = require('./common/util')
 const message = require('./msg')
 const configSet = require('./config-parse')
+const baseConfig = require('./config')
 
 class bproxy {
   constructor(userConfig) {
-    // this.configFile = userConfig.configFile || configSet.CONFIG_PATH
-    // this.port = userConfig.port || configSet.PORT
-
-    // if (!fs.existsSync(this.configFile)) {
-    //   fs.writeFileSync(this.configFile, proxyConfigTemplate)
-    // }
     this.userConfig = userConfig
     this.isProxyServerStart = false
     this.init()
-    // msg.emit('config-file-found', this.configFile)
   }
 
   init(){
-    // this.startServer()
     this.onConfigReady()
   }
 
   onConfigReady(){
-    if (!this.userConfig.configFile) {
-      message.emit('config-file-found', null)
-    }else{
-      if (!fs.existsSync(this.userConfig.configFile)) {
-        fs.writeFileSync(this.userConfig.configFile, proxyConfigTemplate)
-      }
-      message.emit('config-file-found', this.userConfig.configFile)
+    this.userConfig.configFile = this.userConfig.configFile || baseConfig.CONFIG_PATH
+    if (!fs.existsSync(this.userConfig.configFile)) {
+      fs.writeFileSync(this.userConfig.configFile, proxyConfigTemplate)
     }
+    message.emit('config-file-found', this.userConfig.configFile)
     if (!configSet.setting) {
       message.on('config:ready',cf=>{
         this.config = Object.assign({},cf,this.userConfig)

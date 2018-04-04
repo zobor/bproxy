@@ -6,8 +6,8 @@ const baseConfig = require('./config')
 
 
 let config
-message.on('config-file-found', (filepath=baseConfig.CONFIG_PATH)=>{
-  filepath = filepath || baseConfig.CONFIG_PATH
+message.on('config-file-found', (filepath)=>{
+  filepath = filepath || baseConfig.CONFIG_PATH;
   fs.ensureFile(filepath).then(() => {
     watchConfigFileOnChange(filepath)
   })
