@@ -2,6 +2,7 @@ const httpMiddleware = require('./http-middleware')
 // const configApi = require('./config-parse')
 const util = require('./common/util')
 const fs = require('fs')
+const cert = require('./common/cert.js')
 
 
 var app = require('http').createServer(handler)
@@ -11,7 +12,7 @@ app.listen(9000)
 util.terminalLog([
   '[Info] '.green,
   'bproxy UI Pannel is ',
-  `http://0.0.0.0:9000/`.underline,
+  `http://127.0.0.1:9000/`.underline,
 ])
 var socket
 io.on('connection', function(skt) {
@@ -38,7 +39,8 @@ function handler(req, res) {
     res.writeHead(200, {
       'Content-Type': 'application/octet-stream'
     })
-    res.end(fs.readFileSync(config.getDefaultCACertPath()))
+    console.log('证书的路径:', cert.getDefaultCACertPath())
+    res.end(fs.readFileSync(cert.getDefaultCACertPath()))
     return
 
   }
