@@ -1,18 +1,19 @@
 const httpMiddleware = require('./http-middleware')
 // const configApi = require('./config-parse')
-const util = require('./common/util')
+const _ = require('./common/util')
 const fs = require('fs')
 const cert = require('./common/cert.js')
 
 
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app)
-app.listen(9000)
+const httpServerPort = 9909;
+app.listen(httpServerPort)
 
-util.terminalLog([
+_.terminalLog([
   '[Info] '.green,
   'bproxy UI Pannel is ',
-  `http://127.0.0.1:9000/`.underline,
+  `http://127.0.0.1:${httpServerPort}/`.underline,
 ])
 var socket
 io.on('connection', function(skt) {
@@ -57,7 +58,7 @@ function handler(req, res) {
 }
 
 function proxy(req, res, config){
-  if (!req.__sid__) req.__sid__ = util.newGuid()
+  if (!req.__sid__) req.__sid__ = _.newGuid()
   let httpProxy = new httpMiddleware({config: config})
   let pattern = httpProxy.init(req, res)
 

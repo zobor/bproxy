@@ -1,6 +1,5 @@
 const fs = require('fs-extra')
 const Readable = require('stream').Readable
-const console = require('./console')
 const url = require('url')
 const request = require('request')
 

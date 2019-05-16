@@ -5,7 +5,7 @@ const server = new http.Server()
 const colors = require('colors')
 const httpProxy = require('./http-proxy')
 const httpsMiddleware = require('./https-middleware')
-const util = require('./common/util')
+const _ = require('./common/util')
 const message = require('./msg')
 const configSet = require('./config-parse')
 const baseConfig = require('./config')
@@ -22,7 +22,12 @@ class bproxy {
   }
 
   onConfigReady(){
-    this.userConfig.configFile = this.userConfig.configFile || baseConfig.CONFIG_PATH
+    this.userConfig.configFile = this.userConfig.config || baseConfig.CONFIG_PATH
+    _.terminalLog([
+      '[Info] '.green,
+      'Config filepath:',
+      `${this.userConfig.configFile}`.underline
+    ]);
     if (!fs.existsSync(this.userConfig.configFile)) {
       fs.writeFileSync(this.userConfig.configFile, proxyConfigTemplate)
     }
@@ -42,7 +47,7 @@ class bproxy {
   startServer() {
     if (this.isProxyServerStart) return;
     this.isProxyServerStart = true;
-    util.terminalLog([
+    _.terminalLog([
       '[Info] '.green,
       'bproxy Service is running at ',
       `http://0.0.0.0:${this.port}/`.underline,
@@ -59,7 +64,7 @@ class bproxy {
 
       // tunneling for https
       server.on('connect', (req, socket, head) => {
-        if (!req.__sid__) req.__sid__ = util.newGuid()
+        if (!req.__sid__) req.__sid__ = _.newGuid()
         httpsMiddleware.proxy(req, socket, head, this.config)
       })
 

@@ -102,6 +102,9 @@ class HttpMiddleware extends RulePattern{
       // rule.redirection
       if (this.pattern.rule.redirection) {
         this.options.url = this.pattern.rule.redirection
+        if (this.pattern.filepath) {
+          this.options.url = `${this.options.url}/${this.pattern.filepath}`;
+        }
         let parseParams = url.parse(this.options.url)
         if (parseParams.host) {
           this.options.headers.host = parseParams.host

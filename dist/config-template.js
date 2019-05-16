@@ -11,5 +11,7 @@ var rules = [
 
 module.exports = {
   host: host,
-  rules: rules
+  rules: rules,
+  enableSSLProxying: false,
+  SSLProxyList: []
 }`;
