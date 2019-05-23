@@ -1,4 +1,5 @@
 import React from 'react';
+import { socketPort } from '../../src/config.js';
 
 class msgSender extends React.Component {
   constructor(props){
@@ -7,8 +8,8 @@ class msgSender extends React.Component {
   }
   init(){
     var that = this;
-    jQuery.getScript('http://127.0.0.1:9000/socket.io/socket.io.js').done(()=>{
-      var socket = io('http://localhost:9000');
+    jQuery.getScript(`http://127.0.0.1:${socketPort}/socket.io/socket.io.js`).done(()=>{
+      var socket = io(`http://localhost:${socketPort}`);
       socket.emit('clientConnect');
       socket.on('request', data=>{
         that.props.msg.emit('requestStart', data);

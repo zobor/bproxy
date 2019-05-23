@@ -14,10 +14,6 @@ var _ = require('lodash');
 
 var mkdirp = require('mkdirp');
 
-var colors = require('colors');
-
-var utils = exports;
-
 var createCA = function (CN) {
   var keys = pki.rsa.generateKeyPair(1024);
   var cert = pki.createCertificate();
@@ -101,7 +97,15 @@ var init = function () {
 
 var covertNodeCertToForgeCert = function (originCertificate) {
   var obj = forge.asn1.fromDer(originCertificate.raw.toString('binary'));
-  return forge.pki.certificateFromAsn1(obj);
+  var r;
+
+  try {
+    r = forge.pki.certificateFromAsn1(obj);
+  } catch (err) {
+    console.error(err);
+  }
+
+  return r; // return forge.pki.certificateFromAsn1(obj)
 };
 
 var createFakeCertificateByDomain = function (caKey, caCert, domain) {

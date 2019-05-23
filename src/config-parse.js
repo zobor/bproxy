@@ -1,8 +1,8 @@
 const message = require('./msg')
 const fs = require('fs-extra')
 const chokidar = require('chokidar')
-const console = require('./console')
 const baseConfig = require('./config')
+const _ = require('./common/util');
 
 
 let config
@@ -11,10 +11,9 @@ message.on('config-file-found', (filepath)=>{
   fs.ensureFile(filepath).then(() => {
     watchConfigFileOnChange(filepath)
   })
-  .catch(err => {
-    console.error(err)
+  .catch(() => {
     process.exit()
-  })
+  });
 })
 
 function watchConfigFileOnChange(configFile){
@@ -29,7 +28,8 @@ function watchConfigFileOnChange(configFile){
     message.emit('config:ready', config)
   }
   watcher.on('change', function() {
-    loadConfig()
+    loadConfig();
+    _.info(`${_.color.green.bold('bproxy.config.js changed')}: ${_.color.underline(configFile)}`)
   })
   .on('ready', function() {
     loadConfig()
@@ -41,8 +41,8 @@ function parseConfig(configFile){
   var isError = false
   try{
     conf = require(configFile)
-  }catch(e){
-    console.error(e.stack)
+  } catch(e){
+    _.error(`[require config]: ${JSON.stringify(e)}`)
     isError = true
   }
   let Hostrules = []

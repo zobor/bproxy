@@ -1,7 +1,7 @@
 var path = require('path');
 module.exports = {
   entry:[
-    'main.jsx'
+    './src/main.jsx'
   ],
   output: {
     path: __dirname + '/dist/',
@@ -9,18 +9,20 @@ module.exports = {
     filename: 'main.js'
   },
   resolve: {
-    root: path.resolve('./src/'),
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.jsx', '.js'],
   },
-  resolveLoader: { root: path.join(__dirname, "node_modules") },
+  mode: 'production',
+  target: 'web',
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
-        loader: 'babel',
-        query: {
-          presets: ['react', 'es2015']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/env', '@babel/react']
+          }
         }
       }
     ]

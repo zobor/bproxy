@@ -1,14 +1,12 @@
 const request = require('request');
 
-const msg = require('./msg');
-
 const RulePattern = require('./rule-pattern');
-
-const console = require('./console');
 
 const url = require('url');
 
 const querystring = require('querystring');
+
+const _ = require('./common/util');
 
 class HttpMiddleware extends RulePattern {
   constructor(options = {}) {
@@ -31,18 +29,13 @@ class HttpMiddleware extends RulePattern {
     let urlParam = url.parse(this.dataset.req.url);
     let param = querystring.parse(urlParam.query);
     this.dataset.query = param;
+    const shouldUseHTTP = this.config.forceHTTPList && this.config.forceHTTPList.length && this.config.forceHTTPList.indexOf(urlParam.hostname) > -1;
     this.options = {
-      url: req.url,
+      url: shouldUseHTTP ? req.url : this.dataset.req.httpsURL || req.url,
       method: req.method,
       headers: Object.assign({}, req.headers)
     };
-
-    try {
-      this.rulesPattern();
-    } catch (e) {
-      console.error(e);
-    }
-
+    this.rulesPattern();
     return this.pattern || {};
   }
 
@@ -50,33 +43,29 @@ class HttpMiddleware extends RulePattern {
     this.dataset.socketio = socketio;
     return new Promise((resolve, reject) => {
       this.$resolve = resolve;
+      this.$reject = reject;
 
-      try {
-        if (this.options && this.options.method.toLowerCase() === 'post') {
-          let body = [];
-          this.dataset.req.on('data', chunk => {
-            body.push(chunk);
-          });
-          this.dataset.req.on('end', () => {
-            this.options.body = Buffer.concat(body);
-            this.onParamsReady();
-          });
-        } else {
+      if (this.options && this.options.method.toLowerCase() === 'post') {
+        let body = [];
+        this.dataset.req.on('data', chunk => {
+          body.push(chunk);
+        });
+        this.dataset.req.on('end', () => {
+          this.options.body = Buffer.concat(body);
           this.onParamsReady();
-        }
-      } catch (e) {
-        console.error(e);
+        });
+        this.dataset.req.on('error', err => {
+          _.error(`[req error]: ${JSON.stringify(err)}`);
+        });
+      } else {
+        this.onParamsReady();
       }
     });
   }
 
   onParamsReady() {
     if (this.pattern && this.pattern.disableHttpRequest) {
-      try {
-        this.readLocalData();
-      } catch (e) {
-        console.error(e);
-      }
+      this.readLocalData();
     } else {
       this.request();
     }
@@ -134,7 +123,13 @@ class HttpMiddleware extends RulePattern {
     delete this.options.headers['if-modified-since'];
     delete this.options.headers['if-none-match'];
     delete this.options.headers['accept-encoding'];
-    let httpRequest = request(this.options, (err = {}, response = {}, body = '') => {
+    request(this.options, (err, response = {}, body = '') => {
+      Object.assign(response.headers, this.dataset.responseHeaders); // _.debug(`[${response.statusCode}]: ${this.options.url}`);
+
+      if (err) {
+        _.error(`httpRequest: ${JSON.stringify(err)}`);
+      }
+
       if (this.dataset.socketio && this.dataset.socketio.emit) {
         this.dataset.socketio.emit('response', {
           sid: this.dataset.req.__sid__,
@@ -142,10 +137,13 @@ class HttpMiddleware extends RulePattern {
           body: body
         });
       }
-    }).on('response', response => {
-      Object.assign(response.headers, this.dataset.responseHeaders);
-    }).on('data', chunk => {});
-    this.$resolve(httpRequest);
+
+      this.$resolve({
+        body,
+        headers: response.headers,
+        statusCode: response.statusCode
+      });
+    });
   }
 
 }

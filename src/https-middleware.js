@@ -1,34 +1,34 @@
 const net = require('net')
 const url = require('url')
-const colors = require('colors')
 const ca = require('./common/ca')
 const forge = require('node-forge');
 const pki = forge.pki;
 const https = require('https')
 const fs = require('fs')
 const httpProxy = require('./http-proxy')
+const _ = require('./common/util');
+const tls = require('tls');
 
-
-const tls                 = require('tls');
-const rs                  = ca.init();
-const certificatePem      = fs.readFileSync(rs.caCertPath);
-const certificateKeyPem   = fs.readFileSync(rs.caKeyPath);
-const localCertificate    = forge.pki.certificateFromPem(certificatePem);
+const rs = ca.init();
+const certificatePem = fs.readFileSync(rs.caCertPath);
+const certificateKeyPem = fs.readFileSync(rs.caKeyPath);
+const localCertificate = forge.pki.certificateFromPem(certificatePem);
 const localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
 
 class httpsMiddleware {
-  constructor() {}
+  constructor() { }
 
-  proxy(req, socket, head,config) {
+  proxy(req, socket, head, config) {
     this.config = config
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
+      _.debug(`https: ${httpsParams.hostname}:${httpsParams.port}`);
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
     })
   }
 
   connect(req, socket, head, hostname, port) {
-    if (this.config.enableSSLProxying==='all') {
+    if (this.config.enableSSLProxying === 'all') {
       this.mergeCertificate(hostname, port).then(localProxyPort => {
         this.web(req, socket, head, '127.0.0.1', localProxyPort)
       })
@@ -38,33 +38,50 @@ class httpsMiddleware {
       this.web(req, socket, head, hostname, port);
     }
     // enable and inWhiteList
-    else if (this.config.enableSSLProxying && 
+    else if (this.config.enableSSLProxying &&
       this.config.SSLProxyList.length &&
-      this.config.SSLProxyList.indexOf(`${hostname}:${port}`)>-1
+      this.config.SSLProxyList.indexOf(`${hostname}:${port}`) > -1
     ) {
       this.mergeCertificate(hostname, port).then(localProxyPort => {
         this.web(req, socket, head, '127.0.0.1', localProxyPort)
       })
-    }else{
+    } else {
       this.web(req, socket, head, hostname, port);
     }
   }
 
   web(req, socket, head, hostname, port) {
+    var timeout = 2000;
     var socketAgent = net.connect(port, hostname, () => {
       var agent = "bproxy Agent";
-      socket.write([
+      socket
+      .on('error', err => {
+        _.error(`net.socket.write.error: ${hostname}:${port} : ${JSON.stringify(err)}`)
+        socketAgent.end();
+      })
+      .write([
         'HTTP/1.1 200 Connection Established\r\n',
         `Proxy-agent: ${agent}\r\n`,
         '\r\n'
       ].join(''))
+      socket.setTimeout(timeout);
+      socket.on('timeout', () => {
+        _.error(`[TIMEOUT] ${hostname}:${port}`);
+      })
+
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
     });
-    socketAgent.on('data', (e) => {});
+    socketAgent.setTimeout(timeout);
+    socketAgent.on('timeout', () => {
+      _.error(`[TIMEOUT] ${hostname}:${port}`);
+      socket.end();
+    })
+    socketAgent.on('data', (e) => { });
     socketAgent.on('error', (e) => {
-      console.error(colors.red(e));
+      e.host = `${hostname}:${port}`;
+      _.error(`[HTTPS CONNECT]: ${JSON.stringify(e)}`);
     });
   }
 
@@ -100,37 +117,27 @@ class httpsMiddleware {
           httpProxy(req, res, this.config)
         });
         localServer.on('error', (e) => {
-          console.error(colors.red(e));
+          _.error(`[localServer]: ${JSON.stringify(e)}`);
         });
       }).catch((e) => {
-        console.error(colors.red(e));
+        _.error(`[requestCertificate]: ${JSON.stringify(e)}`);
       });
     });
   }
 
-  requestCertificate(hostname, port){
-    return new Promise( (resolve, reject)=>{
+  requestCertificate(hostname, port) {
+    return new Promise((resolve, reject) => {
       var certificate;
-      var requestConfig;
-      if (0) {
-        requestConfig = {
-          method: 'HEAD',
-          // host: 'proxy.company.com',
-          port: 8080,
-          path: 'https://' + hostname
-        }
-      }else{
-        requestConfig = {
-          method: 'HEAD',
-          port: port,
-          host: hostname,
-          path: '/'
-        }
+      var requestConfig = {
+        method: 'HEAD',
+        port: port,
+        host: hostname,
+        path: '/'
       }
-      var _resolve = function(cert){
+      var _resolve = function (cert) {
         resolve(cert);
       }
-      var req = https.request(requestConfig, (resp)=>{
+      var req = https.request(requestConfig, (resp) => {
         try {
           var serverCertificate = resp.socket.getPeerCertificate();
           if (serverCertificate && serverCertificate.raw) {
@@ -143,15 +150,23 @@ class httpsMiddleware {
           reject(e);
         }
       });
-      req.setTimeout(4000, ()=>{
+      req.setTimeout(4000, () => {
         if (!certificate) {
-          certificate = ca.createFakeCertificateByDomain(localCertificateKey, localCertificate, hostname);
+          certificate = ca.createFakeCertificateByDomain(
+            localCertificateKey,
+            localCertificate,
+            hostname
+          );
           _resolve(certificate);
         }
       });
-      req.on('error', (e)=>{
+      req.on('error', (e) => {
         if (!certificate) {
-          certificate = ca.createFakeCertificateByDomain(localCertificateKey, localCertificate, hostname);
+          certificate = ca.createFakeCertificateByDomain(
+            localCertificateKey,
+            localCertificate,
+            hostname
+          );
           _resolve(certificate);
         }
       });

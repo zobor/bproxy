@@ -5,7 +5,8 @@ let config = {
   enableSSLProxying: false,
   SSLProxyList: [],
   host: [],
-  rules: []
+  rules: [],
+  socketPort: 3366
 }
 
 module.exports = config

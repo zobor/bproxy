@@ -1,6 +1,6 @@
 # bproxy
 
-a free web debugging tool for devolper
+Front-end development agent tool
 
 ----
 
@@ -20,7 +20,7 @@ $$> bproxy
     -h, --help            output usage information
 ```
 
-### Install
+## Install
 
 ```
 npm install bproxy -g
@@ -32,19 +32,51 @@ or
 yarn global add bproxy
 ```
 
+## config.options
+```
+* regx {String|RegExp|Function} => match request url
+* status {Number}               => response http status code
+* file {String}                 => local file path
+* path {String}                 => local files path
+* jsonp {String}                => local json file path
+* callbackParameter {String}    => jsonp callback parameter
+* host {String}                 => request host
+* responseHeaders {Object}      => response headers
+* delay {Number}                => response delay
+* redirection {String}          => redirect to other url
+* response {Function}           => diy your response data
+```
 
-### example bproxy.config.js
+## global.config.options
+```
+* enableSSLProxying {Boolean|String} Proxy https switch
+* SSLProxyList {Array} Proxy the list of https
+* forceHTTPList {Array} Force https to http protocol
+```
 
+```
+// Proxy the list of https requests
+SSLProxyList: [
+  'fusion.design:443'
+]
+
+// Domains that do not support https can also provide https requests.
+forceHTTPList: [
+  'fusion.design.net'
+]
+```
+
+## bproxy.config.js
 ```js
 var host = `
 # 127.0.0.1 www.baidu.com
 `
 
 var rules = [
-  // {
-  //   regx: /^https?://.*.baidu.com/,
-  //   status: '404'
-  // }
+  {
+    regx: /^https?://.*.baidu.com/,
+    redirection: 'http://ip.sb',
+  }
 ]
 
 module.exports = {
@@ -55,27 +87,24 @@ module.exports = {
 }
 ```
 
-### rule usage
+## rules usage
 
-#### Set request url host
+### Set up a host for a single request
 ```js
 {
-  // regx test req.url
-  regx: /^https?:\/\/v\.qq\.com/,
-  // your test host ip
+  regx: 'https://fusion.design/plugin/cool/',
   host: '127.0.0.1'
 }
 ```
-#### Set request url proxy
+### Configuring a proxy for a single file type
 ```js
 {
-  // mp4 use your company proxy
   regx: /\.mp4/,
   proxy: 'http://proxyIP:proxyPort'
 }
 ```
 
-#### remote path map to local path
+### Proxy network path to local path
 ```js
 {
   regx: /^https?:\/\/m.v.qq.com\/([^?]+)/,
@@ -83,7 +112,7 @@ module.exports = {
 }
 ```
 
-#### remote file map to local file
+### Proxy network file to local file
 ```js
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
@@ -91,7 +120,7 @@ module.exports = {
 }
 ```
 
-#### jsonp
+### Support jsonp method
 ```js
 {
   regx: /cgi\?callback=/,
@@ -99,7 +128,7 @@ module.exports = {
 }
 ```
 
-#### response header rewrite
+### Response header rewrite
 ```js
 {
   regx: /cgi\?callback=/,
@@ -111,7 +140,7 @@ module.exports = {
 }
 ```
 
-#### redirection
+### Redirect a URL to another URL
 ```js
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
@@ -119,7 +148,7 @@ module.exports = {
 }
 ```
 
-#### simulate http status
+### Simulate http status code
 ```js
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
@@ -127,7 +156,7 @@ module.exports = {
 }
 ```
 
-#### speed limit
+### Limit network speed
 ```js
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
@@ -150,7 +179,7 @@ module.exports = {
 }
 ```
 
-#### https support
+### Support https
 ```js
 {
   regx: /https?:\/\/v.qq.com\//,
@@ -166,13 +195,12 @@ sudo bproxy --install
 
 #### regx usage
 
-regx can use follow type of data
+regx can be follow type of data
 * RegExp
 * String
 * Function
 
-
-`{regx: /\.html/}` is equal to `RegExp.test(reg.url)`
+`{regx: /\.html/}` is equal to `regx.test(reg.url)`
 
 `{regx: '.html'}` is equal to `req.url.indexOf(regx)>-1`
 
@@ -185,36 +213,7 @@ regx can use follow type of data
 ```
 equal to `regx.call(null, req.url)`
 
-
-### config.options
-```
-* regx {String|RegExp|Function} => match request url
-* status {Number}               => response http status code
-* file {String}                 => local file path
-* path {String}                 => local files path
-* jsonp {String}                => local json file path
-* callbackParameter {String}    => jsonp callback parameter
-* host {String}                 => request host
-* responseHeaders {Object}      => response headers
-* delay {Number}                => response delay
-* redirection {String}          => redirect to other url
-* response {Function}           => diy your response data
-
-```
-
-### global.config.options
-```
-* enableSSLProxying {Boolean|String} => switch of proxy https
-* SSLProxyList {Array} => white list of https
-```
-
-
-    SSLProxyList: [
-      'm.v.qq.com:443',
-      'y.qq.com:443'
-    ]
-
-### example for combo
+### Combine local files with web requests
 
 `url` http://vm.gtimg.cn/c/=/tencentvideo_v1/script/txv.core.js,/tencentvideo/script/fansadmin/menu.js
 ```js

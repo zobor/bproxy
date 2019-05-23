@@ -4,17 +4,13 @@ const _ = require('./common/util')
 const fs = require('fs')
 const cert = require('./common/cert.js')
 
-
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app)
-const httpServerPort = 9909;
-app.listen(httpServerPort)
+const uiServerPort = require('./config').socketPort;
+const uiServer = `http://127.0.0.1:${uiServerPort}/`;
+app.listen(uiServerPort)
 
-_.terminalLog([
-  '[Info] '.green,
-  'bproxy UI Pannel is ',
-  `http://127.0.0.1:${httpServerPort}/`.underline,
-])
+_.info(`bproxy ${_.color.magentaBright.bold.underline('UI Service')} is ${_.color.green.bold.underline(uiServer)}`);
 var socket
 io.on('connection', function(skt) {
   socket = skt
@@ -40,8 +36,9 @@ function handler(req, res) {
     res.writeHead(200, {
       'Content-Type': 'application/octet-stream'
     })
-    console.log('证书的路径:', cert.getDefaultCACertPath())
-    res.end(fs.readFileSync(cert.getDefaultCACertPath()))
+    const certPath = cert.getDefaultCACertPath();
+    _.info(`证书的路径: ${_.color.underline.magenta(certPath)}`);
+    res.end(fs.readFileSync(certPath))
     return
 
   }
@@ -75,8 +72,12 @@ function proxy(req, res, config){
     .catch((error)=>{
       res.end(error)
     })
-    .then((responseStream)=>{
-      responseStream.pipe(res)
+    .then((r)=>{
+      if (r.headers && r.headers.connection === 'close') {
+        delete r.headers.connection;
+      }
+      res.writeHead(r.statusCode, r.headers)
+      res.end(r.body);
       httpProxy = null
       pattern = null
     })

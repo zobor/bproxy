@@ -2,8 +2,6 @@ const net = require('net');
 
 const url = require('url');
 
-const colors = require('colors');
-
 const ca = require('./common/ca');
 
 const forge = require('node-forge');
@@ -15,6 +13,8 @@ const https = require('https');
 const fs = require('fs');
 
 const httpProxy = require('./http-proxy');
+
+const _ = require('./common/util');
 
 const tls = require('tls');
 
@@ -31,6 +31,9 @@ class httpsMiddleware {
     this.config = config;
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
+
+      _.debug(`https: ${httpsParams.hostname}:${httpsParams.port}`);
+
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
     });
   }
@@ -54,16 +57,33 @@ class httpsMiddleware {
   }
 
   web(req, socket, head, hostname, port) {
+    var timeout = 2000;
     var socketAgent = net.connect(port, hostname, () => {
       var agent = "bproxy Agent";
-      socket.write(['HTTP/1.1 200 Connection Established\r\n', `Proxy-agent: ${agent}\r\n`, '\r\n'].join(''));
+      socket.on('error', err => {
+        _.error(`net.socket.write.error: ${hostname}:${port} : ${JSON.stringify(err)}`);
+
+        socketAgent.end();
+      }).write(['HTTP/1.1 200 Connection Established\r\n', `Proxy-agent: ${agent}\r\n`, '\r\n'].join(''));
+      socket.setTimeout(timeout);
+      socket.on('timeout', () => {
+        _.error(`[TIMEOUT] ${hostname}:${port}`);
+      });
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
     });
+    socketAgent.setTimeout(timeout);
+    socketAgent.on('timeout', () => {
+      _.error(`[TIMEOUT] ${hostname}:${port}`);
+
+      socket.end();
+    });
     socketAgent.on('data', e => {});
     socketAgent.on('error', e => {
-      console.error(colors.red(e));
+      e.host = `${hostname}:${port}`;
+
+      _.error(`[HTTPS CONNECT]: ${JSON.stringify(e)}`);
     });
   }
 
@@ -99,10 +119,10 @@ class httpsMiddleware {
           httpProxy(req, res, this.config);
         });
         localServer.on('error', e => {
-          console.error(colors.red(e));
+          _.error(`[localServer]: ${JSON.stringify(e)}`);
         });
       }).catch(e => {
-        console.error(colors.red(e));
+        _.error(`[requestCertificate]: ${JSON.stringify(e)}`);
       });
     });
   }
@@ -110,23 +130,12 @@ class httpsMiddleware {
   requestCertificate(hostname, port) {
     return new Promise((resolve, reject) => {
       var certificate;
-      var requestConfig;
-
-      if (0) {
-        requestConfig = {
-          method: 'HEAD',
-          // host: 'proxy.company.com',
-          port: 8080,
-          path: 'https://' + hostname
-        };
-      } else {
-        requestConfig = {
-          method: 'HEAD',
-          port: port,
-          host: hostname,
-          path: '/'
-        };
-      }
+      var requestConfig = {
+        method: 'HEAD',
+        port: port,
+        host: hostname,
+        path: '/'
+      };
 
       var _resolve = function (cert) {
         resolve(cert);

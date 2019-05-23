@@ -1,3 +1,6 @@
+const chalk = require('chalk');
+const log = console.log;
+
 class Util {
 
   newGuid(len) {
@@ -20,9 +23,28 @@ class Util {
     return "";
   }
 
-  terminalLog(arr){
-    console.log(arr.join(''))
+  log(obj) {
+    log(obj)
+  }
+
+  info(obj) {
+    const info = chalk.green('[INFO]')
+    log(`${info} ${obj}`);
+  }
+
+  debug(obj) {
+    const info = chalk.gray('[DEBUG]')
+    obj = chalk.gray(obj);
+    log(`${info} ${obj}`);
+  }
+
+  error(obj) {
+    const info = chalk.red('[ERROR]')
+    obj = chalk.red(obj);
+    log(`${info} ${obj}`);
   }
 }
+
+Util.prototype.color = chalk;
 
 module.exports = new Util()
