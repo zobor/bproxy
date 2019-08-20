@@ -29,8 +29,10 @@ class HttpMiddleware extends RulePattern{
 
     this.options = {
       url: shouldUseHTTP ? req.url : (this.dataset.req.httpsURL || req.url),
+      // url: this.dataset.req.httpsURL || req.url,
       method: req.method,
-      headers: Object.assign({}, req.headers)
+      headers: Object.assign({}, req.headers),
+      strictSSL: false,
     }
     this.rulesPattern()
     return this.pattern||{}
@@ -107,17 +109,28 @@ class HttpMiddleware extends RulePattern{
         Object.assign(this.dataset.responseHeaders,this.pattern.rule.responseHeaders)
       }
     }
-    delete this.options.headers['cache-control']
-    delete this.options.headers['if-modified-since']
-    delete this.options.headers['if-none-match']
+    // delete this.options.headers['cache-control']
+    // delete this.options.headers['if-modified-since']
+    // delete this.options.headers['if-none-match']
     delete this.options.headers['accept-encoding']
 
+    // if (this.options.url.indexOf('png')>-1) {
+    //   this.options.url = this.options.url.replace(/http:\/\//, 'https://');
+    //   console.log(this.options.url);
+    // }
+    // _.debug(`[http] ${this.options.url}`);
     request(this.options, (err, response={}, body='') => {
-      Object.assign(response.headers, this.dataset.responseHeaders)
+      Object.assign(response.headers || {}, this.dataset.responseHeaders || {})
       // _.debug(`[${response.statusCode}]: ${this.options.url}`);
       if (err) {
         _.error(`httpRequest: ${JSON.stringify(err)}`);
       }
+      _.debug(`[✓http] ${this.options.url}`);
+      // if (this.options.url.indexOf('png')>-1) {
+      //   console.log(response.headers);
+      //   console.log(body.length);
+      // }
+      
       if (this.dataset.socketio && this.dataset.socketio.emit) {
         this.dataset.socketio.emit('response',{
           sid: this.dataset.req.__sid__,
@@ -125,12 +138,16 @@ class HttpMiddleware extends RulePattern{
           body: body
         })
       }
+      // this.$resolve(response);
       this.$resolve({
         body,
         headers: response.headers,
         statusCode: response.statusCode,
       });
     })
+    // .on('data', (data) => {
+      
+    // });
   }
 }
 

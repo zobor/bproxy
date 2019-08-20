@@ -14,6 +14,7 @@ const certificatePem = fs.readFileSync(rs.caCertPath);
 const certificateKeyPem = fs.readFileSync(rs.caKeyPath);
 const localCertificate = forge.pki.certificateFromPem(certificatePem);
 const localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
+const timeout = 5000;
 
 class httpsMiddleware {
   constructor() { }
@@ -22,7 +23,7 @@ class httpsMiddleware {
     this.config = config
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
-      _.debug(`https: ${httpsParams.hostname}:${httpsParams.port}`);
+      _.debug(`[request]: ${httpsParams.hostname}:${httpsParams.port}`);
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
     })
   }
@@ -51,8 +52,8 @@ class httpsMiddleware {
   }
 
   web(req, socket, head, hostname, port) {
-    var timeout = 2000;
     var socketAgent = net.connect(port, hostname, () => {
+      _.debug(`[connect success]${hostname}:${port}`);
       var agent = "bproxy Agent";
       socket
       .on('error', err => {
@@ -64,20 +65,20 @@ class httpsMiddleware {
         `Proxy-agent: ${agent}\r\n`,
         '\r\n'
       ].join(''))
-      socket.setTimeout(timeout);
-      socket.on('timeout', () => {
-        _.error(`[TIMEOUT] ${hostname}:${port}`);
-      })
+      // socket.setTimeout(timeout);
+      // socket.on('timeout', () => {
+      //   _.error(`[TIMEOUT][socket] ${hostname}:${port}`);
+      // })
 
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
     });
-    socketAgent.setTimeout(timeout);
-    socketAgent.on('timeout', () => {
-      _.error(`[TIMEOUT] ${hostname}:${port}`);
-      socket.end();
-    })
+    // socketAgent.setTimeout(timeout);
+    // socketAgent.on('timeout', () => {
+    //   _.error(`[TIMEOUT][socketAgent] ${hostname}:${port}`);
+    //   socket.end();
+    // })
     socketAgent.on('data', (e) => { });
     socketAgent.on('error', (e) => {
       e.host = `${hostname}:${port}`;
@@ -140,7 +141,8 @@ class httpsMiddleware {
       var req = https.request(requestConfig, (resp) => {
         try {
           var serverCertificate = resp.socket.getPeerCertificate();
-          if (serverCertificate && serverCertificate.raw) {
+          const isSSLDisabled = this.config.forceHTTPList.indexOf(hostname) > -1;
+          if (serverCertificate && serverCertificate.raw && !isSSLDisabled) {
             certificate = ca.createFakeCertificateByCA(localCertificateKey, localCertificate, serverCertificate);
           } else {
             certificate = ca.createFakeCertificateByDomain(localCertificateKey, localCertificate, hostname);

@@ -106,7 +106,6 @@ var covertNodeCertToForgeCert = function(originCertificate) {
         console.error(err);
     }
     return r;
-    // return forge.pki.certificateFromAsn1(obj)
 }
 
 var createFakeCertificateByDomain = function(caKey, caCert, domain) {
