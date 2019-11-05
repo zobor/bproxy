@@ -23,7 +23,6 @@ class httpsMiddleware {
     this.config = config
     return new Promise((resolve, reject) => {
       let httpsParams = url.parse('https://' + req.url);
-      _.debug(`[request]: ${httpsParams.hostname}:${httpsParams.port}`);
       this.connect(req, socket, head, httpsParams.hostname, httpsParams.port);
     })
   }
@@ -53,7 +52,6 @@ class httpsMiddleware {
 
   web(req, socket, head, hostname, port) {
     var socketAgent = net.connect(port, hostname, () => {
-      _.debug(`[connect success]${hostname}:${port}`);
       var agent = "bproxy Agent";
       socket
       .on('error', err => {
@@ -65,20 +63,11 @@ class httpsMiddleware {
         `Proxy-agent: ${agent}\r\n`,
         '\r\n'
       ].join(''))
-      // socket.setTimeout(timeout);
-      // socket.on('timeout', () => {
-      //   _.error(`[TIMEOUT][socket] ${hostname}:${port}`);
-      // })
 
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
     });
-    // socketAgent.setTimeout(timeout);
-    // socketAgent.on('timeout', () => {
-    //   _.error(`[TIMEOUT][socketAgent] ${hostname}:${port}`);
-    //   socket.end();
-    // })
     socketAgent.on('data', (e) => { });
     socketAgent.on('error', (e) => {
       e.host = `${hostname}:${port}`;

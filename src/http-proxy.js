@@ -77,7 +77,9 @@ function proxy(req, res, config){
         delete r.headers.connection;
       }
       res.writeHead(r.statusCode, r.headers)
-      res.end(r.body);
+      res.write(r.body);
+      res.end();
+      // res.end(r.body);
       httpProxy = null
       pattern = null
     })

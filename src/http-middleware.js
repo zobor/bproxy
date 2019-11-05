@@ -3,6 +3,7 @@ const RulePattern = require('./rule-pattern')
 const url = require('url')
 const querystring = require('querystring')
 const _ = require('./common/util');
+const fs = require('fs');
 
 class HttpMiddleware extends RulePattern{
   constructor(options={}){
@@ -29,7 +30,6 @@ class HttpMiddleware extends RulePattern{
 
     this.options = {
       url: shouldUseHTTP ? req.url : (this.dataset.req.httpsURL || req.url),
-      // url: this.dataset.req.httpsURL || req.url,
       method: req.method,
       headers: Object.assign({}, req.headers),
       strictSSL: false,
@@ -109,45 +109,35 @@ class HttpMiddleware extends RulePattern{
         Object.assign(this.dataset.responseHeaders,this.pattern.rule.responseHeaders)
       }
     }
-    // delete this.options.headers['cache-control']
-    // delete this.options.headers['if-modified-since']
-    // delete this.options.headers['if-none-match']
     delete this.options.headers['accept-encoding']
+    if (this.options.disableCache) {
+      delete this.options.headers['cache-control']
+      delete this.options.headers['if-modified-since']
+      delete this.options.headers['if-none-match']
+    }
 
-    // if (this.options.url.indexOf('png')>-1) {
-    //   this.options.url = this.options.url.replace(/http:\/\//, 'https://');
-    //   console.log(this.options.url);
-    // }
-    // _.debug(`[http] ${this.options.url}`);
-    request(this.options, (err, response={}, body='') => {
+    request(this.options, (err, response={}, body) => {
       Object.assign(response.headers || {}, this.dataset.responseHeaders || {})
-      // _.debug(`[${response.statusCode}]: ${this.options.url}`);
       if (err) {
         _.error(`httpRequest: ${JSON.stringify(err)}`);
       }
       _.debug(`[✓http] ${this.options.url}`);
-      // if (this.options.url.indexOf('png')>-1) {
-      //   console.log(response.headers);
-      //   console.log(body.length);
+      // if (this.dataset.socketio && this.dataset.socketio.emit) {
+      //   this.dataset.socketio.emit('response',{
+      //     sid: this.dataset.req.__sid__,
+      //     resHeaders: response.headers,
+      //     body: body
+      //   })
       // }
-      
-      if (this.dataset.socketio && this.dataset.socketio.emit) {
-        this.dataset.socketio.emit('response',{
-          sid: this.dataset.req.__sid__,
-          resHeaders: response.headers,
-          body: body
-        })
-      }
-      // this.$resolve(response);
+
+      // response.headers['content-length'] = body.length;
+
       this.$resolve({
         body,
         headers: response.headers,
         statusCode: response.statusCode,
       });
     })
-    // .on('data', (data) => {
-      
-    // });
   }
 }
 
