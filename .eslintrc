@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb/base",
+  "rules": {
+    "strict": "off",
+    "no-console": "off",
+    "import/no-dynamic-require": "off",
+    "global-require": "off",
+    "require-yield": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  }
+}

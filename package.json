@@ -35,12 +35,11 @@
     "mkdirp": "^0.5.1",
     "node-forge": "^0.7.2",
     "request": "^2.83.0",
-    "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.18.2",
     "mocha": "^6.1.4"
   }
 }

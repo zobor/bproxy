@@ -1,50 +1,52 @@
+/* eslint class-methods-use-this: 0 */
 const chalk = require('chalk');
-const log = console.log;
+
+const { log } = console;
 
 class Util {
-
-  newGuid(len) {
-    len = len || 32;
-    var guid = "";
-    for (var i = 1; i <= len; i++) {
-      var n = Math.floor(Math.random() * 16.0).toString(16);
+  newGuid(strLen) {
+    const len = strLen || 32;
+    let guid = '';
+    for (let i = 1; i <= len;) {
+      const n = Math.floor(Math.random() * 16.0).toString(16);
       guid += n;
+      i += 1;
     }
     return guid;
   }
 
   getUrlParam(p, u) {
-    var reg = new RegExp("(^|&|\\\\?)" + p + "=([^&]*)(&|$|#)"),
-      r = null;
+    const reg = new RegExp(`(^|&|\\\\?)${p}=([^&]*)(&|$|#)`);
+    let r = null;
     r = u.match(reg);
     if (r) {
       return r[2];
     }
-    return "";
+    return '';
   }
 
   log(obj) {
-    log(obj)
+    log(obj);
   }
 
   info(obj) {
-    const info = chalk.green('[INFO]')
+    const info = chalk.green('[INFO]');
     log(`${info} ${obj}`);
   }
 
-  debug(obj) {
-    const info = chalk.gray('[DEBUG]')
-    obj = chalk.gray(obj);
+  debug(ob) {
+    const info = chalk.gray('[DEBUG]');
+    const obj = chalk.gray(ob);
     log(`${info} ${obj}`);
   }
 
-  error(obj) {
-    const info = chalk.red('[ERROR]')
-    obj = chalk.red(obj);
+  error(ob) {
+    const info = chalk.red('[ERROR]');
+    const obj = chalk.red(ob);
     log(`${info} ${obj}`);
   }
 }
 
 Util.prototype.color = chalk;
 
-module.exports = new Util()
+module.exports = new Util();

@@ -1,5 +1,6 @@
-let path = require('path')
-let config = {
+const path = require('path');
+
+const config = {
   PORT: 8888,
   CONFIG_PATH: path.resolve(process.cwd(), 'bproxy.conf.js'),
   enableSSLProxying: false,
@@ -8,6 +9,6 @@ let config = {
   rules: [],
   socketPort: 3366,
   forceHTTPList: [],
-}
+};
 
-module.exports = config
+module.exports = config;
