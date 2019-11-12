@@ -46,6 +46,7 @@ class HTTPSMiddleware {
   }
 
   web(req, socket, head, hostname, port) {
+    const startTime = +new Date();
     const socketAgent = net.connect(port, hostname, () => {
       const agent = 'bproxy Agent';
       socket
@@ -62,6 +63,8 @@ class HTTPSMiddleware {
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
+      const endTime = +new Date();
+      console.log(`[INFO][${endTime - startTime}ms] https connect`)
     });
     // socketAgent.on('data', (e) => { });
     socketAgent.on('error', (e) => {
@@ -72,7 +75,10 @@ class HTTPSMiddleware {
 
   mergeCertificate(hostname, port) {
     return new Promise((resolve) => {
+      const startTime = +new Date();
       this.requestCertificate(hostname, port).then((certificate) => {
+        const endTime = +new Date();
+        _.info(`[DEBUG][${endTime - startTime}ms] requestCertificate`);
         const certPem = pki.certificateToPem(certificate.cert);
         const keyPem = pki.privateKeyToPem(certificate.key);
         const localServer = new https.Server({
@@ -123,23 +129,27 @@ class HTTPSMiddleware {
         port,
         host: hostname,
         path: '/',
-        strictSSL: false,
-        rejectUnauthorized: false,
       };
       /* eslint no-underscore-dangle: 0 */
       const _resolve = function _resolve(cert) {
         resolve(cert);
       };
+      const startTime = +new Date();
       const req = https.request(requestConfig, (resp) => {
+        const endTime = +new Date();
+        console.log(`[INFO][${endTime - startTime}ms] https.request`);
         try {
           const serverCertificate = resp.socket.getPeerCertificate();
           const isSSLDisabled = this.config.forceHTTPList.indexOf(hostname) > -1;
           if (serverCertificate && serverCertificate.raw && !isSSLDisabled) {
+            const startTime2 = +new Date();
             certificate = ca.createFakeCertificateByCA(
               localCertificateKey,
               localCertificate,
               serverCertificate,
             );
+            const endTime2 = +new Date();
+            console.log(`[INFO][${endTime2 - startTime2}ms] createFakeCertificateByCA`);
           } else {
             certificate = ca.createFakeCertificateByDomain(
               localCertificateKey,

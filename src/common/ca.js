@@ -113,11 +113,13 @@ const covertNodeCertToForgeCert = function covertNodeCertToForgeCert(originCerti
   return r;
 };
 
+
+const keys = pki.rsa.generateKeyPair(SEC_SIZE);
+const cert = pki.createCertificate();
+
 const createFakeCertificateByDomain = function createFakeCertificateByDomain(
   caKey, caCert, domain,
 ) {
-  const keys = pki.rsa.generateKeyPair(SEC_SIZE);
-  const cert = pki.createCertificate();
   cert.publicKey = keys.publicKey;
 
   cert.serialNumber = `${new Date().getTime()}`;
