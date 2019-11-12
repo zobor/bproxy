@@ -59,23 +59,19 @@ class bproxy {
       })
 
       server.on('upgrade', (req, socket, head) => {
-        console.log(`[server upgrade]: `, req);
           // upgradeHandler(req, socket, head, ssl);
       });
 
       server.on('error', (err) => {
-        console.log('[server error]', err);
       })
     })
     server.on('error', (err) => {
-      console.log('[server error2]', err);
     })
   }
 }
 
 process.on('uncaughtException', (err)=>{
   _.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
-  console.log(err);
 })
 
 module.exports = bproxy

@@ -7,9 +7,11 @@ var config = require('./cert')
 var _ = require('lodash')
 var mkdirp = require('mkdirp')
 
+const SEC_SIZE = 2048;
+
 var createCA = function(CN) {
 
-    var keys = pki.rsa.generateKeyPair(1024)
+    var keys = pki.rsa.generateKeyPair(SEC_SIZE)
     var cert = pki.createCertificate()
     cert.publicKey = keys.publicKey
     cert.serialNumber = new Date().getTime() + ''
@@ -109,7 +111,7 @@ var covertNodeCertToForgeCert = function(originCertificate) {
 }
 
 var createFakeCertificateByDomain = function(caKey, caCert, domain) {
-    var keys = pki.rsa.generateKeyPair(1024)
+    var keys = pki.rsa.generateKeyPair(SEC_SIZE)
     var cert = pki.createCertificate()
     cert.publicKey = keys.publicKey
 
@@ -186,7 +188,7 @@ var createFakeCertificateByDomain = function(caKey, caCert, domain) {
 var createFakeCertificateByCA = function(caKey, caCert, originCertificate) {
     var certificate = covertNodeCertToForgeCert(originCertificate)
 
-    var keys = pki.rsa.generateKeyPair(1024)
+    var keys = pki.rsa.generateKeyPair(SEC_SIZE)
     var cert = pki.createCertificate()
     cert.publicKey = keys.publicKey
 

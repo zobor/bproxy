@@ -6,7 +6,8 @@ let config = {
   SSLProxyList: [],
   host: [],
   rules: [],
-  socketPort: 3366
+  socketPort: 3366,
+  forceHTTPList: [],
 }
 
 module.exports = config

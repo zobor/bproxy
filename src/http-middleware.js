@@ -116,22 +116,16 @@ class HttpMiddleware extends RulePattern{
       delete this.options.headers['if-none-match']
     }
 
+    this.options.strictSSL = false;
+    this.options.rejectUnauthorized = false;
+    this.options.insecure = false;
+
     request(this.options, (err, response={}, body) => {
       Object.assign(response.headers || {}, this.dataset.responseHeaders || {})
       if (err) {
         _.error(`httpRequest: ${JSON.stringify(err)}`);
       }
       _.debug(`[✓http] ${this.options.url}`);
-      // if (this.dataset.socketio && this.dataset.socketio.emit) {
-      //   this.dataset.socketio.emit('response',{
-      //     sid: this.dataset.req.__sid__,
-      //     resHeaders: response.headers,
-      //     body: body
-      //   })
-      // }
-
-      // response.headers['content-length'] = body.length;
-
       this.$resolve({
         body,
         headers: response.headers,

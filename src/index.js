@@ -2,6 +2,7 @@ const program = require('commander')
 const packageJson = require('../package.json')
 const _ = require('./common/util')
 
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 if (process.argv.length==2) {
   process.argv.push('-h')
 }

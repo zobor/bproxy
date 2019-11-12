@@ -109,6 +109,11 @@ class httpsMiddleware {
         localServer.on('error', (e) => {
           _.error(`[localServer]: ${JSON.stringify(e)}`);
         });
+        localServer.on('close', (e) => {
+        });
+        localServer.on('clientError', e => {
+          _.error('localServer.clientError', e);
+        });
       }).catch((e) => {
         _.error(`[requestCertificate]: ${JSON.stringify(e)}`);
       });
@@ -122,7 +127,9 @@ class httpsMiddleware {
         method: 'HEAD',
         port: port,
         host: hostname,
-        path: '/'
+        path: '/',
+        strictSSL: false,
+        rejectUnauthorized: false,
       }
       var _resolve = function (cert) {
         resolve(cert);

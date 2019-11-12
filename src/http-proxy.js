@@ -1,5 +1,4 @@
 const httpMiddleware = require('./http-middleware')
-// const configApi = require('./config-parse')
 const _ = require('./common/util')
 const fs = require('fs')
 const cert = require('./common/cert.js')
@@ -79,7 +78,6 @@ function proxy(req, res, config){
       res.writeHead(r.statusCode, r.headers)
       res.write(r.body);
       res.end();
-      // res.end(r.body);
       httpProxy = null
       pattern = null
     })
