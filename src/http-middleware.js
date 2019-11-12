@@ -119,14 +119,15 @@ class HttpMiddleware extends RulePattern {
 
     this.options.strictSSL = false;
     this.options.rejectUnauthorized = false;
-    this.options.insecure = false;
 
+    const requestStartTime = +new Date();
     request(this.options, (err, response = {}, body) => {
+      const requestEndTime = +new Date();
       Object.assign(response.headers || {}, this.dataset.responseHeaders || {});
       if (err) {
         _.error(`httpRequest: ${JSON.stringify(err)}`);
       }
-      _.debug(`[✓http] ${this.options.url}`);
+      _.debug(`[✓http][${requestEndTime - requestStartTime}ms] ${this.options.url}`);
       this.$resolve({
         body,
         headers: response.headers,

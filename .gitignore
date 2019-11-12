@@ -6,3 +6,4 @@ npm-debug.log
 .idea
 test.js
 package-lock.json
+*.swp
