@@ -113,7 +113,7 @@ class HTTPSMiddleware {
         // localServer.on('close', (e) => {
         // });
         localServer.on('clientError', (e) => {
-          _.error('localServer.clientError', e);
+          console.error('localServer.clientError', e);
         });
       }).catch((e) => {
         _.error(`[requestCertificate]: ${JSON.stringify(e)}`);

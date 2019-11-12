@@ -1,7 +1,7 @@
 {
   "name": "bproxy",
   "version": "3.0.22",
-  "description": "a free web debugging tool for devolper",
+  "description": "Take you to the world",
   "bin": {
     "bproxy": "./bin/bproxy"
   },

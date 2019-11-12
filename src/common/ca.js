@@ -10,10 +10,12 @@ const mkdirp = require('mkdirp');
 const config = require('./cert');
 
 const SEC_SIZE = 2048;
+const keys = pki.rsa.generateKeyPair(SEC_SIZE);
+const cert = pki.createCertificate();
 
 const createCA = function createCA(CN) {
-  const keys = pki.rsa.generateKeyPair(SEC_SIZE);
-  const cert = pki.createCertificate();
+  //const keys = pki.rsa.generateKeyPair(SEC_SIZE);
+  //const cert = pki.createCertificate();
   cert.publicKey = keys.publicKey;
   cert.serialNumber = `${new Date().getTime()}`;
   cert.validity.notBefore = new Date();
@@ -114,9 +116,6 @@ const covertNodeCertToForgeCert = function covertNodeCertToForgeCert(originCerti
 };
 
 
-const keys = pki.rsa.generateKeyPair(SEC_SIZE);
-const cert = pki.createCertificate();
-
 const createFakeCertificateByDomain = function createFakeCertificateByDomain(
   caKey, caCert, domain,
 ) {
@@ -197,8 +196,8 @@ const createFakeCertificateByCA = function createFakeCertificateByCA(
 ) {
   const certificate = covertNodeCertToForgeCert(originCertificate);
 
-  const keys = pki.rsa.generateKeyPair(SEC_SIZE);
-  const cert = pki.createCertificate();
+  //const keys = pki.rsa.generateKeyPair(SEC_SIZE);
+  //const cert = pki.createCertificate();
   cert.publicKey = keys.publicKey;
 
   cert.serialNumber = certificate.serialNumber;
