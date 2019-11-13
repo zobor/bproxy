@@ -1,17 +1,15 @@
 # bproxy
 
-Front-end development agent tool
+![](https://img.alicdn.com/tfs/TB1s4efmNv1gK0jSZFFXXb0sXXa-454-300.png)
+
+Command line agent tool
 
 ----
 
 ```
-$$> bproxy
-
+$ bproxy
   Usage: bproxy [options]
-
-
   Options:
-
     -V, --version         output the version number
     -s ,--start           start bproxy
     -c, --config [value]  specifies the profile path
