@@ -16,6 +16,7 @@ const certificatePem = fs.readFileSync(rs.caCertPath);
 const certificateKeyPem = fs.readFileSync(rs.caKeyPath);
 const localCertificate = forge.pki.certificateFromPem(certificatePem);
 const localCertificateKey = forge.pki.privateKeyFromPem(certificateKeyPem);
+const maps = {};
 
 class HTTPSMiddleware {
   proxy(req, socket, head, config) {
@@ -120,6 +121,10 @@ class HTTPSMiddleware {
 
   requestCertificate(hostname, port) {
     return new Promise((resolve, reject) => {
+      if (maps.hostname) {
+        resolve(maps.hostname);
+        return;
+      }
       let certificate;
       const requestConfig = {
         method: 'HEAD',
@@ -129,8 +134,17 @@ class HTTPSMiddleware {
       };
       /* eslint no-underscore-dangle: 0 */
       const _resolve = function _resolve(cert) {
+        // maps.hostname = cert;
         resolve(cert);
       };
+      // just use local cert
+      certificate = ca.createFakeCertificateByDomain(
+        localCertificateKey,
+        localCertificate,
+        hostname,
+      );
+      _resolve(certificate);
+      return;
       const req = https.request(requestConfig, (resp) => {
         try {
           const serverCertificate = resp.socket.getPeerCertificate();
