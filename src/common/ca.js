@@ -195,7 +195,6 @@ const createFakeCertificateByCA = function createFakeCertificateByCA(
   caKey, caCert, originCertificate,
 ) {
   const certificate = covertNodeCertToForgeCert(originCertificate);
-
   //const keys = pki.rsa.generateKeyPair(SEC_SIZE);
   //const cert = pki.createCertificate();
   cert.publicKey = keys.publicKey;

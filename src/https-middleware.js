@@ -46,7 +46,6 @@ class HTTPSMiddleware {
   }
 
   web(req, socket, head, hostname, port) {
-    const startTime = +new Date();
     const socketAgent = net.connect(port, hostname, () => {
       const agent = 'bproxy Agent';
       socket
@@ -63,8 +62,6 @@ class HTTPSMiddleware {
       socketAgent.write(head);
       socketAgent.pipe(socket);
       socket.pipe(socketAgent);
-      const endTime = +new Date();
-      console.log(`[INFO][${endTime - startTime}ms] https connect`)
     });
     // socketAgent.on('data', (e) => { });
     socketAgent.on('error', (e) => {
@@ -134,31 +131,36 @@ class HTTPSMiddleware {
       const _resolve = function _resolve(cert) {
         resolve(cert);
       };
-      const startTime = +new Date();
       const req = https.request(requestConfig, (resp) => {
-        const endTime = +new Date();
-        console.log(`[INFO][${endTime - startTime}ms] https.request`);
         try {
           const serverCertificate = resp.socket.getPeerCertificate();
           const isSSLDisabled = this.config.forceHTTPList.indexOf(hostname) > -1;
-          if (serverCertificate && serverCertificate.raw && !isSSLDisabled) {
-            const startTime2 = +new Date();
-            certificate = ca.createFakeCertificateByCA(
-              localCertificateKey,
-              localCertificate,
-              serverCertificate,
-            );
-            const endTime2 = +new Date();
-            console.log(`[INFO][${endTime2 - startTime2}ms] createFakeCertificateByCA`);
-          } else {
-            certificate = ca.createFakeCertificateByDomain(
-              localCertificateKey,
-              localCertificate,
-              hostname,
-            );
-          }
+          // if (serverCertificate && serverCertificate.raw && !isSSLDisabled) {
+          //   console.log('step::createFakeCertificateByCA');
+          //   const startTime2 = +new Date();
+          //   certificate = ca.createFakeCertificateByCA(
+          //     localCertificateKey,
+          //     localCertificate,
+          //     serverCertificate,
+          //   );
+          //   const endTime2 = +new Date();
+          //   console.log(`[INFO][${endTime2 - startTime2}ms] createFakeCertificateByCA`);
+          // } else {
+          //   console.log('step::createFakeCertificateByDomain');
+          //   certificate = ca.createFakeCertificateByDomain(
+          //     localCertificateKey,
+          //     localCertificate,
+          //     hostname,
+          //   );
+          // }
+          certificate = ca.createFakeCertificateByDomain(
+            localCertificateKey,
+            localCertificate,
+            hostname,
+          );
           _resolve(certificate);
         } catch (e) {
+          console.log(e);
           reject(e);
         }
       });
