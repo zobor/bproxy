@@ -119,6 +119,7 @@ class HttpMiddleware extends RulePattern {
 
     this.options.strictSSL = false;
     this.options.rejectUnauthorized = false;
+    this.options.encoding = null;
 
     const requestStartTime = +new Date();
     request(this.options, (err, response = {}, body) => {
