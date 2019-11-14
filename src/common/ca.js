@@ -119,6 +119,7 @@ const covertNodeCertToForgeCert = function covertNodeCertToForgeCert(originCerti
 const createFakeCertificateByDomain = function createFakeCertificateByDomain(
   caKey, caCert, domain,
 ) {
+  const cert = pki.createCertificate();
   cert.publicKey = keys.publicKey;
 
   cert.serialNumber = `${new Date().getTime()}`;
