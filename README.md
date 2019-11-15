@@ -2,7 +2,7 @@
 
 ![](https://img.alicdn.com/tfs/TB1lFV6m1T2gK0jSZFvXXXnFXXa-219-159.png)
 
-Command line network agent tool, Simplify development and testing！
+Command line network agent tool, Simplify development and testing!
 
 ----
 
@@ -52,7 +52,7 @@ yarn global add bproxy
 * forceHTTPList {Array} Force https to http protocol
 ```
 
-```js
+```
 // Proxy the list of https requests
 SSLProxyList: [
   'fusion.design:443'
@@ -90,50 +90,50 @@ module.exports = {
 ### Set up a host for a single request
 ```json
 {
-  regx: 'https://fusion.design/plugin/cool/',
-  host: '127.0.0.1'
+  "regx": "https://fusion.design/plugin/cool/",
+  "host": "127.0.0.1"
 }
 ```
 ### Configuring a proxy for a single file type
 ```json
 {
-  regx: /\.mp4/,
-  proxy: 'http://proxyIP:proxyPort'
+  "regx": /\.mp4/,
+  "proxy": "http://proxyIP:proxyPort"
 }
 ```
 
 ### Proxy network path to local path
 ```json
 {
-  regx: /^https?:\/\/m.v.qq.com\/([^?]+)/,
-  path: '/path/to/localpath/'
+  "regx": /^https?:\/\/m.v.qq.com\/([^?]+)/,
+  "path": "/path/to/localpath/"
 }
 ```
 
 ### Proxy network file to local file
 ```json
 {
-  regx: /^http:\/\/www\.baidu\.com\/index\.html/,
-  file: '/path/to/localfile.html'
+  "regx": /^http:\/\/www\.baidu\.com\/index\.html/,
+  "file": "/path/to/localfile.html"
 }
 ```
 
 ### Support jsonp method
 ```json
 {
-  regx: /cgi\?callback=/,
-  jsonp: '/path/to/localfile.json'
+  "regx": "/cgi\?callback=/",
+  "jsonp": "/path/to/localfile.json"
 }
 ```
 
 ### Response header rewrite
 ```json
 {
-  regx: /cgi\?callback=/,
-  file: '/path/to/file/cgi.json',
+  "regx": /cgi\?callback=/,
+  "file": "/path/to/file/cgi.json",
   responseHeaders:{
-    'Allow-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': 'true'
+    "Allow-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": "true"
   }
 }
 ```
@@ -141,32 +141,32 @@ module.exports = {
 ### Redirect a URL to another URL
 ```json
 {
-  regx: /^http:\/\/www\.baidu\.com\/index\.html/,
-  redirection: 'http://www.google.com/'
+  "regx": /^http:\/\/www\.baidu\.com\/index\.html/,
+  "redirection": "http://www.google.com/"
 }
 ```
 
 ### Simulate http status code
 ```json
 {
-  regx: /^http:\/\/www\.baidu\.com\/index\.html/,
-  status: '404'
+  "regx": /^http:\/\/www\.baidu\.com\/index\.html/,
+  "status": "404"
 }
 ```
 
 ### Limit network speed
 ```json
 {
-  regx: /^http:\/\/www\.baidu\.com\/index\.html/,
+  "regx": /^http:\/\/www\.baidu\.com\/index\.html/,
   // 1000ms delay
-  delay: 1000
+  "delay": 1000
 }
 ```
 
 ### response diy
-```json
+```js
 {
-  regx: '.html',
+  "regx": ".html",
   response: function(url, resHeaders, response, request){
     url = 'http://test.m.v.qq.com/tvp/'
     request.get(url, function(error, res, body){
@@ -180,8 +180,8 @@ module.exports = {
 ### Support https
 ```json
 {
-  regx: /https?:\/\/v.qq.com\//,
-  host: '0.0.0.0'
+  "regx": /https?:\/\/v.qq.com\//,
+  "host": "0.0.0.0"
 }
 ```
 
