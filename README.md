@@ -1,12 +1,12 @@
-# bproxy
+# BPROXY
 
-![](https://img.alicdn.com/tfs/TB1s4efmNv1gK0jSZFFXXb0sXXa-454-300.png)
+![](https://img.alicdn.com/tfs/TB1lFV6m1T2gK0jSZFvXXXnFXXa-219-159.png)
 
-Command line agent tool
+Command line network agent tool, Simplify development and testing！
 
 ----
 
-```
+```bash
 $ bproxy
   Usage: bproxy [options]
   Options:
@@ -20,13 +20,13 @@ $ bproxy
 
 ## Install
 
-```
+```bash
 npm install bproxy -g
 ```
 
 or
 
-```
+```bash
 yarn global add bproxy
 ```
 
@@ -52,7 +52,7 @@ yarn global add bproxy
 * forceHTTPList {Array} Force https to http protocol
 ```
 
-```
+```js
 // Proxy the list of https requests
 SSLProxyList: [
   'fusion.design:443'
@@ -88,14 +88,14 @@ module.exports = {
 ## rules usage
 
 ### Set up a host for a single request
-```js
+```json
 {
   regx: 'https://fusion.design/plugin/cool/',
   host: '127.0.0.1'
 }
 ```
 ### Configuring a proxy for a single file type
-```js
+```json
 {
   regx: /\.mp4/,
   proxy: 'http://proxyIP:proxyPort'
@@ -103,7 +103,7 @@ module.exports = {
 ```
 
 ### Proxy network path to local path
-```js
+```json
 {
   regx: /^https?:\/\/m.v.qq.com\/([^?]+)/,
   path: '/path/to/localpath/'
@@ -111,7 +111,7 @@ module.exports = {
 ```
 
 ### Proxy network file to local file
-```js
+```json
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
   file: '/path/to/localfile.html'
@@ -119,7 +119,7 @@ module.exports = {
 ```
 
 ### Support jsonp method
-```js
+```json
 {
   regx: /cgi\?callback=/,
   jsonp: '/path/to/localfile.json'
@@ -127,7 +127,7 @@ module.exports = {
 ```
 
 ### Response header rewrite
-```js
+```json
 {
   regx: /cgi\?callback=/,
   file: '/path/to/file/cgi.json',
@@ -139,7 +139,7 @@ module.exports = {
 ```
 
 ### Redirect a URL to another URL
-```js
+```json
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
   redirection: 'http://www.google.com/'
@@ -147,7 +147,7 @@ module.exports = {
 ```
 
 ### Simulate http status code
-```js
+```json
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
   status: '404'
@@ -155,7 +155,7 @@ module.exports = {
 ```
 
 ### Limit network speed
-```js
+```json
 {
   regx: /^http:\/\/www\.baidu\.com\/index\.html/,
   // 1000ms delay
@@ -164,7 +164,7 @@ module.exports = {
 ```
 
 ### response diy
-```js
+```json
 {
   regx: '.html',
   response: function(url, resHeaders, response, request){
@@ -178,7 +178,7 @@ module.exports = {
 ```
 
 ### Support https
-```js
+```json
 {
   regx: /https?:\/\/v.qq.com\//,
   host: '0.0.0.0'
@@ -187,7 +187,7 @@ module.exports = {
 
 install certificate
 
-```
+```bash
 sudo bproxy --install
 ```
 
