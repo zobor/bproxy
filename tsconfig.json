@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "noImplicitAny": false,
+    "strict": true,
+    "typeRoots" : [
+      "./src/index.d.ts",
+      "node_modules/@types"
+    ],
+    "allowJs": true,
+    "lib": [ "es6", "dom"],
+    "target": "es6",
+    "types": ["node"],
+    "removeComments": true
+  },
+  "include": [
+    "src/**/*",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
