@@ -31,6 +31,6 @@ export default {
         this.getDefaultCABasePath(),
         this.keyFileName,
       );
-    }
-  }
+    },
+  },
 }

@@ -6,12 +6,19 @@ import settings from './settings';
 
 const { pki } = forge;
 const config = settings.certificate;
-const keys = pki.rsa.generateKeyPair(settings.certificate.keySize);
-const cert = pki.createCertificate();
+const dataset = {
+  get cert() {
+    return pki.createCertificate();
+  },
+  get keys() {
+    return pki.rsa.generateKeyPair(settings.certificate.keySize);
+  },
+};
 
 class Certificate {
   // 创建安装使用的本地证书
   createCAForInstall(commonName: string) {
+    const { cert, keys} = dataset;
     cert.publicKey = keys.publicKey;
     cert.serialNumber = `${new Date().getTime()}`;
     cert.validity.notBefore = new Date();

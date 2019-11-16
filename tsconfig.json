@@ -9,7 +9,7 @@
     "noImplicitAny": false,
     "strict": true,
     "typeRoots" : [
-      "./src/index.d.ts",
+      "./types/index.d.ts",
       "node_modules/@types"
     ],
     "allowJs": true,
@@ -20,6 +20,7 @@
   },
   "include": [
     "src/**/*",
+    "types/index.d.ts",
   ],
   "exclude": [
     "node_modules"
