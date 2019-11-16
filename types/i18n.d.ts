@@ -7,4 +7,5 @@ export default interface ILocalLanguage {
   CERT_INSTALL_FAIL?: string;
   INSTALL_TIPS?: string;
   START_LOCAL_SVR_SUC?: string;
+  ERROR_CONFIG_PATH?: string;
 }

@@ -36,6 +36,10 @@ const lang = {
     en: '',
     'zh-cn': '本地代理服务器启动成功',
   },
+  ERROR_CONFIG_PATH: {
+    en: '',
+    'zh-cn': '配置文件路径不能为空，你可以使用 . 来代表当前目录',
+  },
 };
 
 const langLocal:ILocalLanguage = {};

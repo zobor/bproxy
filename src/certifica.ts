@@ -72,8 +72,8 @@ class Certificate {
     const caKeyPath = path.resolve(basePath, config.keyFileName);
 
     try {
-      fs.accessSync(caCertPath, fs.F_OK);
-      fs.accessSync(caKeyPath, fs.F_OK);
+      fs.accessSync(caCertPath, fs.constants.R_OK);
+      fs.accessSync(caKeyPath, fs.constants.R_OK);
   
       // has exist
       return {

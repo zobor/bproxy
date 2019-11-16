@@ -14,7 +14,7 @@ export default {
     } else if (params.proxy) {
       this.proxy(params.proxy, params.port);
     } else if (params.start) {
-      this.start();
+      this.start(params);
     }
   },
 
@@ -61,7 +61,9 @@ export default {
   },
 
   // start local proxy server
-  start() {
-    LocalServer.start();
+  start(params: any) {
+    const port = params.port || 0;
+    const configPath = params.config;
+    LocalServer.start(port, configPath);
   },
 }

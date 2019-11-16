@@ -7,7 +7,8 @@
   },
   "scripts": {
     "compile": "rm -rf dist && tsc",
-    "prepublish": "npm run compile"
+    "prepublish": "npm run compile",
+    "test": "mocha -r ts-node/register test/*.test.ts"
   },
   "repository": {
     "type": "git",
@@ -31,21 +32,23 @@
   "homepage": "https://github.com/zobor/bproxy",
   "dependencies": {
     "chalk": "^2.4.2",
-    "chokidar": "^2.0.2",
     "commander": "^2.20.3",
     "fs-extra": "^8.1.0",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.7.6",
     "request": "^2.83.0"
   },
   "devDependencies": {
-    "ts-node": "^8.5.2",
-    "typescript": "^3.7.2",
-    "@types/node": "^12.12.7",
+    "@types/chai": "^4.2.5",
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.148",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.8",
+    "chai": "^4.2.0",
     "eslint": "^6.6.0",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "mocha": "^6.1.4"
+    "mocha": "^6.1.4",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
   }
 }
