@@ -9,7 +9,7 @@ import cm from './common';
 import lang from './i18n';
 
 export default class LocalServer {
-  static start(port: number, configPath: string) {
+  static start(port: number, configPath: string): void{
     if (!this.before(configPath)) return;
     const server = new http.Server();
     server.listen(settings.port, () => {
@@ -35,6 +35,7 @@ export default class LocalServer {
         const userConfig = require(confPath);
         console.log(userConfig);
         const mixConfig = {...settings, ...userConfig};
+        console.log(mixConfig);
       }
     } else {
       cm.error(`${lang.ERROR_CONFIG_PATH}`);

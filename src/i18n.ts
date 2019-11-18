@@ -1,5 +1,4 @@
 import dataset from './dataset';
-import * as _ from 'lodash';
 import ILocalLanguage from '../types/i18n';
 
 const { language } = dataset;
@@ -42,7 +41,7 @@ const lang = {
   },
 };
 
-const langLocal:ILocalLanguage = {};
+const langLocal: ILocalLanguage = {};
 Object.keys(lang).forEach((key) => {
   langLocal[key] = lang[key][language];
 });

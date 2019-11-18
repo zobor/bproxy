@@ -5,10 +5,11 @@ import Certificate from './certifica';
 import cm from './common';
 import lang from './i18n';
 import LocalServer from './localServer';
+import { CommanderStatic } from 'commander';
 
 export default {
   // command entry
-  run(params: any):void {
+  run(params: CommanderStatic): void {
     if (params.install) {
       this.install();
     } else if (params.proxy) {
@@ -19,7 +20,7 @@ export default {
   },
 
   // install and trust certificate
-  install():void {
+  install(): void {
     const ca = new Certificate();
     const installStatus = ca.install();
     if (installStatus && !installStatus.create) {
@@ -45,7 +46,7 @@ export default {
   },
   
   // set system proxy
-  proxy(proxy: string | boolean, port: number):void {
+  proxy(proxy: string | boolean, port: number): void {
     const sysProxyPort = port || settings.port;
     if (typeof proxy === 'boolean') {
       cm.warn(`Usage:\n${pkg.name} --proxy [off|on]`);
@@ -61,7 +62,7 @@ export default {
   },
 
   // start local proxy server
-  start(params: any) {
+  start(params: CommanderStatic): void {
     const port = params.port || 0;
     const configPath = params.config;
     LocalServer.start(port, configPath);

@@ -3,21 +3,22 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
+import { ICertificate, ICertificateKey, ICertificateCreateRes, ICertificateInstallRes } from '../types/certificate';
 
 const { pki } = forge;
 const config = settings.certificate;
 const dataset = {
-  get cert() {
+  get cert(): ICertificate {
     return pki.createCertificate();
   },
-  get keys() {
+  get keys(): ICertificateKey {
     return pki.rsa.generateKeyPair(settings.certificate.keySize);
   },
 };
 
 class Certificate {
   // 创建安装使用的本地证书
-  createCAForInstall(commonName: string) {
+  createCAForInstall(commonName: string): ICertificateCreateRes {
     const { cert, keys} = dataset;
     cert.publicKey = keys.publicKey;
     cert.serialNumber = `${new Date().getTime()}`;
@@ -66,7 +67,7 @@ class Certificate {
     };
   }
 
-  install(caPath?: string) {
+  install(caPath?: string): ICertificateInstallRes {
     const basePath = caPath || config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
@@ -74,7 +75,7 @@ class Certificate {
     try {
       fs.accessSync(caCertPath, fs.constants.R_OK);
       fs.accessSync(caKeyPath, fs.constants.R_OK);
-  
+
       // has exist
       return {
         caCertPath,
@@ -83,13 +84,13 @@ class Certificate {
       };
     } catch (e) {
       const caObj = this.createCAForInstall(config.filename);
-  
+
       const caCert = caObj.cert;
       const cakey = caObj.key;
-  
+
       const certPem = pki.certificateToPem(caCert);
       const keyPem = pki.privateKeyToPem(cakey);
-  
+
       mkdirp.sync(path.dirname(caCertPath));
       fs.writeFileSync(caCertPath, certPem);
       fs.writeFileSync(caKeyPath, keyPem);

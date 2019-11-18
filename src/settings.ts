@@ -16,17 +16,17 @@ export default {
     provinceName: 'HuBei',
     localityName: 'WuHan',
     keySize: 2048,
-    getDefaultCABasePath() {
+    getDefaultCABasePath(): string {
       const userHome = process.env.HOME || process.env.USERPROFILE || process.cwd();
       return path.resolve(userHome, './.AppData/bproxy');
     },
-    getDefaultCACertPath() {
+    getDefaultCACertPath(): string {
       return path.resolve(
         this.getDefaultCABasePath(),
         this.filename,
       );
     },
-    getDefaultCAKeyPath() {
+    getDefaultCAKeyPath(): string {
       return path.resolve(
         this.getDefaultCABasePath(),
         this.keyFileName,
