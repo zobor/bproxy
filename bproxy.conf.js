@@ -7,5 +7,6 @@ module.exports = {
         response.end('hello, bproxy!');
       }
     }
-  ]
+  ],
+  ssl: [],
 };

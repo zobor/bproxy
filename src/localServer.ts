@@ -7,25 +7,30 @@ import httpMiddleware from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import cm from './common';
 import lang from './i18n';
+import { IConfig } from '../types/config';
 
 export default class LocalServer {
   static start(port: number, configPath: string): void{
-    if (!this.before(configPath)) return;
+    const mixConfig = this.loadUserConfig(configPath, settings);
+    if (typeof mixConfig === 'boolean') {
+      return;
+    }
     const server = new http.Server();
-    server.listen(settings.port, () => {
+    server.listen(mixConfig.port, () => {
       // http
       server.on('request', (req, res) => {
-        httpMiddleware.proxy(req, res, settings.rules);
+        httpMiddleware.proxy(req, res, mixConfig.rules);
       });
       // https
       server.on('connect', (req, socket, head) => {
-        httpsMiddleware.proxy(req, socket, head);
+        httpsMiddleware.proxy(req, socket, head, mixConfig.rules);
       });
     });
-    cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${settings.port}`)
+    cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${mixConfig.port}`)
   }
 
-  static before(configPath: string): boolean {
+  static loadUserConfig(configPath: string, defaultSettings: IConfig): IConfig | boolean {
+    let mixConfig;
     if (_.isString(configPath)) {
       const confPath = path.resolve(configPath, 'bproxy.conf.js');
       if (!fs.existsSync(confPath)) {
@@ -33,14 +38,12 @@ export default class LocalServer {
         return false;
       } else {
         const userConfig = require(confPath);
-        console.log(userConfig);
-        const mixConfig = {...settings, ...userConfig};
-        console.log(mixConfig);
+        mixConfig = {...settings, ...userConfig};
       }
     } else {
       cm.error(`${lang.ERROR_CONFIG_PATH}`);
       return false;
     }
-    return true;
+    return mixConfig;
   }
 }

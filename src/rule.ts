@@ -1,5 +1,5 @@
 import IPattern from '../types/pattern';
-import IRule from '../types/rule';
+import { IRule } from '../types/rule';
 
 export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
   const options: IPattern = {

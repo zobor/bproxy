@@ -1,19 +1,55 @@
-import IHttpMiddleWare from '../types/httpMiddleWare';
-import IPattern from '../types/pattern';
-import IRule from '../types/rule';
+import * as request from 'request';
+import { IHttpMiddleWare } from '../types/httpMiddleWare';
+import { IRule } from '../types/rule';
 import { rulesPattern } from './rule';
+import { IRequestOptions } from '../types/request';
 
 export default<IHttpMiddleWare> {
-  proxy(req: any, res: any, rules: Array<IRule>): void{
+  async proxy(req: any, res: any, rules: Array<IRule>): Promise<number>{
     const pattern = rulesPattern(rules, req.url);
-    console.log(pattern);
+    if (pattern.matched) {
+      return new Promise((resolve) => {
+
+      });
+    } else {
+      return new Promise( async(resolve) => {
+        const rHeaders = {...req.headers};
+        const options:IRequestOptions = {
+          url: req.url,
+          method: req.method,
+          headers: rHeaders,
+          body: null,
+        };
+        if (req.method.toLowerCase() === 'post') {
+          options.body = await this.getPOSTBody(req);
+        }
+        request(options, (err, resp, body) => {
+          if (err) {
+            console.error(err);
+            res.end(err);
+            return;
+          }
+          res.writeHead(resp.statusCode, resp.headers);
+          res.write(body);
+          res.end();
+        });
+      });
+    }
   },
 
-  before(req: any, res: any): IPattern{
-    console.log(req.url);
-    return {
-      delay: 0,
-      matched: false,
-    };
+  getPOSTBody(req: any): Promise<Buffer> {
+    return new Promise((resolve) => {
+      const body:Array<Buffer> = [];
+      req.on('adta', (chunk: Buffer) => {
+        body.push(chunk);
+      });
+      req.on('end', () => {
+        resolve(Buffer.concat(body));
+      });
+      req.on('error', (err) => {
+        // todo
+        console.log(err);
+      });
+    });
   }
 }

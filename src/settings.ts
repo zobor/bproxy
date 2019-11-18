@@ -3,7 +3,7 @@ import * as path from 'path';
 export default {
   port: 8888,
   configFile: path.resolve(process.cwd(), 'bproxy.conf.js'),
-  enableSSL: false,
+  ssl: [],
   host: [],
   rules: [],
   certificate: {
