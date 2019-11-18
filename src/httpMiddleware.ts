@@ -19,6 +19,9 @@ export default<IHttpMiddleWare> {
           method: req.method,
           headers: rHeaders,
           body: null,
+          encoding: null,
+          strictSSL: false,
+          rejectUnauthorized: false,
         };
         if (req.method.toLowerCase() === 'post') {
           options.body = await this.getPOSTBody(req);

@@ -7,4 +7,7 @@ export interface IRequestOptions {
   url: string;
   headers: IRequestHeaders;
   body: Buffer | null;
+  encoding?: string | null;
+  strictSSL?: boolean;
+  rejectUnauthorized?: boolean;
 }
