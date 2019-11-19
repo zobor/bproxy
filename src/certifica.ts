@@ -111,8 +111,6 @@ class Certificate {
     try {
       fs.accessSync(caCertPath, fs.constants.R_OK);
       fs.accessSync(caKeyPath, fs.constants.R_OK);
-
-      // has exist
       return {
         caCertPath,
         caKeyPath,
@@ -120,12 +118,8 @@ class Certificate {
       };
     } catch (e) {
       const caObj = this.createCAForInstall(settings.certificate.name);
-
-      const caCert = caObj.cert;
-      const cakey = caObj.key;
-
-      const certPem = pki.certificateToPem(caCert);
-      const keyPem = pki.privateKeyToPem(cakey);
+      const certPem = pki.certificateToPem(caObj.cert);
+      const keyPem = pki.privateKeyToPem(caObj.key);
 
       mkdirp.sync(path.dirname(caCertPath));
       fs.writeFileSync(caCertPath, certPem);

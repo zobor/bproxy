@@ -1,5 +1,5 @@
 module.exports = {
-  port: 8889,
+  port: 8888,
   rules: [
     {
       regx: 'http://m.baidu.com',
