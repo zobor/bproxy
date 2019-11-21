@@ -5,10 +5,8 @@ import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
-import { ICertificateCreateRes } from "../types/certificate";
 import { IRule } from "../types/rule";
 import httpMiddleware from "./httpMiddleware";
-import { hostname } from "os";
 
 const { pki } = forge;
 const certInstance = new Certificate();
@@ -23,8 +21,12 @@ export default {
     const urlParsed = url.parse(`https://${req.url}`);
     // toto
     // check https hostname in whiteList
-    this.startLocalHttpsServer(hostname, rules).then(localHttpsPort => {
-      this.web(socket, head, urlParsed.hostname, urlParsed.port);
+    this.startLocalHttpsServer(urlParsed.hostname, rules).then(localHttpsPort => {
+      if (urlParsed.hostname === 'g.alicdn.com') {
+        this.web(socket, head, '127.0.0.1', localHttpsPort);
+      } else {
+        this.web(socket, head, urlParsed.hostname, urlParsed.port);
+      }
     });
   },
 
@@ -70,26 +72,19 @@ export default {
           done(
             null,
             tls.createSecureContext({
-              key: pki.privateKeyToPem(certificate.key),
-              cert: pki.certificateToPem(certificate.cert)
-            })
+              key: keyPem,
+              cert: certPem,
+            }),
           );
         }
       });
-      const localServerData = {
-        cert: certificate.cert,
-        key: certificate.key,
-        server: localServer,
-        port: 0
-      };
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
           console.error(localAddress);
           return;
         }
-        localServerData.port = localAddress.port;
-        resolve(localServerData.port);
+        resolve(localAddress.port);
       });
       localServer.on("request", (req, res) => {
         req.httpsURL = `https://${hostname}${req.url}`;
@@ -98,7 +93,7 @@ export default {
         httpMiddleware.proxy(req, res, rules);
       });
       localServer.on("error", err => {
-        console.error(err);
+        console.error("localServer.error", err);
       });
       localServer.on("clientError", e => {
         console.error("localServer.clientError", e);

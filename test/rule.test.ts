@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import { rulesPattern } from '../src/rule';
-import IRule from '../types/rule';
+import { IRule } from '../types/rule';
 
 describe('rule.regx为String: https://tmall.com', () => {
   const rule: IRule = {
@@ -16,6 +16,31 @@ describe('rule.regx为String: https://tmall.com', () => {
     expect(rulesPattern([rule], url2).matched).to.be.false;
   });
 });
+
+describe('rule.regx为String: https://g.alicdn.com/fusion-platform/sketch-markup/app.js', () => {
+  const rule: IRule = {
+    regx: 'https://g.alicdn.com/fusion-platform/sketch-markup/app.js',
+  };
+  const url = 'https://g.alicdn.com/fusion-platform/sketch-markup/app.js';
+  it(`${url} should matched`, () => {
+    expect(rulesPattern([rule], url).matched).to.be.true;
+  });
+});
+
+describe('rule.regx为String: https://g.alicdn.com/fusion-platform/sketch-markup/*', () => {
+  const rule: IRule = {
+    regx: 'https://g.alicdn.com/fusion-platform/sketch-markup/*',
+  };
+  const url1 = 'https://g.alicdn.com/fusion-platform/sketch-markup/app.js';
+  it(`${url1} should matched`, () => {
+    expect(rulesPattern([rule], url1).matched).to.be.true;
+  });
+  const url2 = 'https://g.alicdn.com/fusion-platform/sketch-markup/files/app.js';
+  it(`${url2} should not matched`, () => {
+    expect(rulesPattern([rule], url2).matched).to.be.false;
+  });
+});
+
 
 describe('rule.regx为RegExp: /\.tmall\.com/', () => {
   const rule: IRule = {

@@ -7,3 +7,4 @@ npm-debug.log
 package-lock.json
 *.swp
 dist/
+bproxy.conf.js

@@ -7,6 +7,10 @@ const lang = {
     en: '',
     'zh-cn': '证书已存在，不需要再创建了!'
   },
+  CREATE_CERTING: {
+    en: '',
+    'zh-cn': '本地代理服务https证书创建中，请稍后',
+  },
   CREATE_CERT_SUC: {
     en: '',
     'zh-cn': '证书创建成功',

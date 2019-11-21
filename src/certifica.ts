@@ -3,24 +3,19 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
-import { ICertificate, ICertificateKey, ICertificateCreateRes, ICertificateInstallRes } from '../types/certificate';
+import { ICertificateCreateRes, ICertificateInstallRes } from '../types/certificate';
+import cm from './common';
+import lang from './i18n';
 
 const { pki } = forge;
 const config = settings.certificate;
-const dataset = {
-  get cert(): ICertificate {
-    return pki.createCertificate();
-  },
-  get keys(): ICertificateKey {
-    return pki.rsa.generateKeyPair(settings.certificate.keySize);
-  },
-};
-const keys = pki.rsa.generateKeyPair(config.keySize);
+let keys;
 
 class Certificate {
   // 创建安装使用的本地证书
   createCAForInstall(commonName: string): ICertificateCreateRes {
-    const { cert, keys} = dataset;
+    // const { cert, keys} = dataset;
+    const cert = pki.createCertificate();
     cert.publicKey = keys.publicKey;
     cert.serialNumber = `${new Date().getTime()}`;
     cert.validity.notBefore = new Date();
@@ -104,6 +99,8 @@ class Certificate {
   }
 
   init(): ICertificateInstallRes {
+    cm.info(lang.CREATE_CERTING);
+    keys = pki.rsa.generateKeyPair(config.keySize);
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);

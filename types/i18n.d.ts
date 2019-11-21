@@ -8,4 +8,5 @@ export default interface ILocalLanguage {
   INSTALL_TIPS?: string;
   START_LOCAL_SVR_SUC?: string;
   ERROR_CONFIG_PATH?: string;
+  CREATE_CERTING?: string;
 }
