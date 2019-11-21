@@ -4,6 +4,7 @@ npm-debug.log
 *.log
 .DS_Store
 .idea
-test.js
 package-lock.json
 *.swp
+dist/
+bproxy.conf.js

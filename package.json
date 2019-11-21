@@ -1,0 +1,57 @@
+{
+  "name": "bproxy",
+  "version": "4.0.1",
+  "description": "Take you to the world, I am a network agent。",
+  "bin": {
+    "bproxy": "./bin/bproxy"
+  },
+  "scripts": {
+    "compile": "rm -rf dist && tsc",
+    "prepublish": "npm run compile",
+    "lint": "eslint src --ext .ts",
+    "test": "mocha -r ts-node/register test/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zobor/bproxy"
+  },
+  "keywords": [
+    "nodejs proxy,bproxy"
+  ],
+  "author": {
+    "name": "zobor",
+    "email": "nodejs.js@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zobor/bproxy/issues"
+  },
+  "engines": {
+    "node": ">= 6.4.0"
+  },
+  "preferGlobal": true,
+  "homepage": "https://github.com/zobor/bproxy",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^2.20.3",
+    "fs-extra": "^8.1.0",
+    "lodash": "^4.17.15",
+    "mkdirp": "^0.5.1",
+    "node-forge": "^0.7.6",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.5",
+    "@types/fs-extra": "^8.0.1",
+    "@types/lodash": "^4.14.148",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.8",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.7.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.6.0",
+    "mocha": "^6.1.4",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
+  }
+}
