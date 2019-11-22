@@ -6,7 +6,9 @@ module.exports = {
     browser: true,
     node: true,
   },
-  rules: {
-    "no-var-requires": 0
+  parserOptions: {
+    ecmaFeatures: {
+      "experimentalDecorators": true,
+    }
   }
 }

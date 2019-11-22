@@ -1,7 +1,7 @@
 import * as program from 'commander';
 import * as pkg from '../package.json';
 import commands from './command';
-import cm from './common';
+import { cm } from './common';
 
 if (process.argv.length === 2) process.argv.push('-h');
 program

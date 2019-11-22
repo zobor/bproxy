@@ -1,4 +1,4 @@
-import IRule from './rule';
+import { IRule } from './rule';
 
 export interface ICertificate {
   filename: string;

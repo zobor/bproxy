@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
 import { ICertificateCreateRes, ICertificateInstallRes } from '../types/certificate';
-import cm from './common';
+import { cm } from './common';
 import lang from './i18n';
 
 const { pki } = forge;
@@ -130,7 +130,7 @@ class Certificate {
 
   }
 
-  createFakeCertificateByDomain(caCert, caKey, domain):ICertificateCreateRes {
+  createFakeCertificateByDomain(caCert, caKey, domain): ICertificateCreateRes {
     const cert = pki.createCertificate();
     cert.publicKey = keys.publicKey;
 

@@ -1,6 +1,6 @@
 import IDataSet from '../types/dataset';
 
-export default<IDataSet> {
+export const dataset: IDataSet = {
   debug: true,
   logLevel: 'error',
   language: 'zh-cn',

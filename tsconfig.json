@@ -16,13 +16,13 @@
     "lib": [ "es6", "dom"],
     "target": "es6",
     "types": ["node"],
-    "removeComments": true
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src/**/*",
     "types/index.d.ts",
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": [ "node_modules" ]
 }

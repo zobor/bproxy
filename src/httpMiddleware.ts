@@ -1,24 +1,30 @@
 import * as request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
+import * as _ from 'lodash';
+import * as path from 'path';
 import { IHttpMiddleWare } from '../types/httpMiddleWare';
 import { IRule } from '../types/rule';
 import { rulesPattern } from './rule';
 import { IRequestOptions } from '../types/request';
 
-export default<IHttpMiddleWare> {
+export const httpMiddleware: IHttpMiddleWare = {
   async proxy(req: any, res: any, rules: Array<IRule>): Promise<number>{
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     if (pattern.matched) {
       return new Promise(() => {
+        if (!pattern.matchedRule) return;
         if (pattern.matchedRule.file) {
           this.proxyLocalFile(pattern.matchedRule.file, res);
+        }
+        else if (pattern.matchedRule.path) {
+          this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res);
         }
       });
     } else {
       return new Promise(async(resolve) => {
         const rHeaders = {...req.headers};
-        const options:IRequestOptions = {
+        const options: IRequestOptions = {
           url: req.url,
           method: req.method,
           headers: rHeaders,
@@ -46,7 +52,7 @@ export default<IHttpMiddleWare> {
 
   getPOSTBody(req: any): Promise<Buffer> {
     return new Promise((resolve) => {
-      const body:Array<Buffer> = [];
+      const body: Array<Buffer> = [];
       req.on('adta', (chunk: Buffer) => {
         body.push(chunk);
       });
@@ -60,7 +66,7 @@ export default<IHttpMiddleWare> {
     });
   },
 
-  proxyLocalFile(filepath: string, res: any):void {
+  proxyLocalFile(filepath: string, res: any): void {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
@@ -72,5 +78,5 @@ export default<IHttpMiddleWare> {
       s.pipe(res);
       res.writeHead(404, {});
     }
-  }
+  },
 }

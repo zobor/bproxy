@@ -1,4 +1,4 @@
-import dataset from './dataset';
+import { dataset } from './dataset';
 import ILocalLanguage from '../types/i18n';
 
 const { language } = dataset;

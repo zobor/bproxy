@@ -2,7 +2,7 @@ import settings from './settings';
 import { spawn } from 'child_process';
 import * as pkg from '../package.json';
 import Certificate from './certifica';
-import cm from './common';
+import { cm } from './common';
 import lang from './i18n';
 import LocalServer from './localServer';
 import { CommanderStatic } from 'commander';

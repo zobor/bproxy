@@ -3,9 +3,9 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import settings from './settings';
-import httpMiddleware from './httpMiddleware';
+import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
-import cm from './common';
+import { cm } from './common';
 import lang from './i18n';
 import { IConfig } from '../types/config';
 
@@ -37,6 +37,7 @@ export default class LocalServer {
         console.log('当前目录下没有找到bproxy.conf.js, 是否立即自动创建？');
         return false;
       } else {
+        /* eslint @typescript-eslint/no-var-requires: 0 */
         const userConfig = require(confPath);
         mixConfig = {...settings, ...userConfig};
       }

@@ -6,7 +6,7 @@ import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
 import { IRule } from "../types/rule";
-import httpMiddleware from "./httpMiddleware";
+import { httpMiddleware } from "./httpMiddleware";
 
 const { pki } = forge;
 const certInstance = new Certificate();
