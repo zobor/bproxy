@@ -4,6 +4,7 @@ import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
+import * as _ from 'lodash';
 import Certificate from "./certifica";
 import { IRule } from "../types/rule";
 import { httpMiddleware } from "./httpMiddleware";
@@ -17,12 +18,13 @@ const localCertificate = pki.certificateFromPem(certificatePem);
 const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
 
 export default {
-  proxy(req: any, socket: any, head: any, rules: Array<IRule>): void {
+  proxy(req: any, socket: any, head: any, rules: Array<IRule>, ssl: Array<string>): void {
     const urlParsed = url.parse(`https://${req.url}`);
+    console.log(urlParsed.host);
     // toto
     // check https hostname in whiteList
     this.startLocalHttpsServer(urlParsed.hostname, rules).then(localHttpsPort => {
-      if (urlParsed.hostname === 'g.alicdn.com') {
+      if (ssl.indexOf(`${urlParsed.host}`) > -1) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
       } else {
         this.web(socket, head, urlParsed.hostname, urlParsed.port);
@@ -39,7 +41,7 @@ export default {
         socket
           .on("error", err => {
             // todo
-            console.error(err);
+            console.error('net connect error:', err);
           })
           .write([
               "HTTP/1.1 200 Connection Established\r\n",
@@ -52,7 +54,7 @@ export default {
       }
     );
     socketAgent.on("error", e => {
-      console.error({ e, hostname, port });
+      console.error('socketAgent error', { e, hostname, port });
     });
   },
 
@@ -81,7 +83,7 @@ export default {
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
-          console.error(localAddress);
+          console.error('https server error: ', localAddress);
           return;
         }
         resolve(localAddress.port);

@@ -23,16 +23,19 @@ export default class LocalServer {
       });
       // https
       server.on('connect', (req, socket, head) => {
-        httpsMiddleware.proxy(req, socket, head, mixConfig.rules);
+        httpsMiddleware.proxy(req, socket, head, mixConfig.rules, mixConfig.ssl);
       });
     });
     cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${mixConfig.port}`)
   }
 
   static loadUserConfig(configPath: string, defaultSettings: IConfig): IConfig | boolean {
-    let mixConfig;
-    if (_.isString(configPath)) {
-      const confPath = path.resolve(configPath, 'bproxy.conf.js');
+    let mixConfig, userConfigPath;
+    if (_.isBoolean(configPath) || _.isUndefined(configPath)) {
+      userConfigPath = '.';
+    }
+    if (userConfigPath || _.isString(configPath)) {
+      const confPath = path.resolve(userConfigPath || configPath, 'bproxy.conf.js');
       if (!fs.existsSync(confPath)) {
         console.log('当前目录下没有找到bproxy.conf.js, 是否立即自动创建？');
         return false;
@@ -41,9 +44,6 @@ export default class LocalServer {
         const userConfig = require(confPath);
         mixConfig = {...settings, ...userConfig};
       }
-    } else {
-      cm.error(`${lang.ERROR_CONFIG_PATH}`);
-      return false;
     }
     return mixConfig;
   }

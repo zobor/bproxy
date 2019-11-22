@@ -4,4 +4,7 @@ export interface IRule {
   filepath?: string;
   file?: string;
   path?: string;
+  response?: Function | string;
+  redirect?: string;
+  proxy?: string;
 }

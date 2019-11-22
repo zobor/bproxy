@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
+import * as url from 'url';
 import { IHttpMiddleWare } from '../types/httpMiddleWare';
 import { IRule } from '../types/rule';
 import { rulesPattern } from './rule';
@@ -19,35 +20,65 @@ export const httpMiddleware: IHttpMiddleWare = {
         }
         else if (pattern.matchedRule.path) {
           this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res);
+        } else if (_.isFunction(pattern.matchedRule.response)) {
+          pattern.matchedRule.response({
+            response: res,
+          });
+        } else if (_.isString(pattern.matchedRule.redirect)) {
+          req.url = pattern.matchedRule.redirect;
+          const redirectUrlParam = url.parse(req.url);
+          if (redirectUrlParam.host && req.headers) {
+            req.headers.host = redirectUrlParam.host;
+          }
+          return this.proxyByRequest(req, res, {}, {});
+        } else if (_.isString(pattern.matchedRule.proxy)) {
+          return this.proxyByRequest(req, res, {
+            proxy: pattern.matchedRule.proxy,
+          }, {});
+        } else if (_.isString(pattern.matchedRule.host)) {
+          return this.proxyByRequest(req, res, {
+            hostname: pattern.matchedRule.host,
+          }, {});
+        } else {
+          console.log('// todo');
+          console.log(pattern);
         }
       });
     } else {
-      return new Promise(async(resolve) => {
-        const rHeaders = {...req.headers};
-        const options: IRequestOptions = {
-          url: req.url,
-          method: req.method,
-          headers: rHeaders,
-          body: null,
-          encoding: null,
-          strictSSL: false,
-          rejectUnauthorized: false,
-        };
-        if (req.method.toLowerCase() === 'post') {
-          options.body = await this.getPOSTBody(req);
-        }
-        request(options, (err, resp, body) => {
-          if (err) {
-            console.error(err);
-            res.end(err);
-            return;
-          }
-          res.writeHead(resp.statusCode, resp.headers);
-          res.write(body);
-          res.end();
-        });
-      });
+      return this.proxyByRequest(req, res, {}, {});
     }
+  },
+
+  async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
+    return new Promise(async(resolve) => {
+      const rHeaders = {...req.headers};
+      console.log('http request: ', req.url);
+      const options: IRequestOptions = {
+        url: req.url,
+        method: req.method,
+        headers: rHeaders,
+        body: null,
+        encoding: null,
+        strictSSL: false,
+        rejectUnauthorized: false,
+      };
+      if (req.method.toLowerCase() === 'post') {
+        options.body = await this.getPOSTBody(req);
+      }
+      request({
+        ...options,
+        ...requestOption,
+      }, (err, resp, body) => {
+        if (err) {
+          console.error('node http request error:', err);
+          res.end(err);
+          return;
+        }
+        res.writeHead(resp.statusCode, {...resp.headers, ...responseOptions.headers});
+        res.write(body);
+        res.end();
+      });
+    });
   },
 
   getPOSTBody(req: any): Promise<Buffer> {
