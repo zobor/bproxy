@@ -24,6 +24,8 @@ export const httpMiddleware: IHttpMiddleWare = {
           pattern.matchedRule.response({
             response: res,
           });
+        } else if (_.isString(pattern.matchedRule.response)) {
+          res.end(pattern.matchedRule.response);
         } else if (_.isString(pattern.matchedRule.redirect)) {
           req.url = pattern.matchedRule.redirect;
           const redirectUrlParam = url.parse(req.url);

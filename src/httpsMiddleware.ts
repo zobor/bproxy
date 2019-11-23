@@ -18,13 +18,10 @@ const localCertificate = pki.certificateFromPem(certificatePem);
 const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
 
 export default {
-  proxy(req: any, socket: any, head: any, rules: Array<IRule>, ssl: Array<string>): void {
+  proxy(req: any, socket: any, head: any, rules: Array<IRule>, https: Array<string>): void {
     const urlParsed = url.parse(`https://${req.url}`);
-    console.log(urlParsed.host);
-    // toto
-    // check https hostname in whiteList
     this.startLocalHttpsServer(urlParsed.hostname, rules).then(localHttpsPort => {
-      if (ssl.indexOf(`${urlParsed.host}`) > -1) {
+      if (https.indexOf(`${urlParsed.host}`) > -1) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
       } else {
         this.web(socket, head, urlParsed.hostname, urlParsed.port);
