@@ -54,9 +54,8 @@ export const httpMiddleware: IHttpMiddleWare = {
   async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
     return new Promise(async(resolve) => {
       const rHeaders = {...req.headers};
-      console.log('http request: ', req.url);
       const options: IRequestOptions = {
-        url: req.url,
+        url: req.httpsURL || req.url,
         method: req.method,
         headers: rHeaders,
         body: null,
@@ -66,6 +65,10 @@ export const httpMiddleware: IHttpMiddleWare = {
       };
       if (req.method.toLowerCase() === 'post') {
         options.body = await this.getPOSTBody(req);
+      }
+      // todo
+      if (/mp3|mp4|m4a/i.test(options.url)) {
+        console.log('URL: ', options.url);
       }
       request({
         ...options,
@@ -86,7 +89,7 @@ export const httpMiddleware: IHttpMiddleWare = {
   getPOSTBody(req: any): Promise<Buffer> {
     return new Promise((resolve) => {
       const body: Array<Buffer> = [];
-      req.on('adta', (chunk: Buffer) => {
+      req.on('data', (chunk: Buffer) => {
         body.push(chunk);
       });
       req.on('end', () => {
@@ -94,7 +97,7 @@ export const httpMiddleware: IHttpMiddleWare = {
       });
       req.on('error', (err) => {
         // todo
-        console.log(err);
+        console.error(err);
       });
     });
   },

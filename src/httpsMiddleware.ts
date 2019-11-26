@@ -21,35 +21,33 @@ export default {
   proxy(req: any, socket: any, head: any, rules: Array<IRule>, https: Array<string>): void {
     const urlParsed = url.parse(`https://${req.url}`);
     this.startLocalHttpsServer(urlParsed.hostname, rules).then(localHttpsPort => {
-      if (https.indexOf(`${urlParsed.host}`) > -1) {
-        this.web(socket, head, '127.0.0.1', localHttpsPort);
-      } else {
-        this.web(socket, head, urlParsed.hostname, urlParsed.port);
-      }
+      // if (1 || https.indexOf(`${urlParsed.host}`) > -1) {
+      //   this.web(socket, head, '127.0.0.1', localHttpsPort);
+      // } else {
+      //   // this.web(socket, head, urlParsed.hostname, urlParsed.port);
+      // }
+      // this.web(socket, head, urlParsed.hostname, urlParsed.port);
+      this.web(socket, head, '127.0.0.1', localHttpsPort);
     });
   },
 
   web(socket, head, hostname, port) {
-    const socketAgent = net.connect(
-      port,
-      hostname,
-      () => {
-        const agent = "bproxy Agent";
-        socket
-          .on("error", err => {
-            // todo
-            console.error('net connect error:', err);
-          })
-          .write([
-              "HTTP/1.1 200 Connection Established\r\n",
-              `Proxy-agent: ${agent}\r\n`,
-              "\r\n"].join(""));
+    const socketAgent = net.connect(port, hostname, () => {
+      const agent = "bproxy Agent";
+      socket.on("error", err => {
+        // todo
+        console.error('net connect error:', err);
+        socketAgent.end();
+      })
+      .write([
+        "HTTP/1.1 200 Connection Established\r\n",
+        `Proxy-agent: ${agent}\r\n`,
+        "\r\n"].join(""));
 
-        socketAgent.write(head);
-        socketAgent.pipe(socket);
-        socket.pipe(socketAgent);
-      }
-    );
+      socketAgent.write(head);
+      socketAgent.pipe(socket);
+      socket.pipe(socketAgent);
+    });
     socketAgent.on("error", e => {
       console.error('socketAgent error', { e, hostname, port });
     });
@@ -95,7 +93,7 @@ export default {
         console.error("localServer.error", err);
       });
       localServer.on("clientError", e => {
-        console.error("localServer.clientError", e);
+        // console.error(`localServer.clientError(${hostname})`, JSON.stringify(e));
       });
     });
   }
