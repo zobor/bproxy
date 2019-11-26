@@ -7,6 +7,7 @@ import * as fs from "fs";
 import * as _ from 'lodash';
 import Certificate from "./certifica";
 import { IRule } from "../types/rule";
+import { IConfig } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
 
 const { pki } = forge;
@@ -18,16 +19,15 @@ const localCertificate = pki.certificateFromPem(certificatePem);
 const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
 
 export default {
-  proxy(req: any, socket: any, head: any, rules: Array<IRule>, https: Array<string>): void {
+  proxy(req: any, socket: any, head: any, config: IConfig): void {
+    const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
-    this.startLocalHttpsServer(urlParsed.hostname, rules).then(localHttpsPort => {
-      // if (1 || https.indexOf(`${urlParsed.host}`) > -1) {
-      //   this.web(socket, head, '127.0.0.1', localHttpsPort);
-      // } else {
-      //   // this.web(socket, head, urlParsed.hostname, urlParsed.port);
-      // }
-      // this.web(socket, head, urlParsed.hostname, urlParsed.port);
-      this.web(socket, head, '127.0.0.1', localHttpsPort);
+    this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
+      if (sslAll || https.indexOf(`${urlParsed.host}`) > -1) {
+        this.web(socket, head, '127.0.0.1', localHttpsPort);
+      } else {
+        this.web(socket, head, urlParsed.hostname, urlParsed.port);
+      }
     });
   },
 
@@ -53,7 +53,7 @@ export default {
     });
   },
 
-  startLocalHttpsServer(hostname, rules: Array<IRule>): Promise<number> {
+  startLocalHttpsServer(hostname, config: IConfig): Promise<number> {
     return new Promise(resolve => {
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
@@ -87,7 +87,7 @@ export default {
         req.httpsURL = `https://${hostname}${req.url}`;
         req.url = `http://${hostname}${req.url}`;
         req.protocol = "https";
-        httpMiddleware.proxy(req, res, rules);
+        httpMiddleware.proxy(req, res, config);
       });
       localServer.on("error", err => {
         console.error("localServer.error", err);

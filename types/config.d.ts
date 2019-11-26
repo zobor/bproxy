@@ -18,7 +18,9 @@ export interface ICertificate {
 export interface IConfig {
   port: number;
   configFile: string;
+  downloadPath: string;
   https: Array<string>;
+  sslAll: boolean;
   host: Array<string>;
   rules: Array<IRule>;
   certificate: ICertificate;

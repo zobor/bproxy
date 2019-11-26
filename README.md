@@ -69,11 +69,13 @@ All supported global parameter configurations
 |Parameter Name|Data Type|Default Value|Description|
 |---|---|---|---|
 |https|{boolean \| Array}|false|Whether to open https, or which one|
+|sslAll|{boolean}|false|Enable All https request|
 |port|{Number}|8888|App port|
 |Hosts|{String \| Array}|[]|Hosts|
 |rules|{Array}|[]|Matching rules|
 |proxy|{String}|null|Network Proxy|
 |delay|{Number}|0|http response delay|
+|downloadPath|{String}|''|Download Path set|
 
 ## Rules Configuration
 |Parameter Name|Data Type|Description|
@@ -86,6 +88,8 @@ All supported global parameter configurations
 |redirect|{String}|302|
 |proxy|{String}|Network proxy|
 |delay|{Number}|Network spped delay|
+|showLog|{Boolean}|show request url log|
+|download|{Boolean}|Auto download file by url|
 
 ## Configuration format and examples
 

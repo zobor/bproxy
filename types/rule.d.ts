@@ -6,4 +6,6 @@ export interface IRule {
   response?: Function | string;
   redirect?: string;
   proxy?: string;
+  showLog?: boolean;
+  download?: boolean;
 }

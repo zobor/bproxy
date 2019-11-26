@@ -19,11 +19,11 @@ export default class LocalServer {
     server.listen(mixConfig.port, () => {
       // http
       server.on('request', (req, res) => {
-        httpMiddleware.proxy(req, res, mixConfig.rules);
+        httpMiddleware.proxy(req, res, mixConfig);
       });
       // https
       server.on('connect', (req, socket, head) => {
-        httpsMiddleware.proxy(req, socket, head, mixConfig.rules, mixConfig.https);
+        httpsMiddleware.proxy(req, socket, head, mixConfig);
       });
     });
     cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${mixConfig.port}`)

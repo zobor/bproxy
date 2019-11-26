@@ -4,44 +4,69 @@ import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
+import * as fileType from 'file-type';
 import { IHttpMiddleWare } from '../types/httpMiddleWare';
-import { IRule } from '../types/rule';
 import { rulesPattern } from './rule';
 import { IRequestOptions } from '../types/request';
+import { IConfig } from '../types/config';
+import { utils } from './common';
 
 export const httpMiddleware: IHttpMiddleWare = {
-  async proxy(req: any, res: any, rules: Array<IRule>): Promise<number>{
+  async proxy(req: any, res: any, config: IConfig): Promise<number>{
+    const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
+        // 1. rule.file
         if (pattern.matchedRule.file) {
           this.proxyLocalFile(pattern.matchedRule.file, res);
         }
+        // 2. rule.path
         else if (pattern.matchedRule.path) {
           this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res);
-        } else if (_.isFunction(pattern.matchedRule.response)) {
+        }
+        // 3.1. rule.response.function
+        else if (_.isFunction(pattern.matchedRule.response)) {
           pattern.matchedRule.response({
             response: res,
           });
-        } else if (_.isString(pattern.matchedRule.response)) {
+        }
+        // 3.2.  rule.response.string
+        else if (_.isString(pattern.matchedRule.response)) {
           res.end(pattern.matchedRule.response);
-        } else if (_.isString(pattern.matchedRule.redirect)) {
+        }
+        // 4. rule.redirect
+        else if (_.isString(pattern.matchedRule.redirect)) {
           req.url = pattern.matchedRule.redirect;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
           return this.proxyByRequest(req, res, {}, {});
-        } else if (_.isString(pattern.matchedRule.proxy)) {
+        }
+        // rule.proxy
+        else if (_.isString(pattern.matchedRule.proxy)) {
           return this.proxyByRequest(req, res, {
             proxy: pattern.matchedRule.proxy,
           }, {});
-        } else if (_.isString(pattern.matchedRule.host)) {
+        }
+        // rule.host
+        else if (_.isString(pattern.matchedRule.host)) {
           return this.proxyByRequest(req, res, {
             hostname: pattern.matchedRule.host,
           }, {});
-        } else {
+        }
+        // rule.showLog
+        else if (pattern.matchedRule.showLog === true) {
+          return this.proxyByRequest(req, res, {}, {
+            showLog: true,
+            download: pattern.matchedRule.download,
+            config,
+          });
+        }
+        // rule.down
+        else {
           console.log('// todo');
           console.log(pattern);
         }
@@ -66,9 +91,8 @@ export const httpMiddleware: IHttpMiddleWare = {
       if (req.method.toLowerCase() === 'post') {
         options.body = await this.getPOSTBody(req);
       }
-      // todo
-      if (/mp3|mp4|m4a/i.test(options.url)) {
-        console.log('URL: ', options.url);
+      if (responseOptions.showLog) {
+        console.info('URL: ', options.url);
       }
       request({
         ...options,
@@ -82,6 +106,21 @@ export const httpMiddleware: IHttpMiddleWare = {
         res.writeHead(resp.statusCode, {...resp.headers, ...responseOptions.headers});
         res.write(body);
         res.end();
+        if (responseOptions.download &&
+            responseOptions.config &&
+            responseOptions.config.downloadPath
+        ) {
+          console.log('download: URL: ', options.url);
+          const filetype = fileType(body);
+          console.log(filetype);
+          if (filetype && filetype.ext) {
+            const downloadFileName = utils.guid();
+            const downloadFilePath = `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype.ext}`;
+            fs.writeFile(downloadFilePath, body, () =>{
+              console.log('download suc: ', downloadFilePath);
+            });
+          }
+        }
       });
     });
   },
