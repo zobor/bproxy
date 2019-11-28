@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "4.0.0",
+  "version": "3.0.0",
   "description": "Take you to the world, I am a network agent。",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -39,7 +39,8 @@
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.7.6",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "semver": "^6.3.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.5",

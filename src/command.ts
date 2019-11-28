@@ -1,3 +1,6 @@
+import { CommanderStatic } from 'commander';
+import * as request from 'request';
+import * as semver from 'semver';
 import settings from './settings';
 import { spawn } from 'child_process';
 import * as pkg from '../package.json';
@@ -5,11 +8,16 @@ import Certificate from './certifica';
 import { cm } from './common';
 import lang from './i18n';
 import LocalServer from './localServer';
-import { CommanderStatic } from 'commander';
 
 export default {
   // command entry
-  run(params: CommanderStatic): void {
+  async run(params: CommanderStatic): Promise<string> {
+    const verLatest = await this.getLatestVersion();
+    if (semver.lt(pkg.version, verLatest)) {
+      cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
+      return '';
+    }
+    cm.info(`当前版本: ${verLatest}`);
     if (params.install) {
       this.install();
     } else if (params.proxy) {
@@ -17,6 +25,15 @@ export default {
     } else if (params.start) {
       this.start(params);
     }
+    return verLatest;
+  },
+
+  async getLatestVersion():Promise<string> {
+    return new Promise((resolve) => {
+      request.get('https://raw.githubusercontent.com/zobor/bproxy/master/package.json', (err, res, body) => {
+        resolve(JSON.parse(body).version);
+      });
+    });
   },
 
   // install and trust certificate
