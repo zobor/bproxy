@@ -11,6 +11,10 @@ import { IRequestOptions } from '../types/request';
 import { IConfig } from '../types/config';
 import { utils } from './common';
 
+const dataset = {
+  cache: {},
+};
+
 export const httpMiddleware: IHttpMiddleWare = {
   async proxy(req: any, res: any, config: IConfig): Promise<number>{
     const { rules } = config;
@@ -108,11 +112,12 @@ export const httpMiddleware: IHttpMiddleWare = {
         res.end();
         if (responseOptions.download &&
             responseOptions.config &&
-            responseOptions.config.downloadPath
+            responseOptions.config.downloadPath &&
+            !dataset.cache[options.url]
         ) {
           console.log('download: URL: ', options.url);
+          dataset.cache[options.url] = true;
           const filetype = fileType(body);
-          console.log(filetype);
           if (filetype && filetype.ext) {
             const downloadFileName = utils.guid();
             const downloadFilePath = `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype.ext}`;
