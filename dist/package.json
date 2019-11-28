@@ -1,6 +1,6 @@
 {
     "name": "bproxy",
-    "version": "4.0.0",
+    "version": "4.0.1",
     "description": "Take you to the world, I am a network agent。",
     "bin": {
         "bproxy": "./bin/bproxy"

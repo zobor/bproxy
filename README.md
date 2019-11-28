@@ -20,7 +20,9 @@ $ bproxy
     -h, --help            output usage information
 ```
 Here is a usage and feature preview.
+
 ![](https://img.alicdn.com/tfs/TB1tmYEnNz1gK0jSZSgXXavwpXa-597-295.png)
+
 ```
 // config
 {

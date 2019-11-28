@@ -21,6 +21,7 @@ const localServer_1 = require("./localServer");
 exports.default = {
     run(params) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.report();
             const verLatest = yield this.getLatestVersion();
             if (semver.lt(pkg.version, verLatest)) {
                 common_1.cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
@@ -47,6 +48,9 @@ exports.default = {
                 });
             });
         });
+    },
+    report() {
+        request.get(`http://pingtcss.qq.com/pingd?dm=zobor.me&pvi=67181574951438293&si=s106251574951438294&url=/&arg=&ty=0&rdm=&rurl=&rarg=&adt=&r2=500704279&scr=1440x900&scl=24-bit&lg=zh-cn&tz=-8&ext=version=2.0.14&random=${+new Date}`);
     },
     install() {
         const ca = new certifica_1.default();
