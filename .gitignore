@@ -6,5 +6,4 @@ npm-debug.log
 .idea
 package-lock.json
 *.swp
-dist/
 bproxy.conf.js
