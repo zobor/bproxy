@@ -9,6 +9,13 @@ The original intention of bproxy design is to solve the problem of agent trouble
 [![NPM version][npm-image]][npm-url]
 [![node version][node-image]][node-url]
 [![npm download][download-image]][download-url]
+
+[npm-image]: https://zobor.github.io/bproxy/static/bproxy-npm.svg
+[npm-url]: https://npmjs.org/package/bproxy
+[node-image]: https://zobor.github.io/bproxy/static/bproxy-nodejs.svg
+[node-url]: http://nodejs.org/download/
+[download-image]: https://zobor.github.io/bproxy/static/bproxy-download.svg
+[download-url]: https://npmjs.org/package/bproxy
 ----
 
 ```bash
@@ -328,3 +335,4 @@ $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
 
 [Back To Top](#table-of-contents)
+

@@ -27,7 +27,8 @@
     "url": "https://github.com/zobor/bproxy/issues"
   },
   "engines": {
-    "node": ">= 6.4.0"
+    "node": ">= 6.0.0",
+    "npm": ">= 5.5.0"
   },
   "preferGlobal": true,
   "homepage": "https://github.com/zobor/bproxy",
