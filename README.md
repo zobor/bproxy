@@ -37,8 +37,25 @@ curl -x http://127.0.0.1:8888 https://www.qq.com
 hello, bproxy
 ```
 
-## Installation & Usage
+## Table of Contents
+- [Installation & Usage](#installation--usage)
+- [How To Use](#how-to-use)
+- [Global Configuration](#global-configuration)
+- [Rules Configuration](#rules-configuration)
+- [Configuration format and examples](#configuration-format-and-examples)
+- [What features are supported?](#what-features-are-supported)
+  - [Network request proxy to local](#network-request-proxy-to-local)
+  - [Network request redirects to other requests](#network-request-redirects-to-other-requests)
+  - [Network request to configure network proxy](#network-request-to-configure-network-proxy)
+  - [Network request configuration host](#network-request-configuration-host)
+  - [Network request delay simulation](#network-request-delay-simulation)
+  - [Modify response headers](#modify-response-headers)
+  - [Custom return content](#custom-return-content)
+  - [Custom match rule](#custom-match-rule)
+  - [Https request to capture packets](#https-request-to-capture-packets)
 
+
+## Installation & Usage
 ```bash
 npm install bproxy -g
 ```
@@ -48,13 +65,15 @@ or
 ```bash
 yarn global add bproxy
 ```
+[Back To Top](#table-of-contents)
 
-### How To Use
+## How To Use
 ```bash
 $ bproxy -s
 $ curl -x http://127.0.0.1:8888 https://www.qq.com
 $ "hello, bproxy"
 ```
+[Back To Top](#table-of-contents)
 
 ## Global Configuration
 Global parameter configuration usage
@@ -79,6 +98,8 @@ All supported global parameter configurations
 |delay|{Number}|0|http response delay|
 |downloadPath|{String}|''|Download Path set|
 
+[Back To Top](#table-of-contents)
+
 ## Rules Configuration
 |Parameter Name|Data Type|Description|
 |---|---|---|
@@ -92,6 +113,8 @@ All supported global parameter configurations
 |delay|{Number}|Network spped delay|
 |showLog|{Boolean}|show request url log|
 |download|{Boolean}|Auto download file by url|
+
+[Back To Top](#table-of-contents)
 
 ## Configuration format and examples
 
@@ -111,6 +134,8 @@ module.exports = {
 }
 ```
 
+[Back To Top](#table-of-contents)
+
 ## What features are supported?
 ### Network request proxy to local
 ```js
@@ -126,6 +151,8 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://www.qq.com"
 ```
+[Back To Top](#table-of-contents)
+
 ### Network request redirects to other requests
 ```js
 module.exports = {
@@ -140,6 +167,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://www.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Network request to configure network proxy
 ```js
 module.exports = {
@@ -154,6 +184,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://www.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Network request configuration host
 ```js
 module.exports = {
@@ -169,6 +202,9 @@ module.exports = {
 $ sudo http-server -p 80
 $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Network request delay simulation
 ```js
 module.exports = {
@@ -183,6 +219,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Modify response headers
 ```js
 module.exports = {
@@ -200,6 +239,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888  -h "https://www.baidu.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Custom return content
 The res parameter can be a function, you can write any node code yourself.
 ```js
@@ -220,6 +262,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Custom match rule
 The regx parameter support 3 formats
 ```js
@@ -243,6 +288,9 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
+
 ### Https request to capture packets
 Will only intercept requests from v.qq.com
 ```js
@@ -275,3 +323,5 @@ module.exports = {
 ```bash
 $ curl -x http://127.0.0.1:8888 "https://v.qq.com"
 ```
+
+[Back To Top](#table-of-contents)
