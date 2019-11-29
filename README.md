@@ -6,6 +6,9 @@
 
 The original intention of bproxy design is to solve the problem of agent trouble, including various packet capture, package change, configuration host, modify response header or content.
 
+[![NPM version][npm-image]][npm-url]
+[![node version][node-image]][node-url]
+[![npm download][download-image]][download-url]
 ----
 
 ```bash
