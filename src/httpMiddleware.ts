@@ -98,6 +98,26 @@ export const httpMiddleware: IHttpMiddleWare = {
       if (responseOptions.showLog) {
         console.info('URL: ', options.url);
       }
+      // download file by request.pipe
+      if (responseOptions.download &&
+          responseOptions.config &&
+          responseOptions.config.downloadPath &&
+          !dataset.cache[options.url]
+      ) {
+        const downloadFileName = utils.guid(8);
+        const parseUrl = url.parse(options.url);
+        const fileName = (parseUrl.pathname || '').split('/').pop();
+        if (fileName) {
+          const filetype = fileName.split('.').pop();
+          if (filetype) {
+            request({
+              ...options,
+              ...requestOption,
+            }).pipe(fs.createWriteStream(`${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`));
+            return;
+          }
+        }
+      }
       request({
         ...options,
         ...requestOption,
@@ -110,22 +130,6 @@ export const httpMiddleware: IHttpMiddleWare = {
         res.writeHead(resp.statusCode, {...resp.headers, ...responseOptions.headers});
         res.write(body);
         res.end();
-        if (responseOptions.download &&
-            responseOptions.config &&
-            responseOptions.config.downloadPath &&
-            !dataset.cache[options.url]
-        ) {
-          console.log('download: URL: ', options.url);
-          dataset.cache[options.url] = true;
-          const filetype = fileType(body);
-          if (filetype && filetype.ext) {
-            const downloadFileName = utils.guid();
-            const downloadFilePath = `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype.ext}`;
-            fs.writeFile(downloadFilePath, body, () =>{
-              console.log('download suc: ', downloadFilePath);
-            });
-          }
-        }
       });
     });
   },

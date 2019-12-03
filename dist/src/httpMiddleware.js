@@ -15,7 +15,6 @@ const stream_1 = require("stream");
 const _ = require("lodash");
 const path = require("path");
 const url = require("url");
-const fileType = require("file-type");
 const rule_1 = require("./rule");
 const common_1 = require("./common");
 const dataset = {
@@ -99,6 +98,14 @@ exports.httpMiddleware = {
                 if (responseOptions.showLog) {
                     console.info('URL: ', options.url);
                 }
+                if (responseOptions.download &&
+                    responseOptions.config &&
+                    responseOptions.config.downloadPath &&
+                    !dataset.cache[options.url]) {
+                    const downloadFileName = common_1.utils.guid();
+                    console.log(downloadFileName);
+                    return;
+                }
                 request(Object.assign(Object.assign({}, options), requestOption), (err, resp, body) => {
                     if (err) {
                         console.error('node http request error:', err);
@@ -108,21 +115,6 @@ exports.httpMiddleware = {
                     res.writeHead(resp.statusCode, Object.assign(Object.assign({}, resp.headers), responseOptions.headers));
                     res.write(body);
                     res.end();
-                    if (responseOptions.download &&
-                        responseOptions.config &&
-                        responseOptions.config.downloadPath &&
-                        !dataset.cache[options.url]) {
-                        console.log('download: URL: ', options.url);
-                        dataset.cache[options.url] = true;
-                        const filetype = fileType(body);
-                        if (filetype && filetype.ext) {
-                            const downloadFileName = common_1.utils.guid();
-                            const downloadFilePath = `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype.ext}`;
-                            fs.writeFile(downloadFilePath, body, () => {
-                                console.log('download suc: ', downloadFilePath);
-                            });
-                        }
-                    }
                 });
             }));
         });
