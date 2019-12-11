@@ -102,9 +102,16 @@ exports.httpMiddleware = {
                     responseOptions.config &&
                     responseOptions.config.downloadPath &&
                     !dataset.cache[options.url]) {
-                    const downloadFileName = common_1.utils.guid();
-                    console.log(downloadFileName);
-                    return;
+                    const downloadFileName = common_1.utils.uuid(12);
+                    const parseUrl = url.parse(options.url);
+                    const fileName = (parseUrl.pathname || '').split('/').pop();
+                    if (fileName) {
+                        const filetype = fileName.split('.').pop();
+                        if (filetype) {
+                            request(Object.assign(Object.assign({}, options), requestOption)).pipe(fs.createWriteStream(`${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`));
+                            return;
+                        }
+                    }
                 }
                 request(Object.assign(Object.assign({}, options), requestOption), (err, resp, body) => {
                     if (err) {

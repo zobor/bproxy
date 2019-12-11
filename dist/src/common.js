@@ -61,10 +61,15 @@ __decorate([
 const cm = new Common();
 exports.cm = cm;
 exports.utils = {
-    guid: () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    guid: (len = 36) => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.slice(0, len).replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
-    }
+    },
+    uuid: (len = 12) => {
+        return Buffer.from(exports.utils.guid())
+            .toString('base64')
+            .replace(/[/=+]/g, '').slice(0, len);
+    },
 };

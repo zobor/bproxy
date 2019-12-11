@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { rulesPattern } from '../src/rule';
 import { IRule } from '../types/rule';
+import { utils } from '../src/common';
 
 describe('rule.regx为String: https://tmall.com', () => {
   const rule: IRule = {
@@ -68,4 +69,10 @@ describe('rule.regx为Function', () => {
   it(`${url2} should mathded`, () => {
     expect(rulesPattern([rule], url2).matched).to.be.true;
   });
+});
+
+describe('uuid create', () => {
+  it(`utils.uuid(16).length === 16`, () => {
+    expect(utils.uuid(16).length === 16).to.be.true;
+  })
 });

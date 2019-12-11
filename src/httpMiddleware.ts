@@ -104,7 +104,7 @@ export const httpMiddleware: IHttpMiddleWare = {
           responseOptions.config.downloadPath &&
           !dataset.cache[options.url]
       ) {
-        const downloadFileName = utils.guid(8);
+        const downloadFileName = utils.uuid(12);
         const parseUrl = url.parse(options.url);
         const fileName = (parseUrl.pathname || '').split('/').pop();
         if (fileName) {

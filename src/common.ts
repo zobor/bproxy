@@ -47,5 +47,10 @@ export const utils = {
       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
-  }
+  },
+  uuid: (len = 12) => {
+    return Buffer.from(utils.guid())
+      .toString('base64')
+      .replace(/[/=+]/g, '').slice(0, len);
+  },
 }
