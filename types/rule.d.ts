@@ -8,4 +8,5 @@ export interface IRule {
   proxy?: string;
   showLog?: boolean;
   download?: boolean;
+  headers?: any;
 }

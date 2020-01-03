@@ -22,6 +22,12 @@ export const httpMiddleware: IHttpMiddleWare = {
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
+        const resOptions = {
+          headers: {},
+        };
+        if (pattern.matchedRule && pattern.matchedRule.headers) {
+          resOptions.headers = pattern.matchedRule.headers;
+        }
         // 1. rule.file
         if (pattern.matchedRule.file) {
           this.proxyLocalFile(pattern.matchedRule.file, res);
@@ -38,6 +44,7 @@ export const httpMiddleware: IHttpMiddleWare = {
         }
         // 3.2.  rule.response.string
         else if (_.isString(pattern.matchedRule.response)) {
+          res.writeHead(200, resOptions.headers);
           res.end(pattern.matchedRule.response);
         }
         // 4. rule.redirect
@@ -47,27 +54,27 @@ export const httpMiddleware: IHttpMiddleWare = {
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
-          return this.proxyByRequest(req, res, {}, {});
+          return this.proxyByRequest(req, res, {}, resOptions);
         }
         // rule.proxy
         else if (_.isString(pattern.matchedRule.proxy)) {
           return this.proxyByRequest(req, res, {
             proxy: pattern.matchedRule.proxy,
-          }, {});
+          }, resOptions);
         }
         // rule.host
         else if (_.isString(pattern.matchedRule.host)) {
           return this.proxyByRequest(req, res, {
             hostname: pattern.matchedRule.host,
-          }, {});
+          }, resOptions);
         }
         // rule.showLog
         else if (pattern.matchedRule.showLog === true) {
-          return this.proxyByRequest(req, res, {}, {
+          return this.proxyByRequest(req, res, {},{...resOptions, ... {
             showLog: true,
             download: pattern.matchedRule.download,
             config,
-          });
+          }});
         }
         // rule.down
         else {

@@ -29,6 +29,12 @@ exports.httpMiddleware = {
                 return new Promise(() => {
                     if (!pattern.matchedRule)
                         return;
+                    const resOptions = {
+                        headers: {},
+                    };
+                    if (pattern.matchedRule && pattern.matchedRule.headers) {
+                        resOptions.headers = pattern.matchedRule.headers;
+                    }
                     if (pattern.matchedRule.file) {
                         this.proxyLocalFile(pattern.matchedRule.file, res);
                     }
@@ -41,6 +47,7 @@ exports.httpMiddleware = {
                         });
                     }
                     else if (_.isString(pattern.matchedRule.response)) {
+                        res.writeHead(200, resOptions.headers);
                         res.end(pattern.matchedRule.response);
                     }
                     else if (_.isString(pattern.matchedRule.redirect)) {
@@ -49,24 +56,24 @@ exports.httpMiddleware = {
                         if (redirectUrlParam.host && req.headers) {
                             req.headers.host = redirectUrlParam.host;
                         }
-                        return this.proxyByRequest(req, res, {}, {});
+                        return this.proxyByRequest(req, res, {}, resOptions);
                     }
                     else if (_.isString(pattern.matchedRule.proxy)) {
                         return this.proxyByRequest(req, res, {
                             proxy: pattern.matchedRule.proxy,
-                        }, {});
+                        }, resOptions);
                     }
                     else if (_.isString(pattern.matchedRule.host)) {
                         return this.proxyByRequest(req, res, {
                             hostname: pattern.matchedRule.host,
-                        }, {});
+                        }, resOptions);
                     }
                     else if (pattern.matchedRule.showLog === true) {
-                        return this.proxyByRequest(req, res, {}, {
+                        return this.proxyByRequest(req, res, {}, Object.assign(Object.assign({}, resOptions), {
                             showLog: true,
                             download: pattern.matchedRule.download,
                             config,
-                        });
+                        }));
                     }
                     else {
                         console.log('// todo');
