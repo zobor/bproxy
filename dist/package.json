@@ -1,6 +1,6 @@
 {
     "name": "bproxy",
-    "version": "4.0.2",
+    "version": "4.0.3",
     "description": "Take you to the world, I am a network agent。",
     "bin": {
         "bproxy": "./bin/bproxy"
@@ -31,7 +31,7 @@
         "npm": ">= 5.5.0"
     },
     "preferGlobal": true,
-    "homepage": "https://github.com/zobor/bproxy",
+    "homepage": "http://regx.vip/post/bproxy-doc/",
     "dependencies": {
         "chalk": "^2.4.2",
         "commander": "^2.20.3",
