@@ -6,8 +6,8 @@
         "bproxy": "./bin/bproxy"
     },
     "scripts": {
-        "compile": "rm -rf dist && tsc",
-        "prepublish": "npm run compile",
+        "build": "rm -rf dist && tsc",
+        "prepublish": "npm run build",
         "lint": "eslint src --ext .ts",
         "test": "mocha -r ts-node/register test/*.test.ts"
     },
@@ -33,6 +33,7 @@
     "preferGlobal": true,
     "homepage": "http://regx.vip/post/bproxy-doc/",
     "dependencies": {
+        "-": "0.0.1",
         "chalk": "^2.4.2",
         "commander": "^2.20.3",
         "file-type": "^12.4.0",
@@ -56,6 +57,6 @@
         "eslint": "^6.6.0",
         "mocha": "^6.1.4",
         "ts-node": "^8.5.4",
-        "typescript": "^3.7.2"
+        "typescript": "^3.9.5"
     }
 }

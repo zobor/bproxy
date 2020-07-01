@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.httpMiddleware = void 0;
 const request = require("request");
 const fs = require("fs");
 const stream_1 = require("stream");
@@ -44,6 +45,8 @@ exports.httpMiddleware = {
                     else if (_.isFunction(pattern.matchedRule.response)) {
                         pattern.matchedRule.response({
                             response: res,
+                            request,
+                            req,
                         });
                     }
                     else if (_.isString(pattern.matchedRule.response)) {
@@ -52,6 +55,7 @@ exports.httpMiddleware = {
                     }
                     else if (_.isString(pattern.matchedRule.redirect)) {
                         req.url = pattern.matchedRule.redirect;
+                        req.httpsURL = req.url;
                         const redirectUrlParam = url.parse(req.url);
                         if (redirectUrlParam.host && req.headers) {
                             req.headers.host = redirectUrlParam.host;
@@ -74,6 +78,10 @@ exports.httpMiddleware = {
                             download: pattern.matchedRule.download,
                             config,
                         }));
+                    }
+                    else if (pattern.matchedRule.statusCode) {
+                        res.writeHead(pattern.matchedRule.statusCode, {});
+                        res.end();
                     }
                     else {
                         console.log('// todo');
@@ -122,8 +130,7 @@ exports.httpMiddleware = {
                 }
                 request(Object.assign(Object.assign({}, options), requestOption), (err, resp, body) => {
                     if (err) {
-                        console.error('node http request error:', err);
-                        res.end(err);
+                        res.end(JSON.stringify(err));
                         return;
                     }
                     res.writeHead(resp.statusCode, Object.assign(Object.assign({}, resp.headers), responseOptions.headers));

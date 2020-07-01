@@ -9,10 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.utils = exports.cm = void 0;
 const chalk_1 = require("chalk");
 const { log } = console;
 function logLevel(level) {
-    return function (target, key, descriptor) {
+    return (target, key, descriptor) => {
         descriptor.value = function (message) {
             target.printf(message, level);
         };

@@ -4,7 +4,6 @@ import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
-import * as fileType from 'file-type';
 import { IHttpMiddleWare } from '../types/httpMiddleWare';
 import { rulesPattern } from './rule';
 import { IRequestOptions } from '../types/request';
@@ -40,6 +39,8 @@ export const httpMiddleware: IHttpMiddleWare = {
         else if (_.isFunction(pattern.matchedRule.response)) {
           pattern.matchedRule.response({
             response: res,
+            request,
+            req,
           });
         }
         // 3.2.  rule.response.string
@@ -50,6 +51,7 @@ export const httpMiddleware: IHttpMiddleWare = {
         // 4. rule.redirect
         else if (_.isString(pattern.matchedRule.redirect)) {
           req.url = pattern.matchedRule.redirect;
+          req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
@@ -75,6 +77,11 @@ export const httpMiddleware: IHttpMiddleWare = {
             download: pattern.matchedRule.download,
             config,
           }});
+        }
+        // rule.statusCode
+        else if (pattern.matchedRule.statusCode) {
+          res.writeHead(pattern.matchedRule.statusCode, {});
+          res.end();
         }
         // rule.down
         else {
@@ -130,8 +137,8 @@ export const httpMiddleware: IHttpMiddleWare = {
         ...requestOption,
       }, (err, resp, body) => {
         if (err) {
-          console.error('node http request error:', err);
-          res.end(err);
+          // console.error('node http request error:', err);
+          res.end(JSON.stringify(err));
           return;
         }
         res.writeHead(resp.statusCode, {...resp.headers, ...responseOptions.headers});

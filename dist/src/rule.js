@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rulesPattern = exports.url2regx = void 0;
 const _ = require("lodash");
 exports.url2regx = (url) => {
     const newUrl = url

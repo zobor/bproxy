@@ -9,4 +9,5 @@ export interface IRule {
   showLog?: boolean;
   download?: boolean;
   headers?: any;
+  statusCode?: number;
 }

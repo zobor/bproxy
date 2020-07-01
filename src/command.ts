@@ -1,3 +1,10 @@
+/*
+ * @Author: zobor
+ * @Date: 2020-06-28 16:25:11
+ * @LastEditTime: 2020-06-30 21:51:04
+ * @LastEditors: zobor
+ * @FilePath: \bproxy\src\command.ts
+ */ 
 import { CommanderStatic } from 'commander';
 import * as request from 'request';
 import * as semver from 'semver';
@@ -13,12 +20,15 @@ export default {
   // command entry
   async run(params: CommanderStatic): Promise<string> {
     this.report();
-    const verLatest = await this.getLatestVersion();
-    if (semver.lt(pkg.version, verLatest)) {
-      cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
-      return '';
-    }
-    cm.info(`当前版本: ${verLatest}`);
+    let verLatest;
+    try {
+      verLatest = await this.getLatestVersion();
+      if (semver.lt(pkg.version, verLatest)) {
+        cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
+        return '';
+      }
+      cm.info(`当前版本: ${verLatest}`);
+    } catch(err) {}
     if (params.install) {
       this.install();
     } else if (params.proxy) {
@@ -30,8 +40,15 @@ export default {
   },
 
   async getLatestVersion():Promise<string> {
-    return new Promise((resolve) => {
-      request.get('https://raw.githubusercontent.com/zobor/bproxy/master/package.json', (err, res, body) => {
+    return new Promise((resolve, reject) => {
+      request.get('https://raw.githubusercontent.com/zobor/bproxy/master/package.json', {
+        timeout: 3000,
+      }, (err, res, body) => {
+        if (err || !body) {
+          cm.error('获取bproxy的版本失败!');
+          reject();
+          return;
+        }
         resolve(JSON.parse(body).version);
       });
     });

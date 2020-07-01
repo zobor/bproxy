@@ -3,7 +3,7 @@ import chalk from "chalk";
 const { log } = console;
 
 function logLevel(level: string) {
-  return function (target, key, descriptor) {
+  return (target, key, descriptor) => {
     descriptor.value = function(message) {
       target.printf(message, level);
     }
