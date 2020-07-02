@@ -6,7 +6,6 @@ import * as forge from "node-forge";
 import * as fs from "fs";
 import * as _ from 'lodash';
 import Certificate from "./certifica";
-import { IRule } from "../types/rule";
 import { IConfig } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
 
@@ -18,12 +17,31 @@ const certificateKeyPem = fs.readFileSync(cert.caKeyPath);
 const localCertificate = pki.certificateFromPem(certificatePem);
 const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
 
+const isHttpsHostRegMatch = (httpsList, hostname) => {
+  let rs;
+  for (let i = 0, len = httpsList.length; i < len; i++) {
+    if (rs) {
+      break;
+    }
+    const httpsItem = httpsList[i];
+    if (typeof httpsItem === 'string') {
+      rs = httpsItem === hostname;
+    } else {
+      rs = httpsItem.test(hostname.replace(':443'));
+    }
+  }
+  return rs;
+};
+
 export default {
   proxy(req: any, socket: any, head: any, config: IConfig): void {
     const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
+    const host = urlParsed.host || '';
     this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
-      if (sslAll || https.indexOf(`${urlParsed.host}`) > -1) {
+      const isHttpsMatch = sslAll || isHttpsHostRegMatch(https, host);
+      console.log('isHttpsMatch', isHttpsMatch, 'host', host);
+      if ( isHttpsMatch ) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
       } else {
         this.web(socket, head, urlParsed.hostname, urlParsed.port);
@@ -36,13 +54,19 @@ export default {
       const agent = "bproxy Agent";
       socket.on("error", err => {
         // todo
-        console.error('net connect error:', err);
+        console.error('net connect error:', {
+          err,
+          info: {
+            hostname,
+            port,
+          },
+        });
         socketAgent.end();
       })
-      .write([
-        "HTTP/1.1 200 Connection Established\r\n",
-        `Proxy-agent: ${agent}\r\n`,
-        "\r\n"].join(""));
+        .write([
+          "HTTP/1.1 200 Connection Established\r\n",
+          `Proxy-agent: ${agent}\r\n`,
+          "\r\n"].join(""));
 
       socketAgent.write(head);
       socketAgent.pipe(socket);

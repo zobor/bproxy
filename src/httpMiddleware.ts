@@ -15,7 +15,7 @@ const dataset = {
 };
 
 export const httpMiddleware: IHttpMiddleWare = {
-  async proxy(req: any, res: any, config: IConfig): Promise<number>{
+  async proxy(req: any, res: any, config: IConfig): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     if (pattern.matched) {
@@ -72,11 +72,13 @@ export const httpMiddleware: IHttpMiddleWare = {
         }
         // rule.showLog
         else if (pattern.matchedRule.showLog === true) {
-          return this.proxyByRequest(req, res, {},{...resOptions, ... {
-            showLog: true,
-            download: pattern.matchedRule.download,
-            config,
-          }});
+          return this.proxyByRequest(req, res, {}, {
+            ...resOptions, ... {
+              showLog: true,
+              download: pattern.matchedRule.download,
+              config,
+            }
+          });
         }
         // rule.statusCode
         else if (pattern.matchedRule.statusCode) {
@@ -95,8 +97,8 @@ export const httpMiddleware: IHttpMiddleWare = {
   },
 
   async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
-    return new Promise(async(resolve) => {
-      const rHeaders = {...req.headers};
+    return new Promise(async (resolve) => {
+      const rHeaders = { ...req.headers };
       const options: IRequestOptions = {
         url: req.httpsURL || req.url,
         method: req.method,
@@ -114,9 +116,9 @@ export const httpMiddleware: IHttpMiddleWare = {
       }
       // download file by request.pipe
       if (responseOptions.download &&
-          responseOptions.config &&
-          responseOptions.config.downloadPath &&
-          !dataset.cache[options.url]
+        responseOptions.config &&
+        responseOptions.config.downloadPath &&
+        !dataset.cache[options.url]
       ) {
         const downloadFileName = utils.uuid(12);
         const parseUrl = url.parse(options.url);
@@ -132,16 +134,16 @@ export const httpMiddleware: IHttpMiddleWare = {
           }
         }
       }
-      request({
+      const rOpts = {
         ...options,
         ...requestOption,
-      }, (err, resp, body) => {
+      };
+      request(rOpts, (err, resp, body) => {
         if (err) {
-          // console.error('node http request error:', err);
           res.end(JSON.stringify(err));
           return;
         }
-        res.writeHead(resp.statusCode, {...resp.headers, ...responseOptions.headers});
+        res.writeHead(resp.statusCode, { ...resp.headers, ...responseOptions.headers });
         res.write(body);
         res.end();
       });
@@ -169,7 +171,7 @@ export const httpMiddleware: IHttpMiddleWare = {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
       readStream.pipe(res);
-    } catch(err) {
+    } catch (err) {
       const s = new Readable();
       s.push('Not Found or Not Acces');
       s.push(null);

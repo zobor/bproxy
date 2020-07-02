@@ -6,7 +6,7 @@
         "bproxy": "./bin/bproxy"
     },
     "scripts": {
-        "build": "rm -rf dist && tsc",
+        "build": "del dist && tsc",
         "prepublish": "npm run build",
         "lint": "eslint src --ext .ts",
         "test": "mocha -r ts-node/register test/*.test.ts"
@@ -60,6 +60,6 @@
         "typescript": "^3.9.5"
     },
     "publishConfig": {
-        "registry": "https://npm.pkg.github.com/"
+        "registry": "https://npm.pkg.github.com/zobor"
     }
 }

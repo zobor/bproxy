@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "4.0.4",
+  "version": "4.0.3",
   "description": "Take you to the world, I am a network agent。",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -60,6 +60,6 @@
     "typescript": "^3.9.5"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/zobor"
   }
 }

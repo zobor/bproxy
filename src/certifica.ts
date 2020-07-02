@@ -1,5 +1,5 @@
 import * as forge from 'node-forge';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
@@ -104,6 +104,14 @@ class Certificate {
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
+    const res:ICertificateInstallRes = {
+      caCertPath,
+      caKeyPath,
+      create: true,
+    };
+    if (fs.existsSync(caCertPath) && fs.existsSync(caKeyPath)) {
+      return res;
+    }
 
     try {
       fs.accessSync(caCertPath, fs.constants.R_OK);
@@ -122,11 +130,7 @@ class Certificate {
       fs.writeFileSync(caCertPath, certPem);
       fs.writeFileSync(caKeyPath, keyPem);
     }
-    return {
-      caCertPath,
-      caKeyPath,
-      create: true,
-    };
+    return res;
 
   }
 

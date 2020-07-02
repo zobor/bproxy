@@ -1,7 +1,7 @@
 /*
  * @Author: zobor
  * @Date: 2020-06-28 16:25:11
- * @LastEditTime: 2020-06-30 21:51:04
+ * @LastEditTime: 2020-07-02 10:57:24
  * @LastEditors: zobor
  * @FilePath: \bproxy\src\command.ts
  */ 
@@ -22,12 +22,12 @@ export default {
     this.report();
     let verLatest;
     try {
-      verLatest = await this.getLatestVersion();
-      if (semver.lt(pkg.version, verLatest)) {
-        cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
-        return '';
-      }
-      cm.info(`当前版本: ${verLatest}`);
+      // verLatest = await this.getLatestVersion();
+      // if (semver.lt(pkg.version, verLatest)) {
+      //   cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
+      //   return '';
+      // }
+      // cm.info(`当前版本: ${verLatest}`);
     } catch(err) {}
     if (params.install) {
       this.install();
