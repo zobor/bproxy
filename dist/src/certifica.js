@@ -67,7 +67,7 @@ class Certificate {
             return {
                 caCertPath,
                 caKeyPath,
-                create: false,
+                create: true,
             };
         }
         catch (e) {

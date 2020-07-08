@@ -9,6 +9,7 @@
     "build": "trash dist && npm run lint && tsc",
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
+    "dev": "ts-node ./bin/bproxy.ts -s",
     "test": "jest"
   },
   "repository": {

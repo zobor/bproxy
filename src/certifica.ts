@@ -76,7 +76,7 @@ class Certificate {
       return {
         caCertPath,
         caKeyPath,
-        create: false,
+        create: true,
       };
     } catch (e) {
       const caObj = this.createCAForInstall(config.filename);
