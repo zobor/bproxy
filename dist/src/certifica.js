@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const forge = require("node-forge");
-const fs = require("fs-extra");
+const fs = require("fs");
 const path = require("path");
 const mkdirp = require("mkdirp");
 const settings_1 = require("./settings");
@@ -92,6 +92,14 @@ class Certificate {
         const basePath = config.getDefaultCABasePath();
         const caCertPath = path.resolve(basePath, config.filename);
         const caKeyPath = path.resolve(basePath, config.keyFileName);
+        const res = {
+            caCertPath,
+            caKeyPath,
+            create: true,
+        };
+        if (fs.existsSync(caCertPath) && fs.existsSync(caKeyPath)) {
+            return res;
+        }
         try {
             fs.accessSync(caCertPath, fs.constants.R_OK);
             fs.accessSync(caKeyPath, fs.constants.R_OK);
@@ -109,11 +117,7 @@ class Certificate {
             fs.writeFileSync(caCertPath, certPem);
             fs.writeFileSync(caKeyPath, keyPem);
         }
-        return {
-            caCertPath,
-            caKeyPath,
-            create: true,
-        };
+        return res;
     }
     createFakeCertificateByDomain(caCert, caKey, domain) {
         const cert = pki.createCertificate();

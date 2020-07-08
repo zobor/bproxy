@@ -128,7 +128,8 @@ exports.httpMiddleware = {
                         }
                     }
                 }
-                request(Object.assign(Object.assign({}, options), requestOption), (err, resp, body) => {
+                const rOpts = Object.assign(Object.assign({}, options), requestOption);
+                request(rOpts, (err, resp, body) => {
                     if (err) {
                         res.end(JSON.stringify(err));
                         return;

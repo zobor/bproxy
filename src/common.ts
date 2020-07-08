@@ -24,16 +24,16 @@ class Common {
   }
 
   @logLevel('info')
-  info(msg) {}
+  info(msg: any) {}
 
   @logLevel('error')
-  error(msg) {}
+  error(msg: any) {}
 
   @logLevel('debug')
-  debug(msg) {}
+  debug(msg: any) {}
 
   @logLevel('warn')
-  warn(msg) {}
+  warn(msg: any) {}
 };
 
 const cm = new Common();

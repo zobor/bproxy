@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
-const semver = require("semver");
 const settings_1 = require("./settings");
 const child_process_1 = require("child_process");
 const pkg = require("../package.json");
@@ -23,15 +22,6 @@ exports.default = {
         return __awaiter(this, void 0, void 0, function* () {
             this.report();
             let verLatest;
-            try {
-                verLatest = yield this.getLatestVersion();
-                if (semver.lt(pkg.version, verLatest)) {
-                    common_1.cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
-                    return '';
-                }
-                common_1.cm.info(`当前版本: ${verLatest}`);
-            }
-            catch (err) { }
             if (params.install) {
                 this.install();
             }
@@ -42,22 +32,6 @@ exports.default = {
                 this.start(params);
             }
             return verLatest;
-        });
-    },
-    getLatestVersion() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                request.get('https://raw.githubusercontent.com/zobor/bproxy/master/package.json', {
-                    timeout: 3000,
-                }, (err, res, body) => {
-                    if (err || !body) {
-                        common_1.cm.error('获取bproxy的版本失败!');
-                        reject();
-                        return;
-                    }
-                    resolve(JSON.parse(body).version);
-                });
-            });
         });
     },
     report() {

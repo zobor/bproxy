@@ -1,13 +1,12 @@
 /*
  * @Author: zobor
  * @Date: 2020-06-28 16:25:11
- * @LastEditTime: 2020-07-02 10:57:24
+ * @LastEditTime: 2020-07-07 10:46:00
  * @LastEditors: zobor
  * @FilePath: \bproxy\src\command.ts
- */ 
+ */
 import { CommanderStatic } from 'commander';
 import * as request from 'request';
-import * as semver from 'semver';
 import settings from './settings';
 import { spawn } from 'child_process';
 import * as pkg from '../package.json';
@@ -21,14 +20,6 @@ export default {
   async run(params: CommanderStatic): Promise<string> {
     this.report();
     let verLatest;
-    try {
-      // verLatest = await this.getLatestVersion();
-      // if (semver.lt(pkg.version, verLatest)) {
-      //   cm.error(`检测到有版本更新，请立即升级到最新版本: ${verLatest}, 当前版本: ${pkg.version}\nUsage: npm install bproxy@latest -g`);
-      //   return '';
-      // }
-      // cm.info(`当前版本: ${verLatest}`);
-    } catch(err) {}
     if (params.install) {
       this.install();
     } else if (params.proxy) {
@@ -39,27 +30,12 @@ export default {
     return verLatest;
   },
 
-  async getLatestVersion():Promise<string> {
-    return new Promise((resolve, reject) => {
-      request.get('https://raw.githubusercontent.com/zobor/bproxy/master/package.json', {
-        timeout: 3000,
-      }, (err, res, body) => {
-        if (err || !body) {
-          cm.error('获取bproxy的版本失败!');
-          reject();
-          return;
-        }
-        resolve(JSON.parse(body).version);
-      });
-    });
-  },
-
   report() {
     request.get(`http://pingtcss.qq.com/pingd?dm=zobor.me&pvi=67181574951438293&si=s106251574951438294&url=/&arg=&ty=0&rdm=&rurl=&rarg=&adt=&r2=500704279&scr=1440x900&scl=24-bit&lg=zh-cn&tz=-8&ext=version=2.0.14&random=${+new Date}`);
   },
 
   // install and trust certificate
-  install(): void {
+  install() {
     const ca = new Certificate();
     const installStatus = ca.install();
     if (installStatus && !installStatus.create) {
@@ -83,9 +59,9 @@ export default {
       cm.warn(lang.INSTALL_TIPS);
     }
   },
-  
+
   // set system proxy
-  proxy(proxy: string | boolean, port: number): void {
+  proxy(proxy: string | boolean, port: number) {
     const sysProxyPort = port || settings.port;
     if (typeof proxy === 'boolean') {
       cm.warn(`Usage:\n${pkg.name} --proxy [off|on]`);

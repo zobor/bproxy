@@ -15,12 +15,31 @@ const certificatePem = fs.readFileSync(cert.caCertPath);
 const certificateKeyPem = fs.readFileSync(cert.caKeyPath);
 const localCertificate = pki.certificateFromPem(certificatePem);
 const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+const isHttpsHostRegMatch = (httpsList, hostname) => {
+    let rs;
+    for (let i = 0, len = httpsList.length; i < len; i++) {
+        if (rs) {
+            break;
+        }
+        const httpsItem = httpsList[i];
+        if (typeof httpsItem === 'string') {
+            rs = httpsItem === hostname;
+        }
+        else {
+            rs = httpsItem.test(hostname.replace(':443'));
+        }
+    }
+    return rs;
+};
 exports.default = {
     proxy(req, socket, head, config) {
         const { https, sslAll } = config;
         const urlParsed = url.parse(`https://${req.url}`);
+        const host = urlParsed.host || '';
         this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
-            if (sslAll || https.indexOf(`${urlParsed.host}`) > -1) {
+            const isHttpsMatch = sslAll || isHttpsHostRegMatch(https, host);
+            console.log('isHttpsMatch', isHttpsMatch, 'host', host);
+            if (isHttpsMatch) {
                 this.web(socket, head, '127.0.0.1', localHttpsPort);
             }
             else {
@@ -32,7 +51,13 @@ exports.default = {
         const socketAgent = net.connect(port, hostname, () => {
             const agent = "bproxy Agent";
             socket.on("error", err => {
-                console.error('net connect error:', err);
+                console.error('net connect error:', {
+                    err,
+                    info: {
+                        hostname,
+                        port,
+                    },
+                });
                 socketAgent.end();
             })
                 .write([

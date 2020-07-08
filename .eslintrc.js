@@ -10,5 +10,8 @@ module.exports = {
     ecmaFeatures: {
       "experimentalDecorators": true,
     }
+  },
+  rules: {
+    '@typescript-eslint/no-empty-function': 0,
   }
 }

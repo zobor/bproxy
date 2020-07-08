@@ -104,7 +104,7 @@ class Certificate {
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
-    const res:ICertificateInstallRes = {
+    const res: ICertificateInstallRes = {
       caCertPath,
       caKeyPath,
       create: true,
