@@ -4,7 +4,6 @@ import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
-import { IHttpMiddleWare } from '../types/httpMiddleWare';
 import { rulesPattern } from './rule';
 import { IRequestOptions } from '../types/request';
 import { IConfig } from '../types/config';
@@ -14,26 +13,44 @@ const dataset = {
   cache: {},
 };
 
-export const httpMiddleware: IHttpMiddleWare = {
+export const httpMiddleware = {
+  responseByText(text: string, res) {
+    const s = new Readable();
+    s.push(text);
+    s.push(null);
+    s.pipe(res);
+  },
+  
   async proxy(req: any, res: any, config: IConfig): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
+    const resOptions = {
+      headers: {
+        'X-BPROXY-MATCH': 1,
+      },
+    };
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
-        const resOptions = {
-          headers: {},
-        };
         if (pattern.matchedRule && pattern.matchedRule.headers) {
-          resOptions.headers = pattern.matchedRule.headers;
+          resOptions.headers = {...pattern.matchedRule.headers,}
         }
+        // localfile
         // 1. rule.file
         if (pattern.matchedRule.file) {
-          this.proxyLocalFile(pattern.matchedRule.file, res);
+          this.proxyLocalFile(
+            pattern.matchedRule.file,
+            res,
+            resOptions.headers,
+          );
         }
         // 2. rule.path
         else if (pattern.matchedRule.path) {
-          this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res);
+          this.proxyLocalFile(
+            path.resolve(pattern.matchedRule.path, pattern.filepath || ''),
+            res,
+            resOptions.headers,
+          );
         }
         // 3.1. rule.response.function
         else if (_.isFunction(pattern.matchedRule.response)) {
@@ -45,9 +62,14 @@ export const httpMiddleware: IHttpMiddleWare = {
         }
         // 3.2.  rule.response.string
         else if (_.isString(pattern.matchedRule.response)) {
-          res.writeHead(200, resOptions.headers);
-          res.end(pattern.matchedRule.response);
+          this.responseByText(pattern.matchedRule.response, res);
         }
+        // rule.statusCode
+        else if (pattern.matchedRule.statusCode) {
+          res.end();
+        }
+
+        // network response
         // 4. rule.redirect
         else if (_.isString(pattern.matchedRule.redirect)) {
           req.url = pattern.matchedRule.redirect;
@@ -80,11 +102,6 @@ export const httpMiddleware: IHttpMiddleWare = {
             }
           });
         }
-        // rule.statusCode
-        else if (pattern.matchedRule.statusCode) {
-          res.writeHead(pattern.matchedRule.statusCode, {});
-          res.end();
-        }
         // rule.down
         else {
           console.log('// todo');
@@ -92,12 +109,12 @@ export const httpMiddleware: IHttpMiddleWare = {
         }
       });
     } else {
-      return this.proxyByRequest(req, res, {}, {});
+      return this.proxyByRequest(req, res, {}, resOptions);
     }
   },
 
   async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
-    return new Promise(async (resolve) => {
+    return new Promise(async () => {
       const rHeaders = { ...req.headers };
       const options: IRequestOptions = {
         url: req.httpsURL || req.url,
@@ -138,15 +155,14 @@ export const httpMiddleware: IHttpMiddleWare = {
         ...options,
         ...requestOption,
       };
-      request(rOpts, (err, resp, body) => {
-        if (err) {
-          res.end(JSON.stringify(err));
-          return;
-        }
-        res.writeHead(resp.statusCode, { ...resp.headers, ...responseOptions.headers });
-        res.write(body);
-        res.end();
-      });
+      // request(rOpts, (err, resp, body) => {
+      //   if (err) {
+      //     this.responseByText(JSON.stringify(err), res);
+      //     return;
+      //   }
+      //   this.responseByText(body, res);
+      // });
+      request(rOpts).pipe(res);
     });
   },
 
@@ -166,7 +182,7 @@ export const httpMiddleware: IHttpMiddleWare = {
     });
   },
 
-  proxyLocalFile(filepath: string, res: any): void {
+  proxyLocalFile(filepath: string, res: any, resHeaders: any = {}): void {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
@@ -176,7 +192,6 @@ export const httpMiddleware: IHttpMiddleWare = {
       s.push('Not Found or Not Acces');
       s.push(null);
       s.pipe(res);
-      res.writeHead(404, {});
     }
   },
 }
