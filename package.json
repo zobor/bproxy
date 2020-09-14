@@ -39,7 +39,7 @@
     "file-type": "^12.4.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
-    "node-forge": "^0.7.6",
+    "node-forge": "^0.10.0",
     "request": "^2.88.2"
   },
   "devDependencies": {
