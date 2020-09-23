@@ -40,7 +40,7 @@ export default {
     const host = urlParsed.host || '';
     this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
       const isHttpsMatch = sslAll || isHttpsHostRegMatch(https, host);
-      console.log('isHttpsMatch', isHttpsMatch, 'host', host);
+      // console.log('isHttpsMatch', isHttpsMatch, 'host', host);
       if ( isHttpsMatch ) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
       } else {
