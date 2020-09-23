@@ -7,3 +7,4 @@ npm-debug.log
 package-lock.json
 *.swp
 bproxy.conf.js
+yarn.lock

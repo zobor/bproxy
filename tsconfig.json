@@ -15,7 +15,7 @@
     "allowJs": true,
     "lib": [ "es6", "dom"],
     "target": "es6",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
