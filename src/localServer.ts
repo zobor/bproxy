@@ -25,6 +25,7 @@ export default class LocalServer {
       appConfig = require(confPath);
     });
     const server = new http.Server();
+    httpsMiddleware.beforeStart();
     server.listen(appConfig.port, () => {
       // http
       server.on('request', (req, res) => {

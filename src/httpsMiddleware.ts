@@ -10,12 +10,12 @@ import { IConfig } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
 
 const { pki } = forge;
-const certInstance = new Certificate();
-const cert = certInstance.init();
-const certificatePem = fs.readFileSync(cert.caCertPath);
-const certificateKeyPem = fs.readFileSync(cert.caKeyPath);
-const localCertificate = pki.certificateFromPem(certificatePem);
-const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+let certInstance;
+let cert;
+let certificatePem;
+let certificateKeyPem;
+let localCertificate;
+let localCertificateKey;
 
 const isHttpsHostRegMatch = (httpsList, hostname) => {
   let rs;
@@ -34,6 +34,15 @@ const isHttpsHostRegMatch = (httpsList, hostname) => {
 };
 
 export default {
+  beforeStart (): void{
+    certInstance = new Certificate();
+    cert = certInstance.init();
+    certificatePem = fs.readFileSync(cert.caCertPath);
+    certificateKeyPem = fs.readFileSync(cert.caKeyPath);
+    localCertificate = pki.certificateFromPem(certificatePem);
+    localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+  },
+
   proxy(req: any, socket: any, head: any, config: IConfig): void {
     const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);

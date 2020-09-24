@@ -14,7 +14,7 @@ const dataset = {
 };
 
 export const httpMiddleware = {
-  responseByText(text: string, res) {
+  responseByText(text: string, res): void {
     const s = new Readable();
     s.push(text);
     s.push(null);

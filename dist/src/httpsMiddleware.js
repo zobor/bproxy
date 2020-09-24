@@ -9,12 +9,12 @@ const fs = require("fs");
 const certifica_1 = require("./certifica");
 const httpMiddleware_1 = require("./httpMiddleware");
 const { pki } = forge;
-const certInstance = new certifica_1.default();
-const cert = certInstance.init();
-const certificatePem = fs.readFileSync(cert.caCertPath);
-const certificateKeyPem = fs.readFileSync(cert.caKeyPath);
-const localCertificate = pki.certificateFromPem(certificatePem);
-const localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+let certInstance;
+let cert;
+let certificatePem;
+let certificateKeyPem;
+let localCertificate;
+let localCertificateKey;
 const isHttpsHostRegMatch = (httpsList, hostname) => {
     let rs;
     for (let i = 0, len = httpsList.length; i < len; i++) {
@@ -32,13 +32,20 @@ const isHttpsHostRegMatch = (httpsList, hostname) => {
     return rs;
 };
 exports.default = {
+    beforeStart() {
+        certInstance = new certifica_1.default();
+        cert = certInstance.init();
+        certificatePem = fs.readFileSync(cert.caCertPath);
+        certificateKeyPem = fs.readFileSync(cert.caKeyPath);
+        localCertificate = pki.certificateFromPem(certificatePem);
+        localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+    },
     proxy(req, socket, head, config) {
         const { https, sslAll } = config;
         const urlParsed = url.parse(`https://${req.url}`);
         const host = urlParsed.host || '';
         this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
             const isHttpsMatch = sslAll || isHttpsHostRegMatch(https, host);
-            console.log('isHttpsMatch', isHttpsMatch, 'host', host);
             if (isHttpsMatch) {
                 this.web(socket, head, '127.0.0.1', localHttpsPort);
             }

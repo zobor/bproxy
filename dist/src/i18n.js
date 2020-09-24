@@ -43,6 +43,10 @@ const lang = {
         en: '',
         'zh-cn': '配置文件路径不能为空，你可以使用 . 来代表当前目录',
     },
+    CONFIG_FILE_UPDATE: {
+        en: '',
+        'zh-cn': '配置文件已更新'
+    }
 };
 const langLocal = {};
 Object.keys(lang).forEach((key) => {

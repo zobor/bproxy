@@ -22,25 +22,33 @@ const dataset = {
     cache: {},
 };
 exports.httpMiddleware = {
+    responseByText(text, res) {
+        const s = new stream_1.Readable();
+        s.push(text);
+        s.push(null);
+        s.pipe(res);
+    },
     proxy(req, res, config) {
         return __awaiter(this, void 0, void 0, function* () {
             const { rules } = config;
             const pattern = rule_1.rulesPattern(rules, req.httpsURL || req.url);
+            const resOptions = {
+                headers: {
+                    'X-BPROXY-MATCH': 1,
+                },
+            };
             if (pattern.matched) {
                 return new Promise(() => {
                     if (!pattern.matchedRule)
                         return;
-                    const resOptions = {
-                        headers: {},
-                    };
                     if (pattern.matchedRule && pattern.matchedRule.headers) {
-                        resOptions.headers = pattern.matchedRule.headers;
+                        resOptions.headers = Object.assign({}, pattern.matchedRule.headers);
                     }
                     if (pattern.matchedRule.file) {
-                        this.proxyLocalFile(pattern.matchedRule.file, res);
+                        this.proxyLocalFile(pattern.matchedRule.file, res, resOptions.headers);
                     }
                     else if (pattern.matchedRule.path) {
-                        this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res);
+                        this.proxyLocalFile(path.resolve(pattern.matchedRule.path, pattern.filepath || ''), res, resOptions.headers);
                     }
                     else if (_.isFunction(pattern.matchedRule.response)) {
                         pattern.matchedRule.response({
@@ -50,8 +58,10 @@ exports.httpMiddleware = {
                         });
                     }
                     else if (_.isString(pattern.matchedRule.response)) {
-                        res.writeHead(200, resOptions.headers);
-                        res.end(pattern.matchedRule.response);
+                        this.responseByText(pattern.matchedRule.response, res);
+                    }
+                    else if (pattern.matchedRule.statusCode) {
+                        res.end();
                     }
                     else if (_.isString(pattern.matchedRule.redirect)) {
                         req.url = pattern.matchedRule.redirect;
@@ -79,10 +89,6 @@ exports.httpMiddleware = {
                             config,
                         }));
                     }
-                    else if (pattern.matchedRule.statusCode) {
-                        res.writeHead(pattern.matchedRule.statusCode, {});
-                        res.end();
-                    }
                     else {
                         console.log('// todo');
                         console.log(pattern);
@@ -90,13 +96,13 @@ exports.httpMiddleware = {
                 });
             }
             else {
-                return this.proxyByRequest(req, res, {}, {});
+                return this.proxyByRequest(req, res, {}, resOptions);
             }
         });
     },
     proxyByRequest(req, res, requestOption, responseOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            return new Promise(() => __awaiter(this, void 0, void 0, function* () {
                 const rHeaders = Object.assign({}, req.headers);
                 const options = {
                     url: req.httpsURL || req.url,
@@ -129,15 +135,7 @@ exports.httpMiddleware = {
                     }
                 }
                 const rOpts = Object.assign(Object.assign({}, options), requestOption);
-                request(rOpts, (err, resp, body) => {
-                    if (err) {
-                        res.end(JSON.stringify(err));
-                        return;
-                    }
-                    res.writeHead(resp.statusCode, Object.assign(Object.assign({}, resp.headers), responseOptions.headers));
-                    res.write(body);
-                    res.end();
-                });
+                request(rOpts).pipe(res);
             }));
         });
     },
@@ -155,7 +153,7 @@ exports.httpMiddleware = {
             });
         });
     },
-    proxyLocalFile(filepath, res) {
+    proxyLocalFile(filepath, res, resHeaders = {}) {
         try {
             fs.accessSync(filepath, fs.constants.R_OK);
             const readStream = fs.createReadStream(filepath);
@@ -166,7 +164,6 @@ exports.httpMiddleware = {
             s.push('Not Found or Not Acces');
             s.push(null);
             s.pipe(res);
-            res.writeHead(404, {});
         }
     },
 };
