@@ -43,6 +43,7 @@ export default {
     localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
   },
 
+  // https代理入口
   proxy(req: any, socket: any, head: any, config: IConfig): void {
     const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);

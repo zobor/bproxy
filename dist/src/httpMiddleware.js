@@ -39,10 +39,11 @@ exports.httpMiddleware = {
             };
             if (pattern.matched) {
                 return new Promise(() => {
+                    var _a;
                     if (!pattern.matchedRule)
                         return;
-                    if (pattern.matchedRule && pattern.matchedRule.headers) {
-                        resOptions.headers = Object.assign({}, pattern.matchedRule.headers);
+                    if ((_a = pattern === null || pattern === void 0 ? void 0 : pattern.matchedRule) === null || _a === void 0 ? void 0 : _a.responseHeaders) {
+                        resOptions.headers = Object.assign({}, pattern.matchedRule.responseHeaders);
                     }
                     if (pattern.matchedRule.file) {
                         this.proxyLocalFile(pattern.matchedRule.file, res, resOptions.headers);
@@ -135,7 +136,11 @@ exports.httpMiddleware = {
                     }
                 }
                 const rOpts = Object.assign(Object.assign({}, options), requestOption);
-                request(rOpts).pipe(res);
+                request(rOpts)
+                    .on("response", function (response) {
+                    res.writeHead(response.statusCode, Object.assign(Object.assign({}, response.headers), responseOptions.headers));
+                })
+                    .pipe(res);
             }));
         });
     },
@@ -157,11 +162,13 @@ exports.httpMiddleware = {
         try {
             fs.accessSync(filepath, fs.constants.R_OK);
             const readStream = fs.createReadStream(filepath);
+            res.writeHead(200, resHeaders);
             readStream.pipe(res);
         }
         catch (err) {
             const s = new stream_1.Readable();
-            s.push('Not Found or Not Acces');
+            res.writeHead(404, {});
+            s.push('404: Not Found or Not Acces');
             s.push(null);
             s.pipe(res);
         }

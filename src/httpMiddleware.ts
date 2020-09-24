@@ -20,7 +20,8 @@ export const httpMiddleware = {
     s.push(null);
     s.pipe(res);
   },
-  
+
+  // http代理入口
   async proxy(req: any, res: any, config: IConfig): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
@@ -32,8 +33,8 @@ export const httpMiddleware = {
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
-        if (pattern.matchedRule && pattern.matchedRule.headers) {
-          resOptions.headers = {...pattern.matchedRule.headers,}
+        if (pattern?.matchedRule?.responseHeaders) {
+          resOptions.headers = {...pattern.matchedRule.responseHeaders}
         }
         // localfile
         // 1. rule.file
@@ -155,14 +156,11 @@ export const httpMiddleware = {
         ...options,
         ...requestOption,
       };
-      // request(rOpts, (err, resp, body) => {
-      //   if (err) {
-      //     this.responseByText(JSON.stringify(err), res);
-      //     return;
-      //   }
-      //   this.responseByText(body, res);
-      // });
-      request(rOpts).pipe(res);
+      request(rOpts)
+        .on("response", function (response) {
+          res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})
+        })
+        .pipe(res);
     });
   },
 
@@ -186,10 +184,12 @@ export const httpMiddleware = {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
+      res.writeHead(200, resHeaders)
       readStream.pipe(res);
     } catch (err) {
       const s = new Readable();
-      s.push('Not Found or Not Acces');
+      res.writeHead(404, {});
+      s.push('404: Not Found or Not Acces');
       s.push(null);
       s.pipe(res);
     }

@@ -1,4 +1,3 @@
-node_modules
 npm-debug.log
 *.tar.gz
 *.log
@@ -8,3 +7,5 @@ package-lock.json
 *.swp
 bproxy.conf.js
 yarn.lock
+mock/
+node_modules/

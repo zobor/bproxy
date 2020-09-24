@@ -26,7 +26,7 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
       options.matched = rule.regx.test(url);
       if (RegExp.$1) options.filepath = RegExp.$1;
     } else if (_.isString(rule.regx)) {
-      options.matched = url.indexOf(rule.regx) > -1;
+      options.matched = url.includes(rule.regx);
     } else if (_.isFunction(rule.regx)) {
       options.matched = rule.regx(url);
       if (options.matched && RegExp.$1) options.filepath = RegExp.$1;
@@ -50,12 +50,12 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
   if (options.matched) {
     options.responseHeaders = options.responseHeaders || {};
     if (options.disableHttpRequest) {
-      options.responseHeaders['bproxy-hostip'] = '127.0.0.1';
+      options.responseHeaders['BPROXY-HOSTIP'] = '127.0.0.1';
     }
     if (!options.disableHttpRequest && options.matchedRule && options.matchedRule.host) {
-      options.responseHeaders['x-hostip'] = options.matchedRule.host;
+      options.responseHeaders['X-HOSTIP'] = options.matchedRule.host;
     }
-    options.responseHeaders['x-bproxy-match'] = 1;
+    options.responseHeaders['X-BPROXY-MATCH'] = 1;
   }
   return options;
 }
