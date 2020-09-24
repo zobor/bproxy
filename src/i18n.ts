@@ -1,5 +1,5 @@
 import { dataset } from './dataset';
-import ILocalLanguage from '../types/i18n';
+import LocalLanguage from '../types/i18n';
 
 const { language } = dataset;
 const lang = {
@@ -43,9 +43,13 @@ const lang = {
     en: '',
     'zh-cn': '配置文件路径不能为空，你可以使用 . 来代表当前目录',
   },
+  CONFIG_FILE_UPDATE: {
+    en: '',
+    'zh-cn': '配置文件已更新'
+  }
 };
 
-const langLocal: ILocalLanguage = {};
+const langLocal: LocalLanguage = {};
 Object.keys(lang).forEach((key) => {
   langLocal[key] = lang[key][language];
 });

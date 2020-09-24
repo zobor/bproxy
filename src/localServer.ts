@@ -8,29 +8,45 @@ import httpsMiddleware from './httpsMiddleware';
 import { cm } from './common';
 import lang from './i18n';
 import { IConfig } from '../types/config';
+import { isEmpty } from 'lodash';
 
 export default class LocalServer {
   static start(port: number, configPath: string): void{
-    const mixConfig = this.loadUserConfig(configPath, settings);
-    if (typeof mixConfig === 'boolean') {
+    const { config = {} as any, configPath: confPath = '' } = this.loadUserConfig(configPath, settings);
+    if (isEmpty(config) || isEmpty(confPath)) {
       return;
     }
+    let appConfig = config;
+    // watch config file change 
+    // update config without restart app
+    fs.watchFile(confPath, { interval: 1000 }, (e) => {
+      cm.info(`${lang.CONFIG_FILE_UPDATE}: ${confPath}`);
+      delete require.cache[require.resolve(confPath)];
+      appConfig = require(confPath);
+    });
     const server = new http.Server();
-    server.listen(mixConfig.port, () => {
+    server.listen(appConfig.port, () => {
       // http
       server.on('request', (req, res) => {
-        httpMiddleware.proxy(req, res, mixConfig);
+        httpMiddleware.proxy(req, res, appConfig);
       });
       // https
       server.on('connect', (req, socket, head) => {
-        httpsMiddleware.proxy(req, socket, head, mixConfig);
+        httpsMiddleware.proxy(req, socket, head, appConfig);
       });
     });
-    cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${mixConfig.port}`)
+    cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${appConfig.port}`)
   }
 
-  static loadUserConfig(configPath: string, defaultSettings: IConfig): IConfig | boolean {
+  static loadUserConfig(configPath: string, defaultSettings: IConfig): {
+    configPath?: string;
+    config?: IConfig;
+  } {
     let mixConfig, userConfigPath;
+    const res: {
+      configPath?: string;
+      config?: IConfig;
+    } = {};
     if (_.isBoolean(configPath) || _.isUndefined(configPath)) {
       userConfigPath = '.';
     }
@@ -38,13 +54,15 @@ export default class LocalServer {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.conf.js');
       if (!fs.existsSync(confPath)) {
         console.log('当前目录下没有找到bproxy.conf.js, 是否立即自动创建？');
-        return false;
+        return res;
       } else {
         /* eslint @typescript-eslint/no-var-requires: 0 */
         const userConfig = require(confPath);
         mixConfig = {...settings, ...userConfig};
+        res.configPath = confPath;
+        res.config = mixConfig;
       }
     }
-    return mixConfig;
+    return res;
   }
 }
