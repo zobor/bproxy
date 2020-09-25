@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { rulesPattern } from './rule';
+import IPattern from '../types/pattern';
 import { IRequestOptions } from '../types/request';
 import { IConfig } from '../types/config';
 import { utils } from './common';
@@ -21,14 +22,12 @@ export const httpMiddleware = {
     s.pipe(res);
   },
 
-  // http代理入口
   async proxy(req: any, res: any, config: IConfig): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     const resOptions = {
-      headers: {
-        'X-BPROXY-MATCH': 1,
-      },
+      headers: {},
+      showLog: pattern?.matchedRule?.showLog
     };
     if (pattern.matched) {
       return new Promise(() => {
@@ -74,12 +73,17 @@ export const httpMiddleware = {
         // 4. rule.redirect
         else if (_.isString(pattern.matchedRule.redirect)) {
           req.url = pattern.matchedRule.redirect;
+          if (pattern.matchedRule.filepath) {
+            req.url = `${req.url}${pattern.matchedRule.filepath}`;
+          }
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
-          return this.proxyByRequest(req, res, {}, resOptions);
+          return this.proxyByRequest(req, res, {
+            headers: pattern.matchedRule.requestHeaders || {}
+          }, resOptions, pattern);
         }
         // rule.proxy
         else if (_.isString(pattern.matchedRule.proxy)) {
@@ -114,9 +118,9 @@ export const httpMiddleware = {
     }
   },
 
-  async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
+  async proxyByRequest(req, res, requestOption, responseOptions, pattern: IPattern = {}): Promise<number> {
     return new Promise(async () => {
-      const rHeaders = { ...req.headers };
+      const rHeaders = { ...req.headers, ...requestOption.headers };
       const options: IRequestOptions = {
         url: req.httpsURL || req.url,
         method: req.method,
@@ -128,9 +132,6 @@ export const httpMiddleware = {
       };
       if (req.method.toLowerCase() === 'post') {
         options.body = await this.getPOSTBody(req);
-      }
-      if (responseOptions.showLog) {
-        console.info('URL: ', options.url);
       }
       // download file by request.pipe
       if (responseOptions.download &&
@@ -152,12 +153,26 @@ export const httpMiddleware = {
           }
         }
       }
+      // todo deep assign object
+      requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {
         ...options,
         ...requestOption,
       };
+      if (responseOptions.showLog) {
+        console.log('---request.options---', rOpts);
+      }
+
+      if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
+        rOpts.method = 'POST';
+      }
       request(rOpts)
         .on("response", function (response) {
+          if (responseOptions.showLog) {
+            console.log('---response.headers---', {...response.headers, ...responseOptions.headers});
+            console.log(response.body)
+            console.log(response.statusCode)
+          }
           res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})
         })
         .pipe(res);

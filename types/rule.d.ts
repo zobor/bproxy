@@ -9,5 +9,8 @@ export interface IRule {
   showLog?: boolean;
   download?: boolean;
   responseHeaders?: any;
+  requestHeaders?: any;
   statusCode?: number;
+  filepath?: string;
+  OPTIONS2POST?: boolean;
 }

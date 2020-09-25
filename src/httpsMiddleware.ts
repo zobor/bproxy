@@ -83,7 +83,7 @@ export default {
       socket.pipe(socketAgent);
     });
     socketAgent.on("error", e => {
-      console.error('socketAgent error', { e, hostname, port });
+      console.error('socketAgent error', JSON.stringify({ err: e.message, hostname, port }));
     });
   },
 

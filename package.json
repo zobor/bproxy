@@ -6,11 +6,14 @@
     "bproxy": "./bin/bproxy"
   },
   "scripts": {
-    "build": "rm -rf dist && npm run lint && tsc",
+    "build": "npm run clean && npm run lint && tsc",
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
     "dev": "ts-node ./bin/bproxy.ts -s",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -rf dist",
+    "swc": "swc src/** -d dist",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -28,7 +31,7 @@
     "url": "https://github.com/zobor/bproxy/issues"
   },
   "engines": {
-    "node": ">= 6.0.0",
+    "node": ">= 8.0.0",
     "npm": ">= 5.5.0"
   },
   "preferGlobal": true,
@@ -43,6 +46,8 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "@swc/cli": "^0.1.27",
+    "@swc/core": "^1.2.34",
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.148",
     "@types/node": "^12.12.11",

@@ -16,7 +16,6 @@ import lang from './i18n';
 import LocalServer from './localServer';
 
 export default {
-  // command entry
   async run(params: CommanderStatic): Promise<string> {
     this.report();
     let verLatest;
