@@ -166,6 +166,10 @@ export const httpMiddleware = {
         }
       }
 
+      if (responseOptions.showLog && rOpts.headers['accept-encoding']) {
+        delete rOpts.headers['accept-encoding'];
+      }
+
       if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
         rOpts.method = 'POST';
       }
@@ -178,7 +182,8 @@ export const httpMiddleware = {
             response.on('data', (data: Buffer) => {
               body.push(data);
             }).on('end', () => {
-              console.log('---response.body---\n', Buffer.concat(body).toString());
+              const buf = Buffer.concat(body)
+              console.log('---response.body---\n', buf.toString());
             })
           }
           res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})

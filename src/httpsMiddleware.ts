@@ -62,15 +62,8 @@ export default {
   web(socket, head, hostname, port) {
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
-      socket.on("error", err => {
+      socket.on("error", () => {
         // todo
-        console.error('net connect error:', {
-          err,
-          info: {
-            hostname,
-            port,
-          },
-        });
         socketAgent.end();
       })
         .write([

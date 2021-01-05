@@ -60,6 +60,6 @@ exports.rulesPattern = (rules, url) => {
         }
         options.responseHeaders['X-BPROXY-MATCH'] = 1;
     }
-    console.log(url, options.matched);
+    console.log(url, `options.matched=`, options.matched);
     return options;
 };

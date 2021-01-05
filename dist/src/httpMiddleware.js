@@ -141,7 +141,10 @@ exports.httpMiddleware = {
                 requestOption.headers = Object.assign(Object.assign({}, options.headers), requestOption.headers);
                 const rOpts = Object.assign(Object.assign({}, options), requestOption);
                 if (responseOptions.showLog) {
-                    console.log('---request.options---', rOpts);
+                    console.log('---request.options---\n', rOpts);
+                    if (rOpts.method === 'POST') {
+                        console.log('---request.body---\n', rOpts.body.toString());
+                    }
                 }
                 if (((_a = pattern === null || pattern === void 0 ? void 0 : pattern.matchedRule) === null || _a === void 0 ? void 0 : _a.OPTIONS2POST) && req.method === 'OPTIONS') {
                     rOpts.method = 'POST';
@@ -149,9 +152,14 @@ exports.httpMiddleware = {
                 request(rOpts)
                     .on("response", function (response) {
                     if (responseOptions.showLog) {
-                        console.log('---response.headers---', Object.assign(Object.assign({}, response.headers), responseOptions.headers));
-                        console.log(response.body);
+                        console.log('---response.headers---\n', Object.assign(Object.assign({}, response.headers), responseOptions.headers));
                         console.log(response.statusCode);
+                        const body = [];
+                        response.on('data', (data) => {
+                            body.push(data);
+                        }).on('end', () => {
+                            console.log('---response.body---\n', Buffer.concat(body).toString());
+                        });
                     }
                     res.writeHead(response.statusCode, Object.assign(Object.assign({}, response.headers), responseOptions.headers));
                 })
