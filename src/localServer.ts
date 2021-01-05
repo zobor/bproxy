@@ -17,12 +17,14 @@ export default class LocalServer {
       return;
     }
     let appConfig = config;
-    // watch config file change 
+    // watch config file change
     // update config without restart app
     fs.watchFile(confPath, { interval: 1000 }, (e) => {
       cm.info(`${lang.CONFIG_FILE_UPDATE}: ${confPath}`);
-      delete require.cache[require.resolve(confPath)];
-      appConfig = require(confPath);
+      try {
+        delete require.cache[require.resolve(confPath)];
+        appConfig = require(confPath);
+      } catch(err){}
     });
     const server = new http.Server();
     httpsMiddleware.beforeStart();
@@ -57,11 +59,13 @@ export default class LocalServer {
         console.log('当前目录下没有找到bproxy.conf.js, 是否立即自动创建？');
         return res;
       } else {
-        /* eslint @typescript-eslint/no-var-requires: 0 */
-        const userConfig = require(confPath);
-        mixConfig = {...settings, ...userConfig};
-        res.configPath = confPath;
-        res.config = mixConfig;
+        try {
+          /* eslint @typescript-eslint/no-var-requires: 0 */
+          const userConfig = require(confPath);
+          mixConfig = {...settings, ...userConfig};
+          res.configPath = confPath;
+          res.config = mixConfig;
+        } catch(err){}
       }
     }
     return res;

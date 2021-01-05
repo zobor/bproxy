@@ -1,4 +1,4 @@
-import * as request from 'request';
+import request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as _ from 'lodash';
@@ -177,7 +177,7 @@ export const httpMiddleware = {
         .on("response", function (response) {
           if (responseOptions.showLog) {
             console.log('---response.headers---\n', {...response.headers, ...responseOptions.headers});
-            console.log(response.statusCode)
+            // console.log(response.statusCode)
             const body: Buffer[] = [];
             response.on('data', (data: Buffer) => {
               body.push(data);

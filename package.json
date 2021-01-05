@@ -9,11 +9,18 @@
     "build": "npm run clean && npm run lint && tsc",
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
-    "dev": "ts-node ./bin/bproxy.ts -s",
+    "dev": "node ./esbuild.conf.js --platform=node && node dist -s",
+    "start": "npm-watch",
     "test": "jest",
     "clean": "rm -rf dist",
-    "swc": "swc src/** -d dist",
     "tsc": "tsc"
+  },
+  "watch": {
+    "dev": {
+      "patterns": ["src"],
+      "extensions": "ts",
+      "quiet": false
+    }
   },
   "repository": {
     "type": "git",
@@ -40,9 +47,11 @@
     "chalk": "^2.4.2",
     "commander": "^2.20.3",
     "file-type": "^12.4.0",
+    "files": "^2.1.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.10.0",
+    "npm-watch": "^0.7.0",
     "request": "^2.88.2"
   },
   "devDependencies": {
@@ -53,6 +62,7 @@
     "@types/node": "^12.12.11",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
+    "esbuild": "^0.8.29",
     "eslint": "^6.6.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.4.0",
