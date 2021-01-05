@@ -160,7 +160,10 @@ export const httpMiddleware = {
         ...requestOption,
       };
       if (responseOptions.showLog) {
-        console.log('---request.options---', rOpts);
+        console.log('---request.options---\n', rOpts);
+        if (rOpts.method === 'POST') {
+          console.log('---request.body---\n', rOpts.body.toString());
+        }
       }
 
       if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
@@ -169,12 +172,18 @@ export const httpMiddleware = {
       request(rOpts)
         .on("response", function (response) {
           if (responseOptions.showLog) {
-            console.log('---response.headers---', {...response.headers, ...responseOptions.headers});
-            console.log(response.body)
+            console.log('---response.headers---\n', {...response.headers, ...responseOptions.headers});
             console.log(response.statusCode)
+            const body: Buffer[] = [];
+            response.on('data', (data: Buffer) => {
+              body.push(data);
+            }).on('end', () => {
+              console.log('---response.body---\n', Buffer.concat(body).toString());
+            })
           }
           res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})
         })
+        // put response to proxy response
         .pipe(res);
     });
   },

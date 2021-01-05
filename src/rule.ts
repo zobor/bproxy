@@ -58,6 +58,6 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
     }
     options.responseHeaders['X-BPROXY-MATCH'] = 1;
   }
-  console.log(url, options.matched);
+  console.log(url, `options.matched=`, options.matched);
   return options;
 }
