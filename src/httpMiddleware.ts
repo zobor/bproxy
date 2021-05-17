@@ -1,4 +1,4 @@
-import request from 'request';
+import * as request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as _ from 'lodash';
