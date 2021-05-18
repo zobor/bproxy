@@ -9,4 +9,3 @@ bproxy.conf.js
 yarn.lock
 mock/
 node_modules/
-dist/
