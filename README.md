@@ -8,4 +8,4 @@ The original intention of bproxy design is to solve the problem of agent trouble
 
 ## Document
 
-[Show Document](http://regx.vip/post/bproxy-doc/)
+[Show Document](http://regx.vip/post/2020/bproxy-doc/)
