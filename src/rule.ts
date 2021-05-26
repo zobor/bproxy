@@ -53,10 +53,10 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
     if (options.disableHttpRequest) {
       options.responseHeaders['BPROXY-HOSTIP'] = '127.0.0.1';
     }
-    if (!options.disableHttpRequest && options.matchedRule && options.matchedRule.host) {
+    if (!options.disableHttpRequest && options?.matchedRule?.host) {
       options.responseHeaders['X-HOSTIP'] = options.matchedRule.host;
     }
-    options.responseHeaders['X-BPROXY-MATCH'] = 1;
+    options.responseHeaders['X-BPROXY-MATCH'] = true;
   }
   console.log(url, 'matched = ', options.matched);
   return options;

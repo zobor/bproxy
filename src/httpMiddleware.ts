@@ -1,4 +1,5 @@
-import request from 'request';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as _ from 'lodash';
@@ -29,9 +30,15 @@ export const httpMiddleware = {
       headers: {},
       showLog: pattern?.matchedRule?.showLog
     };
+    if (resOptions.showLog) {
+      console.log('BPROXY Match Resutl:', pattern);
+    }
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
+        if (pattern?.responseHeaders) {
+          resOptions.headers = {...pattern.responseHeaders}
+        }
         if (pattern?.matchedRule?.responseHeaders) {
           resOptions.headers = {...pattern.matchedRule.responseHeaders}
         }
@@ -81,9 +88,11 @@ export const httpMiddleware = {
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
-          return this.proxyByRequest(req, res, {
+          const requestOption = {
             headers: pattern.matchedRule.requestHeaders || {}
-          }, resOptions, pattern);
+          };
+          resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
+          return this.proxyByRequest(req, res, requestOption, resOptions, pattern);
         }
         // rule.proxy
         else if (_.isString(pattern.matchedRule.proxy)) {
@@ -134,24 +143,27 @@ export const httpMiddleware = {
         options.body = await this.getPOSTBody(req);
       }
       // download file by request.pipe
-      if (responseOptions.download &&
-        responseOptions.config &&
-        responseOptions.config.downloadPath &&
-        !dataset.cache[options.url]
+      if (
+          responseOptions?.config?.downloadPath &&
+          !dataset.cache[options.url]
       ) {
-        const downloadFileName = utils.uuid(12);
-        const parseUrl = url.parse(options.url);
-        const fileName = (parseUrl.pathname || '').split('/').pop();
-        if (fileName) {
-          const filetype = fileName.split('.').pop();
-          if (filetype) {
-            request({
-              ...options,
-              ...requestOption,
-            }).pipe(fs.createWriteStream(`${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`));
-            return;
+          const downloadFileName = utils.uuid(12);
+          const parseUrl = url.parse(options.url);
+          const fileName = (parseUrl.pathname || '').split('/').pop();
+          if (fileName) {
+              const filetype = fileName.split('.').pop();
+              if (filetype) {
+                  request({
+                      ...options,
+                      ...requestOption,
+                  }).pipe(
+                      fs.createWriteStream(
+                          `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`
+                      )
+                  );
+                  return;
+              }
           }
-        }
       }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
@@ -177,13 +189,15 @@ export const httpMiddleware = {
         .on("response", function (response) {
           if (responseOptions.showLog) {
             console.log('---response.headers---\n', {...response.headers, ...responseOptions.headers});
-            // console.log(response.statusCode)
             const body: Buffer[] = [];
             response.on('data', (data: Buffer) => {
               body.push(data);
             }).on('end', () => {
               const buf = Buffer.concat(body)
-              console.log('---response.body---\n', buf.toString());
+              const stringBuf = buf.toString();
+              if (stringBuf.length <= 512) {
+                console.log('---response.body---\n', stringBuf);
+              }
             })
           }
           res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})
@@ -218,7 +232,7 @@ export const httpMiddleware = {
     } catch (err) {
       const s = new Readable();
       res.writeHead(404, {});
-      s.push('404: Not Found or Not Acces');
+      s.push('404: Not Found or Not Access');
       s.push(null);
       s.pipe(res);
     }

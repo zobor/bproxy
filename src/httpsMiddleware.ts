@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as net from "net";
 import * as https from "https";
 import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 import Certificate from "./certifica";
 import { IConfig } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
@@ -17,7 +18,7 @@ let certificateKeyPem;
 let localCertificate;
 let localCertificateKey;
 
-const isHttpsHostRegMatch = (httpsList, hostname) => {
+const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   let rs;
   for (let i = 0, len = httpsList.length; i < len; i++) {
     if (rs) {
@@ -59,7 +60,7 @@ export default {
     });
   },
 
-  web(socket, head, hostname, port) {
+  web(socket, head, hostname, port): void {
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
       socket.on("error", () => {
@@ -92,7 +93,7 @@ export default {
       const localServer = new https.Server({
         key: keyPem,
         cert: certPem,
-        SNICallback: (host, done) => {
+        SNICallback: (host, done): void => {
           done(
             null,
             tls.createSecureContext({
@@ -120,7 +121,7 @@ export default {
         console.error("localServer.error", err);
       });
       localServer.on("clientError", e => {
-        // console.error(`localServer.clientError(${hostname})`, JSON.stringify(e));
+        console.error(`localServer.clientError(${hostname})`, JSON.stringify(e));
       });
     });
   }

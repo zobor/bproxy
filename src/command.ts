@@ -29,18 +29,14 @@ export default {
     return verLatest;
   },
 
-  report() {
+  report(): void {
     request.get(`http://pingtcss.qq.com/pingd?dm=zobor.me&pvi=67181574951438293&si=s106251574951438294&url=/&arg=&ty=0&rdm=&rurl=&rarg=&adt=&r2=500704279&scr=1440x900&scl=24-bit&lg=zh-cn&tz=-8&ext=version=2.0.14&random=${+new Date}`);
   },
 
   // install and trust certificate
-  install() {
+  install(): void{
     const ca = new Certificate();
     const installStatus = ca.install();
-    if (installStatus && !installStatus.create) {
-      cm.warn(lang.CERT_EXIST);
-      return;
-    }
     if (installStatus && installStatus.caCertPath) {
       cm.info(`${lang.CREATE_CERT_SUC}: ${installStatus.caCertPath}`);
     } else {
@@ -60,7 +56,7 @@ export default {
   },
 
   // set system proxy
-  proxy(proxy: string | boolean, port: number) {
+  proxy(proxy: string | boolean, port: number): void {
     const sysProxyPort = port || settings.port;
     if (typeof proxy === 'boolean') {
       cm.warn(`Usage:\n${pkg.name} --proxy [off|on]`);

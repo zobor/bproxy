@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from 'http';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -19,7 +20,7 @@ export default class LocalServer {
     let appConfig = config;
     // watch config file change
     // update config without restart app
-    fs.watchFile(confPath, { interval: 1000 }, (e) => {
+    fs.watchFile(confPath, { interval: 1000 }, () => {
       cm.info(`${lang.CONFIG_FILE_UPDATE}: ${confPath}`);
       try {
         delete require.cache[require.resolve(confPath)];
@@ -62,7 +63,7 @@ export default class LocalServer {
         try {
           /* eslint @typescript-eslint/no-var-requires: 0 */
           const userConfig = require(confPath);
-          mixConfig = {...settings, ...userConfig};
+          mixConfig = {...defaultSettings, ...userConfig};
           res.configPath = confPath;
           res.config = mixConfig;
         } catch(err){}

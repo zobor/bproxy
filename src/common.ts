@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import chalk from "chalk";
 
 const { log } = console;
@@ -12,9 +15,9 @@ function logLevel(level: string) {
 
 class Common {
   printf(message: string, level: string): void {
-    const info = level === 'info' ? chalk.green('[INFO]') : 
-    ( level === 'error' ? chalk.redBright('[ERROR]') : 
-        ( level === 'debug' ? chalk.gray('[DEBUG]') : 
+    const info = level === 'info' ? chalk.green('[INFO]') :
+    ( level === 'error' ? chalk.redBright('[ERROR]') :
+        ( level === 'debug' ? chalk.gray('[DEBUG]') :
           ( level === 'warn' ? chalk.yellowBright('[WARN]') : '')
         )
     );
