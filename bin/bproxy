@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-// require('../dist/src/index');
-require('../dist2/index');
+require('../dist/src/index');
+// require('../dist/index');
