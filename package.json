@@ -55,14 +55,11 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "@swc/cli": "^0.1.27",
-    "@swc/core": "^1.2.34",
     "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.148",
     "@types/node": "^12.12.11",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
-    "esbuild": "^0.8.29",
     "eslint": "^6.6.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.4.0",

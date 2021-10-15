@@ -68,7 +68,6 @@ class Certificate {
     const basePath = caPath || config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
-    console.log(caKeyPath)
 
     try {
       fs.accessSync(caCertPath, fs.constants.R_OK);

@@ -51,7 +51,7 @@ export default {
     const host = urlParsed.host || '';
     this.startLocalHttpsServer(urlParsed.hostname, config).then(localHttpsPort => {
       const isHttpsMatch = sslAll || isHttpsHostRegMatch(https, host);
-      console.log('isHttpsMatch', isHttpsMatch, 'host', host);
+      // console.log('isHttpsMatch', isHttpsMatch, 'host', host);
       if ( isHttpsMatch ) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
       } else {
@@ -77,7 +77,7 @@ export default {
       socket.pipe(socketAgent);
     });
     socketAgent.on("error", e => {
-      console.error('socketAgent error', JSON.stringify({ err: e.message, hostname, port }));
+      console.error('socketAgent error', JSON.stringify({ err: e.message, hostname, port }).slice(0, 100));
     });
   },
 
@@ -112,16 +112,17 @@ export default {
         resolve(localAddress.port);
       });
       localServer.on("request", (req, res) => {
-        req.httpsURL = `https://${hostname}${req.url}`;
-        req.url = `http://${hostname}${req.url}`;
-        req.protocol = "https";
+        const $req = req as any;
+        $req.httpsURL = `https://${hostname}${req.url}`;
+        $req.url = `http://${hostname}${req.url}`;
+        $req.protocol = "https";
         httpMiddleware.proxy(req, res, config);
       });
       localServer.on("error", err => {
-        console.error("localServer.error", err);
+        console.error("localServer.error", err.toString().slice(0, 100));
       });
       localServer.on("clientError", e => {
-        console.error(`localServer.clientError(${hostname})`, JSON.stringify(e));
+        console.error(`localServer.clientError(${hostname})`, JSON.stringify(e).slice(0, 100));
       });
     });
   }
