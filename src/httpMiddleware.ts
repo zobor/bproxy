@@ -54,7 +54,7 @@ export const httpMiddleware = {
         // 2. rule.path
         else if (pattern.matchedRule.path) {
           this.proxyLocalFile(
-            path.resolve(pattern.matchedRule.path, pattern.filepath || ''),
+            path.resolve(pattern.matchedRule.path, pattern.matchedRule.filepath || ''),
             res,
             resOptions.headers,
           );
@@ -225,6 +225,7 @@ export const httpMiddleware = {
 
   proxyLocalFile(filepath: string, res: any, resHeaders: any = {}): void {
     try {
+      console.log(resHeaders);
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
       res.writeHead(200, resHeaders)
