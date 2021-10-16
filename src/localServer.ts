@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import settings from './settings';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
-import { cm } from './common';
+import { cm, getLocalIpAddress } from './common';
 import lang from './i18n';
 import { IConfig } from '../types/config';
 import { isEmpty } from 'lodash';
@@ -39,7 +39,10 @@ export default class LocalServer {
         httpsMiddleware.proxy(req, socket, head, appConfig);
       });
     });
-    cm.info(`${lang.START_LOCAL_SVR_SUC}: http://127.0.0.1:${appConfig.port}`)
+    const ips = getLocalIpAddress();
+    ips.forEach((ip: string) => {
+      cm.info(`${lang.START_LOCAL_SVR_SUC}: http://${ip}:${appConfig.port}`);
+    });
   }
 
   static loadUserConfig(configPath: string, defaultSettings: IConfig): {
