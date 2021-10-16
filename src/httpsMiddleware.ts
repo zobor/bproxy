@@ -5,7 +5,6 @@ import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
-// import * as _ from 'lodash';
 import Certificate from "./certifica";
 import { IConfig } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";

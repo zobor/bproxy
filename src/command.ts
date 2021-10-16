@@ -14,6 +14,7 @@ import Certificate from './certifica';
 import { cm } from './common';
 import lang from './i18n';
 import LocalServer from './localServer';
+import { rulesPattern } from './rule';
 
 export default {
   async run(params: CommanderStatic): Promise<string> {
@@ -25,6 +26,8 @@ export default {
       this.proxy(params.proxy, params.port);
     } else if (params.start) {
       this.start(params);
+    } else if (params.test) {
+      this.test(params);
     }
     return verLatest;
   },
@@ -77,4 +80,16 @@ export default {
     const configPath = params.config;
     LocalServer.start(port, configPath);
   },
+
+  test(params: CommanderStatic): boolean {
+    const [, , , url] = params.rawArgs;
+    const configPath = params.config;
+    const { config = {} as any } = LocalServer.loadUserConfig(configPath, settings);
+    console.log(url);
+    console.log(config.rules);
+    const matchResult = rulesPattern(config.rules, url);
+    console.log(matchResult);
+    console.log('匹配结果：', matchResult.matched);
+    return false;
+  }
 }

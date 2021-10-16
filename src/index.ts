@@ -11,6 +11,7 @@ program
   .option('-p, --port [value]', 'Specify the app port')
   .option('-i, --install', 'Install bproxy certificate(OSX)')
   .option('-x, --proxy [value]', 'Turn on/off system proxy')
+  .option('-t, --test [value]', 'test url match or not')
   .parse(process.argv);
 
 commands.run(program);
