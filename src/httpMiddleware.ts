@@ -10,6 +10,7 @@ import IPattern from '../types/pattern';
 import { IRequestOptions } from '../types/request';
 import { IConfig } from '../types/config';
 import { utils } from './common';
+import { ioRequest } from './io';
 
 const dataset = {
   cache: {},
@@ -185,6 +186,11 @@ export const httpMiddleware = {
       if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
         rOpts.method = 'POST';
       }
+      ioRequest({
+        url: rOpts.url,
+        params: {},
+        requestHeader: rOpts.headers,
+      })
       request(rOpts)
         .on("response", function (response) {
           if (responseOptions.showLog) {

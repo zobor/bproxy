@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 export const isLocal = (url: string): boolean => {
-  return ['/', '/install'].includes(url);
+  return !(url.startsWith('http') || url.startsWith('https')) && !url.includes('/socket.io/');
 }
 
 const html = `
@@ -20,6 +20,25 @@ const html = `
 </html>
 `;
 
+const inspectResponse = (req, res) => {
+  const urlMap = {
+    '/inspect': './inspect/index.html',
+  };
+  const filepath = (urlMap[req.url] || req.url).replace(/^\//, './');
+
+  try {
+    if (!fs.existsSync(filepath)) {
+      throw 404;
+    }
+    const readStream = fs.createReadStream(filepath);
+    res.writeHead(200, {});
+    readStream.pipe(res);
+  } catch(err) {
+    res.writeHead(404, {});
+    res.end('404');
+  }
+};
+
 export const requestJac = (req, res, certConfig) => {
   switch (req.url) {
     case '/':
@@ -27,13 +46,22 @@ export const requestJac = (req, res, certConfig) => {
       break;
 
     case '/install':
-      const readStream = fs.createReadStream(certConfig.certPath);
-      res.writeHead(200, {
-        'content-type': 'application/x-x509-ca-cert; charset=utf-8',
-      });
-      readStream.pipe(res);
+      try {
+        const readStream = fs.createReadStream(certConfig.certPath);
+        res.writeHead(200, {
+          'content-type': 'application/x-x509-ca-cert; charset=utf-8',
+        });
+        readStream.pipe(res);
+      } catch(err) {
+        res.writeHead(404, {});
+        res.end('404');
+      }
       break;
     default:
+      if (req.url.startsWith('/inspect')) {
+        inspectResponse(req, res);
+        return;
+      }
       res.end('404');
       break;
   }
