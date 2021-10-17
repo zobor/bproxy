@@ -33,14 +33,22 @@ const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   return rs;
 };
 
+interface IcertConfig {
+  certPath: string;
+}
+
 export default {
-  beforeStart (): void{
+  beforeStart (): IcertConfig {
     certInstance = new Certificate();
     cert = certInstance.init();
     certificatePem = fs.readFileSync(cert.caCertPath);
     certificateKeyPem = fs.readFileSync(cert.caKeyPath);
     localCertificate = pki.certificateFromPem(certificatePem);
     localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+
+    return {
+      certPath: cert.caCertPath,
+    };
   },
 
   // https代理入口

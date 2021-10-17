@@ -10,6 +10,7 @@ import { cm, getLocalIpAddress } from './common';
 import lang from './i18n';
 import { IConfig } from '../types/config';
 import { isEmpty } from 'lodash';
+import { isLocal, requestJac } from './pageRouter';
 
 export default class LocalServer {
   static start(port: number, configPath: string): void{
@@ -28,10 +29,14 @@ export default class LocalServer {
       } catch(err){}
     });
     const server = new http.Server();
-    httpsMiddleware.beforeStart();
+    const certConfig = httpsMiddleware.beforeStart();
     server.listen(appConfig.port, () => {
       // http
       server.on('request', (req, res) => {
+        if (isLocal(req.url || '')) {
+          requestJac(req, res, certConfig);
+          return;
+        }
         httpMiddleware.proxy(req, res, appConfig);
       });
       // https

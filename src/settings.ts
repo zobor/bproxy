@@ -11,7 +11,7 @@ export default {
   certificate: {
     filename: 'bproxy.ca.crt',
     keyFileName: 'bproxy.ca.key.pem',
-    name: 'bproxy-cert',
+    name: 'B Proxy CA',
     organizationName: 'zoborzhang',
     OU: 'https://github.com/zobor/bproxy',
     countryName: 'CN',
