@@ -1,3 +1,130 @@
+
 body {
-  background-color: yellow;
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+body {
+  background-color: #fff;
+  font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 16px;
+}
+
+.app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+/* 数据表格 */
+.table {
+  width: 100%;
+}
+.table thead {
+  background-color: #F4F6F6;
+}
+.table td {
+  padding: 5px 10px;
+  border: solid 1px #ECF0F1;
+}
+.table thead td {
+  font-weight: bold;
+}
+.table tbody tr:hover {
+  background-color: #efefef;
+  cursor: pointer;
+}
+.table .status {
+  width: 40px;
+}
+.table .type {
+  width: 50px;
+}
+.table .method {
+  width: 40px;
+}
+.table .protocol {
+  width: 60px;
+}
+.table .speed {
+  width: 80px;
+}
+/* 数据详情 */
+.detail .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: none;
+}
+.detail .content {
+  position: absolute;
+  top: 0;
+  left: 150vw;
+  width: 90vw;
+  bottom: 0;
+  transition: all 0.25s ease-in-out;
+  background-color: #fff;
+  border-left: solid 5px #5D6D7E;
+}
+.detail.open .content {
+  left: 10vw;
+}
+.detail.open .mask {
+  display: block;
+}
+
+.detail .content .tabs > ul{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.detail .content .tabs > ul li {
+  text-align: center;
+  cursor: pointer;
+  border-bottom: solid 3px #fff;
+  padding-bottom: 5px;
+}
+.detail .content .tabs > ul li:hover {
+  border-bottom: solid 3px #ccc;
+}
+.detail .content .tabs > ul li.active {
+  border-bottom: solid 3px #D35400;
+}
+.detail .content .form {
+  width: 600px;
+  height: 70vh;
+  margin: 0 auto;
+  background-color: #ccc;
+  padding: 10vh;
+}
+.detail .content .form .form-item {
+  display: flex;
+  padding: 5px 0;
+  font-size: 17px;
+}
+.detail .content .form .form-item label {
+  width: 40%;
+  text-align: right;
+}
+.detail .content .form .form-item .form-item-value {
+  flex: 1;
+  padding-left: 5px;
 }
