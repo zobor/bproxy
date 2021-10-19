@@ -1,0 +1,200 @@
+
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+body {
+  background-color: #fff;
+  font-family: "Work Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif,Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-family: Mija,-apple-system,BlinkMacSystemFont,Roboto,"Roboto Slab","Droid Serif","Segoe UI",system-ui,Arial,sans-serif;
+  font-family: -apple-system,system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial;
+  font-size: 14px;
+}
+
+.app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.app-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+/* 数据表格 */
+.table-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.table {
+  width: 100%;
+}
+.table thead {
+  background-color: #F4F6F6;
+}
+.table td {
+  padding: 5px 10px;
+  border: solid 1px #ECF0F1;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.table thead td {
+  font-weight: bold;
+}
+.table tbody tr:hover {
+  background-color: #efefef;
+  cursor: pointer;
+}
+.table .status {
+  width: 50px;
+}
+.table .type {
+  width: 50px;
+}
+.table .method {
+  width: 60px;
+}
+.table .protocol {
+  width: 80px;
+}
+.table .speed {
+  width: 80px;
+}
+.table .host {
+  min-width: 100px;
+  max-width: 300px;
+}
+/* 数据详情 */
+.detail .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: none;
+}
+.detail .content {
+  position: absolute;
+  top: 0;
+  left: 150vw;
+  width: 90vw;
+  bottom: 0;
+  transition: all 0.25s ease-in-out;
+  background-color: #fff;
+  border-left: solid 5px #000;
+  border-bottom: solid 5px #000;
+}
+.detail.open .content {
+  left: 10vw;
+}
+.detail.open .mask {
+  display: block;
+}
+
+.detail .content .tabs > ul{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.detail .content .tabs > ul li {
+  text-align: center;
+  cursor: pointer;
+  border-bottom: solid 3px #fff;
+  padding-bottom: 5px;
+  font-weight: bold;
+  font-size: 17px;
+}
+.detail .content .tabs > ul li:hover {
+  border-bottom: solid 3px #ccc;
+}
+.detail .content .tabs > ul li.active {
+  border-bottom: solid 3px #D35400;
+  color: #D35400;
+}
+.detail .content .form {
+  width: 800px;
+  height: 70vh;
+  margin: 0 auto;
+  background-color: #F8F9F9;
+  padding: 50px;
+  border-radius: 10px;
+  overflow-y: auto;
+}
+.detail .content .form .form-item {
+  display: flex;
+  padding: 5px 0;
+  font-size: 16px;
+}
+.detail .content .form .form-item label {
+  width: 30%;
+  text-align: right;
+  font-weight: bold;
+  color: #8E44AD;
+}
+.detail .content .form .form-item .form-item-value {
+  flex: 1;
+  padding-left: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: #873600;
+}
+.detail .content .url {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+.detail .content .body-panel {
+  width: 800px;
+  height: 70vh;
+  margin: 0 auto;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  background-color: #F8F9F9;
+  padding: 50px;
+  border-radius: 10px;padding: 50px;
+  overflow-y: auto;
+}
+.scrollbar-style::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-style::-webkit-scrollbar-track {
+  border-radius: 3px;
+  background: #eee;
+  box-shadow: inset 0 0 5px #F9E79F;
+}
+.scrollbar-style::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #17202A;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}

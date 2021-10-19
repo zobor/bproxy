@@ -1,0 +1,34 @@
+div[role="alert"] {
+  padding: 20px;
+  font-size: 30px;
+
+  h4 {
+    font-size: 34px;
+    text-align: center;
+    padding: 50px;
+    color: red;
+  }
+
+  pre {
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    color: #666;
+  }
+
+  .error-resolve {
+    text-align: center;
+    padding-top: 30px;
+  }
+
+  button {
+    background-color: bisque;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    color: #333;
+    cursor: pointer;
+    font-size: 28px;
+    outline: none;
+  }
+}

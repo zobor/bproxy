@@ -43,17 +43,19 @@ export default class LocalServer {
         if (req.url?.includes('/socket.io/')) {
           return;
         }
-        if (!req.$requestId) {
-          req.$requestId = utils.guid();
+        const $req: any = req;
+        if (!$req.$requestId) {
+          $req.$requestId = utils.guid();
         }
-        httpMiddleware.proxy(req, res, appConfig);
+        httpMiddleware.proxy($req, res, appConfig);
       });
       // https
       server.on('connect', (req, socket, head) => {
-        if (!req.$requestId) {
-          req.$requestId = utils.guid();
+        const $req: any = req;
+        if (!$req.$requestId) {
+          $req.$requestId = utils.guid();
         }
-        httpsMiddleware.proxy(req, socket, head, appConfig);
+        httpsMiddleware.proxy($req, socket, head, appConfig);
       });
     });
     const ips = getLocalIpAddress();

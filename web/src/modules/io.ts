@@ -25,3 +25,7 @@ export const testRule = (url: string): Promise<object> =>
       reject(new Error('invoke timeout'));
     }, 5000);
   });
+
+export const onRequest = (callback: any) => {
+  $socket.on('request', callback)
+};
