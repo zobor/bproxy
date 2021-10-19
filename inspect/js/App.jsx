@@ -116,8 +116,15 @@ export default () => {
             data.postData.$$type = 'formData';
           } else if (req.requestHeader && req.requestHeader['content-type'] && req.requestHeader['content-type'].includes('application/json')) {
             data.postData = arrayBuf2string(req.requestBody);
-            data.postData = JSON.parse(data.postData);
-            data.postData.$$type = 'json';
+            if (data.postData) {
+              try {
+                data.postData = JSON.parse(data.postData);
+                data.postData.$$type = 'json';
+              }catch (err) {
+                console.error('[error] post data parse fail', err);
+                console.log(data.postData);
+              }
+            }
           }
         }
         // done
