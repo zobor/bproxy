@@ -9,7 +9,7 @@ import { rulesPattern } from './rule';
 import IPattern from '../types/pattern';
 import { IRequestOptions } from '../types/request';
 import { IConfig } from '../types/config';
-import { utils } from './common';
+import { isInspectContentType, utils } from './common';
 import { ioRequest } from './io';
 
 const dataset = {
@@ -31,9 +31,9 @@ export const httpMiddleware = {
       headers: {},
       showLog: pattern?.matchedRule?.showLog
     };
-    if (resOptions.showLog) {
-      console.log('BPROXY Match Resutl:', pattern);
-    }
+    // if (resOptions.showLog) {
+    //   console.log('BPROXY Match Resutl:', pattern);
+    // }
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
@@ -139,74 +139,94 @@ export const httpMiddleware = {
         encoding: null,
         strictSSL: false,
         rejectUnauthorized: false,
+        followRedirect: false,
       };
-      if (req.method.toLowerCase() === 'post') {
+      if (['post', 'put'].includes(req.method.toLowerCase())) {
         options.body = await this.getPOSTBody(req);
       }
+      // TODO
+      // plugin to install here
       // download file by request.pipe
-      if (
-          responseOptions?.config?.downloadPath &&
-          !dataset.cache[options.url]
-      ) {
-          const downloadFileName = utils.uuid(12);
-          const parseUrl = url.parse(options.url);
-          const fileName = (parseUrl.pathname || '').split('/').pop();
-          if (fileName) {
-              const filetype = fileName.split('.').pop();
-              if (filetype) {
-                  request({
-                      ...options,
-                      ...requestOption,
-                  }).pipe(
-                      fs.createWriteStream(
-                          `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`
-                      )
-                  );
-                  return;
-              }
-          }
-      }
+      // if (
+      //     responseOptions?.config?.downloadPath &&
+      //     !dataset.cache[options.url]
+      // ) {
+      //     const downloadFileName = utils.uuid(12);
+      //     const parseUrl = url.parse(options.url);
+      //     const fileName = (parseUrl.pathname || '').split('/').pop();
+      //     if (fileName) {
+      //         const filetype = fileName.split('.').pop();
+      //         if (filetype) {
+      //             request({
+      //                 ...options,
+      //                 ...requestOption,
+      //             }).pipe(
+      //                 fs.createWriteStream(
+      //                     `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`
+      //                 )
+      //             );
+      //             return;
+      //         }
+      //     }
+      // }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {
         ...options,
         ...requestOption,
       };
-      if (responseOptions.showLog) {
-        console.log('---request.options---\n', rOpts);
-        if (rOpts.method === 'POST') {
-          console.log('---request.body---\n', rOpts.body.toString());
-        }
-      }
+      // if (responseOptions.showLog) {
+      //   console.log('---request.options---\n', rOpts);
+      //   if (rOpts.method === 'POST') {
+      //     console.log('---request.body---\n', rOpts.body.toString());
+      //   }
+      // }
 
-      if (responseOptions.showLog && rOpts.headers['accept-encoding']) {
+      if (isInspectContentType(rOpts.headers) && rOpts.headers['accept-encoding']) {
         delete rOpts.headers['accept-encoding'];
       }
 
-      if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
-        rOpts.method = 'POST';
-      }
+      // if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
+      //   rOpts.method = 'POST';
+      // }
       ioRequest({
         url: rOpts.url,
-        params: {},
+        method: rOpts.method,
         requestHeader: rOpts.headers,
-      })
+        requestId: req.$requestId,
+        requestBody: rOpts.body,
+      });
       request(rOpts)
         .on("response", function (response) {
-          if (responseOptions.showLog) {
-            console.log('---response.headers---\n', {...response.headers, ...responseOptions.headers});
+          const responseHeader = {...response.headers, ...responseOptions.headers};
+          if (rOpts.url === 'https://git.dz11.com/') {
+            console.log(response.statusCode, rOpts.url);
+          }
+
+          if (isInspectContentType(rOpts.headers) || isInspectContentType(responseHeader)) {
             const body: Buffer[] = [];
             response.on('data', (data: Buffer) => {
               body.push(data);
             }).on('end', () => {
               const buf = Buffer.concat(body)
               const stringBuf = buf.toString();
-              if (stringBuf.length <= 512) {
-                console.log('---response.body---\n', stringBuf);
+              console.log(rOpts.url, stringBuf.length);
+              if (stringBuf.length <= 10000) {
+                ioRequest({
+                  requestId: req.$requestId,
+                  responseBody: stringBuf,
+                });
               }
             })
           }
-          res.writeHead(response.statusCode, {...response.headers, ...responseOptions.headers})
+          ioRequest({
+            requestId: req.$requestId,
+            url: rOpts.url,
+            method: rOpts.method,
+            responseHeader,
+            statusCode: response.statusCode,
+          });
+          res.writeHead(response.statusCode, responseHeader);
         })
         // put response to proxy response
         .pipe(res);
@@ -231,7 +251,6 @@ export const httpMiddleware = {
 
   proxyLocalFile(filepath: string, res: any, resHeaders: any = {}): void {
     try {
-      console.log(resHeaders);
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
       res.writeHead(200, resHeaders)

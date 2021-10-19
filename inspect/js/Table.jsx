@@ -5,8 +5,11 @@ const { useContext } = React;
 const Table = (props) => {
   const { list } = props;
   const { dispatch } = useContext(Ctx);
-  const onClick = () => {
+  const onClick = (req) => {
     dispatch({ type: 'setShowDetail', showDetail: true });
+    if(req.custom.requestId) {
+      dispatch({ type: 'setRequestId', requestId: req.custom.requestId });
+    }
   };
 
   return (<table className="table">
@@ -21,15 +24,15 @@ const Table = (props) => {
     </thead>
 
     <tbody>
-      {list.map((item) => {
+      {list.map((req) => {
         return (
-          <tr onClick={onClick}>
-            <td>200</td>
+          <tr onClick={onClick.bind(null, req)}>
+            <td>{req.custom.statusCode}</td>
             <td>Local</td>
-            <td>{item.method}</td>
-            <td>{item.protocol}</td>
-            <td>{item.host}</td>
-            <td>{item.path}</td>
+            <td>{req.custom.method}</td>
+            <td>{req.custom.protocol}</td>
+            <td>{req.custom.host}</td>
+            <td title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
             <td>200ms</td>
           </tr>
         );

@@ -20,8 +20,8 @@ table {
 
 body {
   background-color: #fff;
-  font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  font-size: 16px;
+  font-family: "Work Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif,Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 14px;
 }
 
 .app {
@@ -41,6 +41,9 @@ body {
 .table td {
   padding: 5px 10px;
   border: solid 1px #ECF0F1;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 .table thead td {
   font-weight: bold;
@@ -50,19 +53,22 @@ body {
   cursor: pointer;
 }
 .table .status {
-  width: 40px;
+  width: 50px;
 }
 .table .type {
   width: 50px;
 }
 .table .method {
-  width: 40px;
+  width: 60px;
 }
 .table .protocol {
-  width: 60px;
+  width: 80px;
 }
 .table .speed {
   width: 80px;
+}
+.table .host {
+  min-width: 200px;
 }
 /* 数据详情 */
 .detail .mask {
@@ -101,6 +107,7 @@ body {
   cursor: pointer;
   border-bottom: solid 3px #fff;
   padding-bottom: 5px;
+  font-weight: bold;
 }
 .detail .content .tabs > ul li:hover {
   border-bottom: solid 3px #ccc;
@@ -109,22 +116,50 @@ body {
   border-bottom: solid 3px #D35400;
 }
 .detail .content .form {
-  width: 600px;
+  width: 800px;
   height: 70vh;
   margin: 0 auto;
-  background-color: #ccc;
-  padding: 10vh;
+  background-color: #F8F9F9;
+  padding: 50px;
+  border-radius: 10px;
+  overflow-y: auto;
 }
 .detail .content .form .form-item {
   display: flex;
   padding: 5px 0;
-  font-size: 17px;
+  font-size: 16px;
 }
 .detail .content .form .form-item label {
-  width: 40%;
+  width: 30%;
   text-align: right;
+  font-weight: bold;
+  color: #8E44AD;
 }
 .detail .content .form .form-item .form-item-value {
   flex: 1;
   padding-left: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: #873600;
+}
+.detail .content .url {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+.detail .content .body-panel {
+  width: 800px;
+  height: 70vh;
+  margin: 0 auto;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  background-color: #F8F9F9;
+  padding: 50px;
+  border-radius: 10px;padding: 50px;
+  overflow-y: auto;
+
 }

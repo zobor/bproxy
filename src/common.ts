@@ -71,3 +71,11 @@ export const getLocalIpAddress = () => {
   }
   return Ips;
 };
+
+export const isInspectContentType = (headers): boolean => {
+  if (!headers || !headers['content-type']) {
+    return false;
+  }
+  const contentType = headers['content-type'];
+  return contentType.includes('application/json') || contentType.includes('x-www-form-urlencoded') || contentType.includes('application/javascript');
+};

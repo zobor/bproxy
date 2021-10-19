@@ -5,6 +5,8 @@ export const Ctx = createContext();
 
 export const defaultState = {
   showDetail: false,
+  detailActiveTab: 'custom',
+  requestId: '',
 };
 
 export const reducer = (state = defaultState, action) => {

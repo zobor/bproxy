@@ -10,4 +10,5 @@ export interface IRequestOptions {
   encoding?: string | null;
   strictSSL?: boolean;
   rejectUnauthorized?: boolean;
+  followRedirect?: boolean;
 }

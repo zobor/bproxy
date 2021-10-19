@@ -1,3 +1,4 @@
+import { utils } from './common';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from 'http';
 import * as _ from 'lodash';
@@ -41,10 +42,16 @@ export default class LocalServer {
         if (req.url?.includes('/socket.io/')) {
           return;
         }
+        if (!req.$requestId) {
+          req.$requestId = utils.guid();
+        }
         httpMiddleware.proxy(req, res, appConfig);
       });
       // https
       server.on('connect', (req, socket, head) => {
+        if (!req.$requestId) {
+          req.$requestId = utils.guid();
+        }
         httpsMiddleware.proxy(req, socket, head, appConfig);
       });
     });

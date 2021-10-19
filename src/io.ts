@@ -15,12 +15,16 @@ export const emit = (type: string, msg: any) => {
   })
 }
 
-const requestList = [];
-interface IIoRequestParams {
-  url: string;
-  params: object;
-  requestHeader: object;
+interface IoRequestParams {
+  url?: string;
+  method?: string;
+  requestHeader?: object;
+  requestId: string;
+  requestBody?: string;
+  responseHeader?: object;
+  responseBody?: string;
+  statusCode?: number;
 }
-export const ioRequest = (params: IIoRequestParams) => {
+export const ioRequest = (params: IoRequestParams) => {
   emit('request', params);
 };

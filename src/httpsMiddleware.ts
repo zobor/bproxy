@@ -1,3 +1,4 @@
+import { utils } from './common';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as net from "net";
 import * as https from "https";
@@ -123,6 +124,9 @@ export default {
         $req.httpsURL = `https://${hostname}${req.url}`;
         $req.url = `http://${hostname}${req.url}`;
         $req.protocol = "https";
+        if (!$req.$requestId) {
+          $req.$requestId = utils.guid();
+        }
         httpMiddleware.proxy(req, res, config);
       });
       localServer.on("error", err => {
