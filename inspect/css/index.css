@@ -31,7 +31,24 @@ body {
   right: 0;
   bottom: 0;
 }
+.app-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
 /* 数据表格 */
+.table-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 .table {
   width: 100%;
 }
@@ -88,7 +105,7 @@ body {
   bottom: 0;
   transition: all 0.25s ease-in-out;
   background-color: #fff;
-  border-left: solid 5px #5D6D7E;
+  border-left: solid 5px #000;
 }
 .detail.open .content {
   left: 10vw;
@@ -161,5 +178,17 @@ body {
   padding: 50px;
   border-radius: 10px;padding: 50px;
   overflow-y: auto;
-
+}
+.scrollbar-style::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-style::-webkit-scrollbar-track {
+  border-radius: 3px;
+  background: #eee;
+  box-shadow: inset 0 0 5px #F9E79F;
+}
+.scrollbar-style::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: #17202A;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
 }

@@ -8,6 +8,7 @@ export default {
   sslAll: false,
   host: [],
   rules: [],
+  configPath: '',
   certificate: {
     filename: 'bproxy.ca.crt',
     keyFileName: 'bproxy.ca.key.pem',

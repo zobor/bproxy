@@ -73,9 +73,18 @@ export const getLocalIpAddress = () => {
 };
 
 export const isInspectContentType = (headers): boolean => {
-  if (!headers || !headers['content-type']) {
+  if (!headers || (!headers['content-type'] && !headers.accept)) {
     return false;
   }
-  const contentType = headers['content-type'];
-  return contentType.includes('application/json') || contentType.includes('x-www-form-urlencoded') || contentType.includes('application/javascript');
+  const contentType = headers['content-type'] || '';
+  const { accept  ='' } = headers;
+
+  return (
+    contentType.includes("application/json") ||
+    contentType.includes("x-www-form-urlencoded") ||
+    contentType.includes("application/javascript") ||
+    contentType.includes("text/css") ||
+    contentType.includes("text/html") ||
+    accept.includes("text/")
+  );
 };

@@ -63,13 +63,17 @@ export default () => {
   const [state, dispatch] = useReducer(reducer, defaultState);
   const [list, setList] = useState([]);
   useEffect(() => {
-    socket.on('test', (data) => {
-      console.log(data);
-    });
 
+    // invoke test
+    // socket.on('ioWebInvokeCallback', rs => {
+    //   console.log(rs);
+    // });
+    // socket.emit('ioWebInvoke', {
+    //   type: 'test',
+    //   params: 'https://v.qq.com/h5/withdraw/index-2193377aab07a6db087c.js'
+    // });
     socket.on('request', (req) => {
       setList((pre) => {
-        console.log(req);
         // merge history request and response
         const history = pre.find(item => item.custom.requestId === req.requestId);
         if (history) {
@@ -77,7 +81,12 @@ export default () => {
             history.responseHeader = req.responseHeader;
           }
           if (req.responseBody) {
-            history.responseBody = req.responseBody || '';
+            try {
+              const data = pako.ungzip(req.responseBody, {to: "string"});
+              history.responseBody = data;
+            } catch(err){
+              console.log('[gzip decode error]', err);
+            }
           }
           if (req.statusCode) {
             history.custom = history.custom || {};
@@ -116,7 +125,7 @@ export default () => {
       });
     });
   }, []);
-  return <div>
+  return <div className="app-main">
     <Ctx.Provider value={{ state, dispatch }}>
       <Table list={list} />
       <Detail list={list} />

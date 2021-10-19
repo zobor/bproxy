@@ -25,7 +25,11 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
     }
     if (_.isRegExp(rule.regx)) {
       options.matched = rule.regx.test(url);
-      if (RegExp.$1) rule.filepath = RegExp.$1;
+      if (RegExp.$1) {
+        if (rule.redirect) {
+          rule.redirectTarget = `${rule.redirect}${RegExp.$1}`;
+        }
+      }
     } else if (_.isString(rule.regx)) {
       options.matched = url.includes(rule.regx);
     } else if (_.isFunction(rule.regx)) {
@@ -58,6 +62,5 @@ export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
     }
     options.responseHeaders['X-BPROXY-MATCH'] = true;
   }
-  // console.log(url, 'matched = ', options.matched);
   return options;
 }

@@ -5,6 +5,7 @@ export interface IRule {
   path?: string;
   response?: Function | string;
   redirect?: string;
+  redirectTarget?: string;
   proxy?: string;
   showLog?: boolean;
   download?: boolean;

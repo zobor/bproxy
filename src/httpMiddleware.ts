@@ -31,9 +31,6 @@ export const httpMiddleware = {
       headers: {},
       showLog: pattern?.matchedRule?.showLog
     };
-    // if (resOptions.showLog) {
-    //   console.log('BPROXY Match Resutl:', pattern);
-    // }
     if (pattern.matched) {
       return new Promise(() => {
         if (!pattern.matchedRule) return;
@@ -76,14 +73,10 @@ export const httpMiddleware = {
         else if (pattern.matchedRule.statusCode) {
           res.end();
         }
-
         // network response
         // 4. rule.redirect
         else if (_.isString(pattern.matchedRule.redirect)) {
-          req.url = pattern.matchedRule.redirect;
-          if (pattern.matchedRule.filepath) {
-            req.url = `${req.url}${pattern.matchedRule.filepath}`;
-          }
+          req.url = pattern.matchedRule.redirectTarget || pattern.matchedRule.redirect;
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
@@ -107,17 +100,6 @@ export const httpMiddleware = {
             hostname: pattern.matchedRule.host,
           }, resOptions);
         }
-        // rule.showLog
-        else if (pattern.matchedRule.showLog === true) {
-          return this.proxyByRequest(req, res, {}, {
-            ...resOptions, ... {
-              showLog: true,
-              download: pattern.matchedRule.download,
-              config,
-            }
-          });
-        }
-        // rule.down
         else {
           console.log('// todo');
           console.log(pattern);
@@ -175,16 +157,15 @@ export const httpMiddleware = {
         ...options,
         ...requestOption,
       };
-      // if (responseOptions.showLog) {
-      //   console.log('---request.options---\n', rOpts);
-      //   if (rOpts.method === 'POST') {
-      //     console.log('---request.body---\n', rOpts.body.toString());
-      //   }
-      // }
 
-      if (isInspectContentType(rOpts.headers) && rOpts.headers['accept-encoding']) {
-        delete rOpts.headers['accept-encoding'];
+    // console.log(rOpts.url, isInspectContentType(rOpts.headers))
+    console.log(rOpts.url,isInspectContentType(rOpts.headers), requestOption.headers);
+      if (isInspectContentType(rOpts.headers)) {
+        if (rOpts.headers['accept-encoding']) {
+          delete rOpts.headers['accept-encoding'];
+        }
       }
+
 
       // if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
       //   rOpts.method = 'POST';
@@ -199,25 +180,24 @@ export const httpMiddleware = {
       request(rOpts)
         .on("response", function (response) {
           const responseHeader = {...response.headers, ...responseOptions.headers};
-          if (rOpts.url === 'https://git.dz11.com/') {
-            console.log(response.statusCode, rOpts.url);
-          }
-
-          if (isInspectContentType(rOpts.headers) || isInspectContentType(responseHeader)) {
+          if (
+            responseHeader['content-length'] < 100 * 1024 &&
+            (isInspectContentType(rOpts.headers) ||
+            isInspectContentType(responseHeader))
+          ) {
             const body: Buffer[] = [];
-            response.on('data', (data: Buffer) => {
-              body.push(data);
-            }).on('end', () => {
-              const buf = Buffer.concat(body)
-              const stringBuf = buf.toString();
-              console.log(rOpts.url, stringBuf.length);
-              if (stringBuf.length <= 10000) {
+            response
+              .on("data", (data: Buffer) => {
+                body.push(data);
+              })
+              .on("end", () => {
+                const buf = Buffer.concat(body);
+                // const stringBuf = buf.toString();
                 ioRequest({
                   requestId: req.$requestId,
-                  responseBody: stringBuf,
+                  responseBody: buf,
                 });
-              }
-            })
+              });
           }
           ioRequest({
             requestId: req.$requestId,

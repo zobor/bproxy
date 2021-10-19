@@ -45,7 +45,7 @@ const Detail = (props) => {
   return (<div className={`detail ${showDetail?'open':''}`}>
     <div className="mask" onClick={onClose} />
     <div className="content">
-      <div className="url">{custom ? `${custom.method} ${custom.path}`: ''}</div>
+      <div className="url">{custom ? `${custom.protocol} ${custom.method} ${custom.statusCode} ${custom.path}`: ''}</div>
       <div className="tabs">
         <ul>
           {
@@ -54,16 +54,16 @@ const Detail = (props) => {
         </ul>
       </div>
 
-      {detail && detailActiveTab !== 'responseBody' ? <div className="form">
+      {detail && detailActiveTab !== 'responseBody' ? <div className="form scrollbar-style">
         {Object.keys(detail).map(key => (
           <div className="form-item">
             <label>{key}:</label>
-            <div className="form-item-value">{detail[key]}</div>
+            <div className="form-item-value">{detail[key].toString()}</div>
           </div>
         ))}
       </div> : null}
-      {detail && detailActiveTab === 'responseBody' ? <div className="body-panel">
-        {detail}
+      {detailActiveTab === 'responseBody' ? <div className="body-panel scrollbar-style">
+        {detail || '不支持预览'}
       </div> : null}
     </div>
   </div>)

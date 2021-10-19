@@ -16,6 +16,7 @@ import { io } from './io';
 export default class LocalServer {
   static start(port: number, configPath: string): void{
     const { config = {} as any, configPath: confPath = '' } = this.loadUserConfig(configPath, settings);
+    settings.configPath = configPath;
     if (isEmpty(config) || isEmpty(confPath)) {
       return;
     }
@@ -89,26 +90,5 @@ export default class LocalServer {
       }
     }
     return res;
-  }
-
-  static ioInit() {
-    // console.log(typeof socketIO);
-    // const io = socketIO()
-    // const io = new Server({
-    //   path: '/io',
-    //   serveClient: false,
-    // });
-    // console.log(io.emit);
-
-    // setInterval(() => {
-    //   console.log(io.emit);
-    //   io.emit("test", { name: 123 });
-    // }, 2000);
-
-    // io.on('connection', (socket) => {
-    //   console.log(socket);
-    // });
-
-    // return io;
   }
 }
