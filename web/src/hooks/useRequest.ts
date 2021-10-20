@@ -35,6 +35,7 @@ export default () => {
             protocol: item.protocol,
             host: item.host,
             path: item.path,
+            origin: item.origin,
           },
           requestHeaders: item.requestHeader,
           requestParams: item.requestParams,

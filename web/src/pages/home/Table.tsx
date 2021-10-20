@@ -1,10 +1,12 @@
 import { useContext } from "react";
+import classNames from "classnames";
 import { Ctx } from "../../ctx";
 import './table.scss';
 
 const Table = (props: any) => {
   const { list } = props;
-  const { dispatch } = useContext(Ctx);
+  const { state, dispatch } = useContext(Ctx);
+  const { requestId } = state;
   const onClick = (req: any) => {
     dispatch({ type: "setShowDetail", showDetail: true });
     if (req.custom.requestId) {
@@ -31,14 +33,16 @@ const Table = (props: any) => {
         <tbody>
           {list.map((req: any) => {
             return (
-              <tr onClick={onClick.bind(null, req)} key={req.custom.requestId}>
+              <tr className={classNames({
+                active: requestId === req?.custom?.requestId,
+              })} onClick={onClick.bind(null, req)} key={req.custom.requestId}>
                 <td className="status">{req.custom.statusCode}</td>
                 <td className="type">Local</td>
                 <td className="method">{req.custom.method}</td>
                 <td className="protocol">{req.custom.protocol}</td>
                 <td className="host" title={req.custom.host}>{req.custom.host.slice(0,25)}</td>
                 <td className="path" title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
-                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/charset=\S+/, '').slice(0,25)}</td>
+                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/;charset=\S+/, '').slice(0,25)}</td>
                 <td className="speed">{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
               </tr>
             );

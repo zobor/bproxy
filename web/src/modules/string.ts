@@ -28,7 +28,7 @@ export function buffer2string(buffer: Buffer, encoding: string): string{
   }
   let data = '';
   try {
-    if (encoding.includes('gzip')) {
+    if (encoding?.includes('gzip')) {
       data = pako.ungzip(new Uint8Array(buffer), {to: "string"});
     } else if (encoding === 'br') {
       console.log(buffer);

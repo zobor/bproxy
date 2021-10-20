@@ -60,7 +60,7 @@ const Detail = (props: any) => {
   return (<div className={`detail ${showDetail?'open':''}`}>
     <div className="mask" onClick={onClose} />
     <div className="content">
-      <div className="url">{custom ? `${custom.protocol} ${custom.method} ${custom.statusCode} ${custom.path}`: ''}</div>
+      <div className="url">{custom ? `${custom.statusCode||'Pendding'} ${custom.origin}${custom.path}`: ''}</div>
       <div className="tabs">
         <ul>
           {
