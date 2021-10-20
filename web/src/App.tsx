@@ -26,12 +26,18 @@ function LazyLoadComponent<P>(
 }
 
 const routerList = [
-  // 提现的首页
+  // 监控
   {
     name: 'Home',
     path: './pages/home',
     Component: lazy(() => import(/* webpackPrefetch: true */ './pages/home')),
     routerPath: '/',
+  },
+  {
+    name: 'Test',
+    path: './pages/ruleTest',
+    Component: lazy(() => import(/* webpackPrefetch: true */ './pages/ruleTest')),
+    routerPath: '/test',
   },
 ];
 

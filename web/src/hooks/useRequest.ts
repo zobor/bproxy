@@ -3,8 +3,6 @@ import pako from 'pako';
 import { onRequest } from "../modules/io";
 import { arrayBuf2string, parseQueryString, parseRequest } from "../modules/util";
 
-console.log(pako.ungzip);
-
 export default () => {
   const [list, setList] = useState<any>([]);
   useEffect(() => {

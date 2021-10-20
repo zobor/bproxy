@@ -6,23 +6,14 @@
     "bproxy": "./bin/bproxy"
   },
   "scripts": {
-    "build": "npm run clean && npm run lint && tsc",
+    "build": "npm run lint && tsc",
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
-    "dev": "ts-node src/index.ts -s",
-    "start": "npm-watch",
+    "start": "ts-node src/index.ts -s",
+    "web": "cd webb && yarn dev",
     "test": "jest",
-    "clean": "rm -rf dist",
-    "tsc": "tsc"
-  },
-  "watch": {
-    "dev": {
-      "patterns": [
-        "src"
-      ],
-      "extensions": "ts",
-      "quiet": false
-    }
+    "tsc": "tsc",
+    "watch": "pm2 start npm --name \"bproxy\" -- start"
   },
   "repository": {
     "type": "git",
@@ -51,7 +42,6 @@
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "node-forge": "^0.10.0",
-    "npm-watch": "^0.7.0",
     "request": "^2.88.2",
     "socket.io": "^4.3.1"
   },

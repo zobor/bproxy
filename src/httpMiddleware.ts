@@ -159,12 +159,11 @@ export const httpMiddleware = {
       };
 
     // console.log(rOpts.url, isInspectContentType(rOpts.headers))
-    console.log(rOpts.url,isInspectContentType(rOpts.headers), requestOption.headers);
-      if (isInspectContentType(rOpts.headers)) {
-        if (rOpts.headers['accept-encoding']) {
-          delete rOpts.headers['accept-encoding'];
-        }
-      }
+      // if (isInspectContentType(rOpts.headers)) {
+      //   if (rOpts.headers['accept-encoding']) {
+      //     delete rOpts.headers['accept-encoding'];
+      //   }
+      // }
 
 
       // if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
@@ -181,7 +180,7 @@ export const httpMiddleware = {
         .on("response", function (response) {
           const responseHeader = {...response.headers, ...responseOptions.headers};
           if (
-            responseHeader['content-length'] < 100 * 1024 &&
+            // responseHeader['content-length'] < 1024 * 1024 &&
             (isInspectContentType(rOpts.headers) ||
             isInspectContentType(responseHeader))
           ) {
@@ -192,7 +191,6 @@ export const httpMiddleware = {
               })
               .on("end", () => {
                 const buf = Buffer.concat(body);
-                // const stringBuf = buf.toString();
                 ioRequest({
                   requestId: req.$requestId,
                   responseBody: buf,

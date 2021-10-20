@@ -33,14 +33,25 @@ const Detail = (props: any) => {
   const { list } = props;
   const { showDetail, detailActiveTab, requestId } = state;
   const listItem = list.length ? list.find((item: any) => item.custom && item.custom.requestId === requestId) : null;
-  const detail = detailActiveTab && listItem && listItem[detailActiveTab] ? listItem[detailActiveTab] : null;
+  let detail = detailActiveTab && listItem && listItem[detailActiveTab] ? listItem[detailActiveTab] : null;
   const custom = listItem && detailActiveTab && listItem.custom ? listItem.custom : null;
+
+  console.log(listItem);
+
+  if ( detailActiveTab === 'responseBody' && custom && listItem.responseHeader && listItem.responseHeader['content-type'] && listItem.responseHeader['content-type'].includes('image/')) {
+    detail = <div className="image-preview-box"><img className="image-preview" src={custom.url} /></div>;
+  }
+
   const onClose = () => {
     dispatch({ type: 'setShowDetail', showDetail: false});
   };
   const onTabChange = (tabValue: string) => {
     dispatch({ type: 'setDetailActiveTab', detailActiveTab: tabValue});
   };
+
+  if (!showDetail) {
+    return null;
+  }
 
   return (<div className={`detail ${showDetail?'open':''}`}>
     <div className="mask" onClick={onClose} />

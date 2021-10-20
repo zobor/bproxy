@@ -35,10 +35,10 @@ body {
 }
 .app-main {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
   overflow: hidden;
 }
 /* 数据表格 */
@@ -59,7 +59,7 @@ body {
 }
 .table td {
   padding: 5px 10px;
-  border: solid 1px #ECF0F1;
+  border: solid 1px #eee;
   word-wrap: break-word;
   word-break: break-all;
   white-space: pre-wrap;
@@ -81,7 +81,7 @@ body {
   width: 60px;
 }
 .table .protocol {
-  width: 80px;
+  width: 50px;
 }
 .table .speed {
   width: 80px;
@@ -184,6 +184,13 @@ body {
   padding: 50px;
   border-radius: 10px;padding: 50px;
   overflow-y: auto;
+  line-height: 1.5;
+  .image-preview-box {
+    text-align: center;
+  }
+  .image-preview {
+    max-width: 100%;
+  }
 }
 .scrollbar-style::-webkit-scrollbar {
   width: 6px;

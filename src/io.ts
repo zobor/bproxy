@@ -20,7 +20,7 @@ export const io = (server) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const $io = require('socket.io')(server);
   $io.on('connection', function(socket){
-    console.log('a user connected');
+    console.info('a user connected');
     socket.emit('test', {msg: 'ws connected!'});
     instances.push(socket);
     ioWebInvokeApiInstal();

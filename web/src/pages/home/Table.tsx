@@ -16,14 +16,14 @@ const Table = (props: any) => {
       <table className="table">
         <thead>
           <tr>
-            <td className="status">status</td>
+            <td className="status">状态</td>
             <td className="type">type</td>
-            <td className="method">method</td>
-            <td className="protocol">protocol</td>
-            <td className="host">host</td>
-            <td className="path">path</td>
-            <td className="contentType">Content-Type</td>
-            <td className="speed">speed</td>
+            <td className="method">方式</td>
+            <td className="protocol">协议</td>
+            <td className="host">域名</td>
+            <td className="path">地址</td>
+            <td className="contentType">类型</td>
+            <td className="speed">耗时</td>
           </tr>
         </thead>
 
@@ -37,7 +37,7 @@ const Table = (props: any) => {
                 <td>{req.custom.protocol}</td>
                 <td>{req.custom.host}</td>
                 <td title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
-                <td>{req.responseHeader && req.responseHeader['content-type']}</td>
+                <td>{req.responseHeader && (req.responseHeader['content-type']||'').replace(/charset=\S+/, '')}</td>
                 <td>{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
               </tr>
             );

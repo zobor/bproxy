@@ -85,10 +85,7 @@ export default {
     const [, , , url] = params.rawArgs;
     const configPath = params.config;
     const { config = {} as any } = LocalServer.loadUserConfig(configPath, settings);
-    console.log(url);
-    console.log(config.rules);
     const matchResult = rulesPattern(config.rules, url);
-    console.log(matchResult);
     console.log('匹配结果：', matchResult.matched);
     return false;
   }

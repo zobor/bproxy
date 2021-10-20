@@ -20,22 +20,24 @@ export const arrayBuf2string = (buf: any) => {
 export const parseQueryString = (query: string) => {
   const vars = query.split("&");
   const queryString: any = {};
-  for (let i = 0; i < vars.length; i++) {
-    const pair = vars[i].split("=");
-    const key = decodeURIComponent(pair[0]);
-    if (!key) {
-      continue;
+  try {
+    for (let i = 0; i < vars.length; i++) {
+      const pair = vars[i].split("=");
+      const key = decodeURIComponent(pair[0]);
+      if (!key && pair.length > 1) {
+        continue;
+      }
+      const value = decodeURIComponent(pair[1]);
+      if (typeof queryString[key] === "undefined") {
+        queryString[key] = decodeURIComponent(value);
+      } else if (typeof queryString[key] === "string") {
+        const arr = [queryString[key], decodeURIComponent(value)];
+        queryString[key] = arr;
+      } else {
+        queryString[key].push(decodeURIComponent(value));
+      }
     }
-    const value = decodeURIComponent(pair[1]);
-    if (typeof queryString[key] === "undefined") {
-      queryString[key] = decodeURIComponent(value);
-    } else if (typeof queryString[key] === "string") {
-      const arr = [queryString[key], decodeURIComponent(value)];
-      queryString[key] = arr;
-    } else {
-      queryString[key].push(decodeURIComponent(value));
-    }
-  }
+  } catch(err) {}
   return queryString;
 }
 
