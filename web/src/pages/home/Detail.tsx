@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { Ctx } from "../../ctx";
+import { buffer2string } from '../../modules/string';
+import './detail.scss';
 
 const tabList = [
   {
@@ -36,10 +38,12 @@ const Detail = (props: any) => {
   let detail = detailActiveTab && listItem && listItem[detailActiveTab] ? listItem[detailActiveTab] : null;
   const custom = listItem && detailActiveTab && listItem.custom ? listItem.custom : null;
 
-  console.log(listItem);
-
   if ( detailActiveTab === 'responseBody' && custom && listItem.responseHeader && listItem.responseHeader['content-type'] && listItem.responseHeader['content-type'].includes('image/')) {
     detail = <div className="image-preview-box"><img className="image-preview" src={custom.url} /></div>;
+  }
+
+  if (detailActiveTab === 'responseBody' && custom && listItem.responseHeader) {
+    detail = buffer2string(detail, listItem.responseHeader['content-encoding']);
   }
 
   const onClose = () => {

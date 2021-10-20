@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import pako from 'pako';
 import { onRequest } from "../modules/io";
 import { arrayBuf2string, parseQueryString, parseRequest } from "../modules/util";
 
@@ -16,20 +15,8 @@ export default () => {
           if (req.responseHeader) {
             history.responseHeader = req.responseHeader;
           }
-          if (req.responseBody && req.responseBody.byteLength
-            ) {
-            try {
-              let data: any;
-              if (history.responseHeader && history.responseHeader['content-encoding']) {
-                data = pako.ungzip(new Uint8Array(req.responseBody), {to: "string"});
-              } else {
-                data = String.fromCharCode.apply(null, new Uint8Array(req.responseBody) as any);
-              }
-              history.responseBody = data;
-            } catch(err){
-              console.log('[gzip decode error]', err);
-              console.log(history.responseHeader['content-encoding']);
-            }
+          if (req.responseBody && req.responseBody.byteLength) {
+            history.responseBody = req.responseBody;
           }
           if (req.statusCode) {
             history.custom = history.custom || {};

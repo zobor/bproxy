@@ -1,0 +1,56 @@
+/* 数据表格 */
+.table-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.table {
+  width: 100%;
+}
+.table thead {
+  background-color: #F1C40F;
+}
+.table td {
+  padding: 5px 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: #212F3C;
+  vertical-align: middle;
+  border-bottom: solid 1px #eee;
+}
+.table thead td {
+  font-weight: bold;
+  border-color: transparent;
+}
+.table tbody tr:hover {
+  background-color: #efefef;
+  cursor: pointer;
+}
+.table .status {
+  width: 50px;
+  font-size: 12px;
+}
+.table .type {
+  width: 50px;
+  font-size: 12px;
+}
+.table .method {
+  width: 60px;
+  font-size: 12px;
+}
+.table .protocol {
+  width: 50px;
+}
+.table .speed {
+  width: 80px;
+  font-size: 12px;
+}
+.table .host {
+  min-width: 100px;
+  max-width: 300px;
+}

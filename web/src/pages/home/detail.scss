@@ -1,0 +1,116 @@
+$modalBackground: #1B4F72;
+$panelBackground: #1d1f21;
+$panelFontColor: #fff;
+$panelBorderRadius: 5px;
+$maskBackground: rgba(0,0,0,0.5);
+$labelKeyColor: #f94962;
+$labelValueColor: #139dcb;
+
+/* 数据详情 */
+.detail .mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $maskBackground;
+  display: none;
+}
+.detail .content {
+  position: absolute;
+  top: 0;
+  left: 150vw;
+  width: 90vw;
+  bottom: 0;
+  transition: all 0.25s ease-in-out;
+  background-color: $modalBackground;
+  border-left: solid 5px #000;
+  border-bottom: solid 5px #000;
+  color: #fff;
+}
+.detail.open .content {
+  left: 10vw;
+}
+.detail.open .mask {
+  display: block;
+}
+
+.detail .content .tabs > ul{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.detail .content .tabs > ul li {
+  text-align: center;
+  cursor: pointer;
+  padding-bottom: 5px;
+  font-weight: bold;
+  font-size: 17px;
+}
+.detail .content .tabs > ul li.active {
+  color: #D35400;
+  background-image: var(--rainbow-gradient,#fff);
+  background-repeat: repeat;
+  background-size: 100%;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  filter: drop-shadow(0 0 2rem #000);
+}
+.detail .content .form {
+  width: 800px;
+  height: 70vh;
+  margin: 0 auto;
+  background-color: $panelBackground;
+  color: $panelFontColor;
+  padding: 50px;
+  border-radius: $panelBorderRadius;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.detail .content .form .form-item {
+  display: flex;
+  padding: 5px 0;
+  font-size: 16px;
+}
+.detail .content .form .form-item label {
+  width: 30%;
+  text-align: right;
+  font-weight: bold;
+  color: $labelKeyColor;
+}
+.detail .content .form .form-item .form-item-value {
+  flex: 1;
+  padding-left: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: $labelValueColor;
+}
+.detail .content .url {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+.detail .content .body-panel {
+  width: 800px;
+  height: 70vh;
+  margin: 0 auto;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  background-color: $panelBackground;
+  color: #aaa;
+  padding: 50px;
+  border-radius: $panelBorderRadius;
+  overflow-y: auto;
+  overflow-x: hidden;
+  line-height: 1.5;
+  .image-preview-box {
+    text-align: center;
+  }
+  .image-preview {
+    max-width: 100%;
+  }
+}

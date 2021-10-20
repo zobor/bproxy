@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { Ctx } from "../../ctx";
+import './table.scss';
 
 const Table = (props: any) => {
   const { list } = props;
@@ -16,14 +17,14 @@ const Table = (props: any) => {
       <table className="table">
         <thead>
           <tr>
-            <td className="status">状态</td>
-            <td className="type">type</td>
-            <td className="method">方式</td>
-            <td className="protocol">协议</td>
-            <td className="host">域名</td>
-            <td className="path">地址</td>
-            <td className="contentType">类型</td>
-            <td className="speed">耗时</td>
+            <td>状态</td>
+            <td>type</td>
+            <td>方式</td>
+            <td>协议</td>
+            <td>域名</td>
+            <td>地址</td>
+            <td>类型</td>
+            <td>耗时</td>
           </tr>
         </thead>
 
@@ -31,14 +32,14 @@ const Table = (props: any) => {
           {list.map((req: any) => {
             return (
               <tr onClick={onClick.bind(null, req)} key={req.custom.requestId}>
-                <td>{req.custom.statusCode}</td>
-                <td>Local</td>
-                <td>{req.custom.method}</td>
-                <td>{req.custom.protocol}</td>
-                <td>{req.custom.host}</td>
-                <td title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
-                <td>{req.responseHeader && (req.responseHeader['content-type']||'').replace(/charset=\S+/, '')}</td>
-                <td>{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
+                <td className="status">{req.custom.statusCode}</td>
+                <td className="type">Local</td>
+                <td className="method">{req.custom.method}</td>
+                <td className="protocol">{req.custom.protocol}</td>
+                <td className="host" title={req.custom.host}>{req.custom.host.slice(0,25)}</td>
+                <td className="path" title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
+                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/charset=\S+/, '').slice(0,25)}</td>
+                <td className="speed">{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
               </tr>
             );
           })}
