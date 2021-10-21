@@ -1,6 +1,6 @@
-import { IRule } from './rule';
+import { Rule } from './rule';
 
-export interface ICertificate {
+export interface Certificate {
   filename: string;
   keyFileName: string;
   name: string;
@@ -15,13 +15,13 @@ export interface ICertificate {
   getDefaultCAKeyPath: Function;
 }
 
-export interface IConfig {
+export interface Config {
   port: number;
   configFile: string;
   downloadPath: string;
   https: Array<string>;
   sslAll: boolean;
   host: Array<string>;
-  rules: Array<IRule>;
-  certificate: ICertificate;
+  rules: Array<Rule>;
+  certificate: Certificate;
 }

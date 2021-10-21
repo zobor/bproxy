@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import IPattern from './types/pattern';
-import { IRule } from './types/rule';
+import Pattern from '../types/pattern';
+import { Rule } from '../types/rule';
 
 export const url2regx = (url: string): RegExp => {
   const newUrl = url
@@ -11,13 +11,13 @@ export const url2regx = (url: string): RegExp => {
   return new RegExp(newUrl);
 };
 
-export const rulesPattern = (rules: Array<IRule>, url: string): IPattern => {
-  const options: IPattern = {
+export const rulesPattern = (rules: Array<Rule>, url: string): Pattern => {
+  const options: Pattern = {
     delay: 0,
     matched: false,
     responseHeaders: {},
   };
-  rules.forEach((rule: IRule) => {
+  rules.forEach((rule: Rule) => {
     if (options.matched) return;
     if (!rule.regx) return;
     if (_.isString(rule.regx) && rule.regx.includes('*')) {

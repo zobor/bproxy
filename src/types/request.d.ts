@@ -1,11 +1,11 @@
-export interface IRequestHeaders {
+export interface RequestHeaders {
   [key: string]: string;
 }
 
-export interface IRequestOptions {
+export interface RequestOptions {
   method: string;
   url: string;
-  headers: IRequestHeaders;
+  headers: RequestHeaders;
   body: Buffer | null;
   encoding?: string | null;
   strictSSL?: boolean;

@@ -1,7 +1,9 @@
-import * as program from 'commander';
-import * as pkg from '../package.json';
+import { Command } from 'commander';
+import * as pkg from '../../package.json';
 import commands from './command';
 import { cm } from './common';
+
+const program = new Command();
 
 if (process.argv.length === 2) process.argv.push('-h');
 program
@@ -14,7 +16,7 @@ program
   .option('-t, --test [value]', 'test url match or not')
   .parse(process.argv);
 
-commands.run(program);
+commands.run(program as any);
 
 process.on('uncaughtException', (err) => {
   cm.error(`uncaughtException: ${JSON.stringify(err.stack)}`);

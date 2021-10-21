@@ -1,15 +1,8 @@
-/*
- * @Author: zobor
- * @Date: 2020-06-28 16:25:11
- * @LastEditTime: 2020-07-07 10:46:00
- * @LastEditors: zobor
- * @FilePath: \bproxy\src\command.ts
- */
 import { CommanderStatic } from 'commander';
 import * as request from 'request';
 import settings from './settings';
 import { spawn } from 'child_process';
-import * as pkg from '../package.json';
+import * as pkg from '../../package.json';
 import Certificate from './certifica';
 import { cm } from './common';
 import lang from './i18n';

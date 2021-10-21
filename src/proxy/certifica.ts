@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
-import { ICertificateCreateRes, ICertificateInstallRes } from './types/certificate';
+import { CertificateCreateRes, CertificateInstallRes } from '../types/certificate';
 import { cm } from './common';
 import lang from './i18n';
 
@@ -13,7 +13,7 @@ let keys;
 
 class Certificate {
   // 创建安装使用的本地证书
-  createCAForInstall(commonName: string): ICertificateCreateRes {
+  createCAForInstall(commonName: string): CertificateCreateRes {
     // const { cert, keys} = dataset;
     const cert = pki.createCertificate();
     cert.publicKey = keys.publicKey;
@@ -63,7 +63,7 @@ class Certificate {
     };
   }
 
-  install(caPath?: string): ICertificateInstallRes {
+  install(caPath?: string): CertificateInstallRes {
     this.init();
     const basePath = caPath || config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
@@ -99,13 +99,13 @@ class Certificate {
     };
   }
 
-  init(): ICertificateInstallRes {
+  init(): CertificateInstallRes {
     cm.info(lang.CREATE_CERTING);
     keys = pki.rsa.generateKeyPair(config.keySize);
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
-    const res: ICertificateInstallRes = {
+    const res: CertificateInstallRes = {
       caCertPath,
       caKeyPath,
       create: true,
@@ -135,7 +135,7 @@ class Certificate {
 
   }
 
-  createFakeCertificateByDomain(caCert, caKey, domain): ICertificateCreateRes {
+  createFakeCertificateByDomain(caCert, caKey, domain): CertificateCreateRes {
     const cert = pki.createCertificate();
     cert.publicKey = keys.publicKey;
 

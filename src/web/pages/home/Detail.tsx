@@ -1,6 +1,6 @@
 import { ReactElement, useContext, useEffect, useState } from "react";
 import { Ctx } from "../../ctx";
-import { buffer2string } from '../../modules/string';
+import { buffer2string } from '../../modules/buffer';
 import './detail.scss';
 
 const tabList = [

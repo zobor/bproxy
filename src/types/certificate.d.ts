@@ -1,29 +1,29 @@
-export interface ICertificateValidity {
+export interface CertificateValidity {
   notBefore: Date;
   notAfter: Date;
 }
 
-export interface ICertificate {
+export interface Certificate {
   publicKey: string;
   serialNumber: string;
-  validity: ICertificateValidity;
+  validity: CertificateValidity;
   setSubject: Function;
   setIssuer: Function;
   setExtensions: Function;
   sign: Function;
 }
 
-export interface ICertificateKey {
+export interface CertificateKey {
   publicKey: string;
   privateKey: string;
 }
 
-export interface ICertificateCreateRes {
+export interface CertificateCreateRes {
   key: string;
-  cert: ICertificate;
+  cert: Certificate;
 }
 
-export interface ICertificateInstallRes {
+export interface CertificateInstallRes {
   caCertPath: string;
   caKeyPath: string;
   create: boolean;

@@ -9,7 +9,7 @@ import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { cm, getLocalIpAddress } from './common';
 import lang from './i18n';
-import { IConfig } from './types/config';
+import { Config } from '../types/config';
 import { isEmpty } from 'lodash';
 import { isLocal, requestJac } from './pageRouter';
 import { io } from './io';
@@ -64,14 +64,14 @@ export default class LocalServer {
     });
   }
 
-  static loadUserConfig(configPath: string, defaultSettings: IConfig): {
+  static loadUserConfig(configPath: string, defaultSettings: Config): {
     configPath?: string;
-    config?: IConfig;
+    config?: Config;
   } {
     let mixConfig, userConfigPath;
     const res: {
       configPath?: string;
-      config?: IConfig;
+      config?: Config;
     } = {};
     if (_.isBoolean(configPath) || _.isUndefined(configPath)) {
       userConfigPath = '.';

@@ -6,14 +6,13 @@
     "bproxy": "./bin/bproxy"
   },
   "scripts": {
-    "build": "npm run lint && tsc",
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
-    "start": "ts-node src/index.ts -s",
-    "web": "cd webb && yarn dev",
+    "start": "ts-node src/proxy/index.ts -s",
     "test": "jest",
-    "tsc": "tsc",
-    "watch": "pm2 start npm --name \"bproxy\" -- start"
+    "tsc": "tsc -p .",
+    "dev": "vite",
+    "build": "npm run lint && npm run tsc && vite build"
   },
   "repository": {
     "type": "git",
@@ -31,7 +30,7 @@
     "url": "https://github.com/zobor/bproxy/issues"
   },
   "engines": {
-    "node": ">= 8.0.0",
+    "node": ">= 10.0.0",
     "npm": ">= 5.5.0"
   },
   "preferGlobal": true,
@@ -46,15 +45,32 @@
     "socket.io": "^4.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.148",
+    "@types/lodash.clonedeep": "^4.5.6",
     "@types/node": "^12.12.11",
+    "@types/pako": "^1.0.2",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.3.1",
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "^2.7.0",
+    "@vitejs/plugin-react": "^1.0.0",
+    "classnames": "^2.3.1",
     "eslint": "^6.6.0",
     "jest": "^26.4.2",
+    "lodash.clonedeep": "^4.5.0",
+    "pako": "^2.0.4",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-error-boundary": "^3.1.3",
+    "react-router-dom": "^5.3.0",
+    "sass": "^1.43.2",
+    "socket.io": "^4.3.1",
+    "socket.io-client": "^4.3.2",
     "ts-jest": "^26.4.0",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.5"
+    "typescript": "^4.3.2",
+    "vite": "^2.6.4"
   }
 }

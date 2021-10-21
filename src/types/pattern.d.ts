@@ -1,10 +1,12 @@
-import { IRule } from './types/rule';
+import { Rule } from '../types/rule';
 
-export default interface IPattern {
+export default interface Pattern {
   delay?: number;
   matched?: boolean;
   filepath?: string;
-  matchedRule?: IRule;
+  matchedRule?: Rule;
   disableHttpRequest?: boolean;
-  responseHeaders?: Object;
+  responseHeaders?: {
+    [key: string]: any;
+  };
 }

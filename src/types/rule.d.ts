@@ -1,4 +1,4 @@
-export interface IRule {
+export interface Rule {
   regx: RegExp | string | Function;
   host?: string;
   file?: string;
@@ -9,8 +9,12 @@ export interface IRule {
   proxy?: string;
   showLog?: boolean;
   download?: boolean;
-  responseHeaders?: any;
-  requestHeaders?: any;
+  responseHeaders?: {
+    [key: string]: any;
+  };
+  requestHeaders?: {
+    [key: string]: any;
+  };
   statusCode?: number;
   filepath?: string;
   OPTIONS2POST?: boolean;

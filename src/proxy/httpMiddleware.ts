@@ -1,20 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as request from 'request';
+import request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { rulesPattern } from './rule';
-import IPattern from './types/pattern';
-import { IRequestOptions } from './types/request';
-import { IConfig } from './types/config';
-import { isInspectContentType, utils } from './common';
+import Pattern from '../types/pattern';
+import { RequestOptions } from '../types/request';
+import { Config } from '../types/config';
+import { isInspectContentType } from './common';
 import { ioRequest } from './io';
 
-const dataset = {
-  cache: {},
-};
+console.log(request);
+// console.log(request({
+//   url: 'https://m.v.qq.com/tvp'
+// }));
+// const request = Request;
+
+// const request = (params: any) => {
+//   return {
+//     on(p: any, fn: any){
+//       return {
+//         pipe(a: any) {}
+//       }
+//     }
+//   }
+// };
 
 export const httpMiddleware = {
   responseByText(text: string, res): void {
@@ -24,7 +36,7 @@ export const httpMiddleware = {
     s.pipe(res);
   },
 
-  async proxy(req: any, res: any, config: IConfig): Promise<number> {
+  async proxy(req: any, res: any, config: Config): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     const resOptions = {
@@ -110,10 +122,10 @@ export const httpMiddleware = {
     }
   },
 
-  async proxyByRequest(req, res, requestOption, responseOptions, pattern: IPattern = {}): Promise<number> {
+  async proxyByRequest(req, res, requestOption, responseOptions, pattern: Pattern = {}): Promise<number> {
     return new Promise(async () => {
       const rHeaders = { ...req.headers, ...requestOption.headers };
-      const options: IRequestOptions = {
+      const options: RequestOptions = {
         url: req.httpsURL || req.url,
         method: req.method,
         headers: rHeaders,

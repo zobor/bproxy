@@ -7,7 +7,7 @@ import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
-import { IConfig } from './types/config';
+import { Config } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
 
 const { pki } = forge;
@@ -34,12 +34,12 @@ const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   return rs;
 };
 
-interface IcertConfig {
+interface CertConfig {
   certPath: string;
 }
 
 export default {
-  beforeStart (): IcertConfig {
+  beforeStart (): CertConfig {
     certInstance = new Certificate();
     cert = certInstance.init();
     certificatePem = fs.readFileSync(cert.caCertPath);
@@ -53,7 +53,7 @@ export default {
   },
 
   // https代理入口
-  proxy(req: any, socket: any, head: any, config: IConfig): void {
+  proxy(req: any, socket: any, head: any, config: Config): void {
     const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
     const host = urlParsed.host || '';
@@ -88,7 +88,7 @@ export default {
     });
   },
 
-  startLocalHttpsServer(hostname, config: IConfig): Promise<number> {
+  startLocalHttpsServer(hostname, config: Config): Promise<number> {
     return new Promise(resolve => {
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,

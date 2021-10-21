@@ -3,26 +3,22 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "outDir": "./dist",
-    "rootDir": ".",
     "sourceMap": false,
     "noImplicitAny": false,
     "strict": true,
     "typeRoots" : [
-      "./types/index.d.ts",
-      "node_modules/@types"
+      "src/types/index.d.ts",
     ],
-    "allowJs": true,
+    "allowJs": false,
     "lib": [ "es6", "dom"],
     "target": "es6",
-    "types": ["node", "jest"],
+    "types": ["node"],
     "removeComments": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "jsx": "react-jsx"
   },
-  "include": [
-    "src/**/*",
-    "types/index.d.ts",
-  ],
-  "exclude": [ "node_modules", "inspect" ]
+  "exclude": [ "node_modules/", "test/", "./vite.config.ts" ]
 }
