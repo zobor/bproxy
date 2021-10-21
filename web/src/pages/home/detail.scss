@@ -88,13 +88,16 @@ $labelValueColor: #139dcb;
 }
 .detail .content .url {
   background-color: #000;
-  color: #fff;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;
+  color: #1ABC9C;
+  font-weight: bold;
+  height: 40px;
+  width: calc(100% - 60px);
+  line-height: 40px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 20px;
+  cursor: pointer;
 }
 .detail .content .body-panel {
   width: 800px;

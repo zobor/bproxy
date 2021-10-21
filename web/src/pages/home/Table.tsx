@@ -42,7 +42,7 @@ const Table = (props: any) => {
                 <td className="protocol">{req.custom.protocol}</td>
                 <td className="host" title={req.custom.host}>{req.custom.host.slice(0,25)}</td>
                 <td className="path" title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
-                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/;charset=\S+/, '').slice(0,25)}</td>
+                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/;\s\S+/, '').slice(0,25)}</td>
                 <td className="speed">{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
               </tr>
             );
