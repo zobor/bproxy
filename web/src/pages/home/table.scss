@@ -27,11 +27,11 @@
   font-weight: bold;
   border-color: transparent;
 }
-.table tr:hover {
+.table tbody tr:hover {
   background-color: #efefef;
   cursor: pointer;
 }
-.table tr.active {
+.table tbody tr.active {
   background-color: #48C9B0;
   color: #000;
 }
@@ -57,4 +57,10 @@
 .table .host {
   min-width: 100px;
   max-width: 300px;
+}
+.empty-tip {
+  text-align: center;
+  font-size: 15px;
+  color: #999;
+  padding: 20px 0;
 }

@@ -49,6 +49,7 @@ const Table = (props: any) => {
           })}
         </tbody>
       </table>
+      {list.length === 0 ? <div className="empty-tip">我在等待 HTTP 请求的到来...</div> : null}
     </div>
   );
 };
