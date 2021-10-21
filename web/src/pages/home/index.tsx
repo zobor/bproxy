@@ -1,18 +1,29 @@
-import { useReducer } from "react";
-import { Ctx, defaultState, reducer } from "../../ctx";
+import { memo, useContext, useEffect, useMemo, useState } from "react";
+import { Ctx } from "../../ctx";
 import useRequest from "../../hooks/useRequest";
 import Detail from "./Detail";
 import Table from "./Table";
 import './index.scss';
 
+const DetailMemo = memo(Detail);
+
 export default () => {
-  const [state, dispatch] = useReducer(reducer, defaultState());
+  const { state } = useContext(Ctx);
   const [list] = useRequest();
+  const [detail, setDetail] = useState<any>(null);
+  const { requestId } = state;
+  const detailMemo = useMemo(() => {
+    return detail;
+  }, [detail?.custom?.requestId]);
+  useEffect(() => {
+    const item = list.find((item: any) => item.custom.requestId === requestId);
+    if (item) {
+      setDetail(item);
+    }
+  }, [list, requestId]);
 
   return <div className="app-main">
-    <Ctx.Provider value={{ state, dispatch }}>
-      <Table list={list} />
-      <Detail list={list} />
-    </Ctx.Provider>
+    <Table list={list} />
+    <DetailMemo detail={detailMemo} />
   </div>
 };

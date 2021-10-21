@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Ctx } from "../../ctx";
 import { buffer2string } from '../../modules/string';
 import './detail.scss';
@@ -32,19 +32,30 @@ const tabList = [
 
 const Detail = (props: any) => {
   const { state, dispatch } = useContext(Ctx);
-  const { list } = props;
-  const { showDetail, detailActiveTab, requestId } = state;
-  const listItem = list.length ? list.find((item: any) => item.custom && item.custom.requestId === requestId) : null;
-  let detail = detailActiveTab && listItem && listItem[detailActiveTab] ? listItem[detailActiveTab] : null;
-  const custom = listItem && detailActiveTab && listItem.custom ? listItem.custom : null;
+  const [ showBody, setShowBody ] = useState('');
+  const { detail = {} } = props;
+  const { showDetail, detailActiveTab } = state;
+  const { custom = {} } = detail || {};
+  // console.log('detail', detail);
 
-  if ( detailActiveTab === 'responseBody' && custom && listItem.responseHeader && listItem.responseHeader['content-type'] && listItem.responseHeader['content-type'].includes('image/')) {
-    detail = <div className="image-preview-box"><img className="image-preview" src={custom.url} /></div>;
-  }
+  // if ( detailActiveTab === 'responseBody' && custom && listItem.responseHeader && listItem.responseHeader['content-type'] && listItem.responseHeader['content-type'].includes('image/')) {
+  //   detail = <div className="image-preview-box"><img className="image-preview" src={custom.url} /></div>;
+  // }
 
-  if (detailActiveTab === 'responseBody' && custom && listItem.responseHeader) {
-    detail = buffer2string(detail, listItem.responseHeader['content-encoding']);
-  }
+  // view text
+  useEffect(() => {
+    setShowBody('处理中...');
+    detail && setTimeout(() => {
+      const body = buffer2string(detail.responseBody, detail.responseHeader['content-encoding']);
+      setShowBody(body);
+    }, 500);
+  }, [detailActiveTab, detail]);
+
+  useEffect(() => {
+    if(!showDetail) {
+      setShowBody('');
+    }
+  }, [showDetail])
 
   const onClose = () => {
     dispatch({ type: 'setShowDetail', showDetail: false});
@@ -60,11 +71,11 @@ const Detail = (props: any) => {
   return (<div className={`detail ${showDetail?'open':''}`}>
     <div className="mask" onClick={onClose} />
     <div className="content">
-      <div className="url">{custom ? `${custom.protocol} ${custom.method} ${custom.statusCode} ${custom.path}`: ''}</div>
+      <div className="url">{custom ? `${custom.statusCode} ${custom.origin}${custom.path}`: ''}</div>
       <div className="tabs">
         <ul>
           {
-            tabList.map((tab) => {
+            custom && tabList.map((tab) => {
               if(custom?.method === 'GET' && tab.value === 'postData') {
                 return null;
               }
@@ -75,15 +86,15 @@ const Detail = (props: any) => {
       </div>
 
       {detailActiveTab !== 'responseBody' ? <div className="form scrollbar-style">
-        {detail && Object.keys(detail).map(key => (
+        {detail && Object.keys(detail[detailActiveTab]).map(key => (
           <div className="form-item" key={key}>
             <label>{key}:</label>
-            <div className="form-item-value">{detail[key].toString()}</div>
+            <div className="form-item-value">{detail[detailActiveTab][key].toString()}</div>
           </div>
         ))}
       </div> : null}
       {detailActiveTab === 'responseBody' ? <div className="body-panel scrollbar-style">
-        {detail || '不支持预览'}
+        {showBody || '不支持预览'}
       </div> : null}
     </div>
   </div>)
