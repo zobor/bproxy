@@ -6,6 +6,7 @@ export const parseURL = (url) => {
     path: a.pathname,
     protocol: a.protocol.replace(':', ''),
     query: a.search.replace('?' ,''),
+    origin: a.origin,
   };
   a = null;
   return res;
@@ -42,13 +43,14 @@ export const parseQueryString = (query: string) => {
 }
 
 export const parseRequest = (req: any) => {
-  const { hostname, path, protocol, query } = parseURL(req.url);
+  const { hostname, path, protocol, query, origin } = parseURL(req.url);
   const params = parseQueryString(query);
 
   return Object.assign(req, {
     host: hostname,
     path,
     protocol,
+    origin,
     requestParams: params,
   });
 };

@@ -28,7 +28,7 @@ export function buffer2string(buffer: Buffer, encoding: string): string{
   }
   let data = '';
   try {
-    if (encoding && encoding.includes('gzip')) {
+    if (encoding?.includes('gzip')) {
       data = pako.ungzip(new Uint8Array(buffer), {to: "string"});
     } else if (encoding === 'br') {
       const u8 = BrotliDecode(new Uint8Array(buffer));

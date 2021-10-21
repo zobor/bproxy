@@ -27,28 +27,32 @@
   font-weight: bold;
   border-color: transparent;
 }
-.table tbody tr:hover {
+.table tr:hover {
   background-color: #efefef;
   cursor: pointer;
 }
+.table tr.active {
+  background-color: #48C9B0;
+  color: #000;
+}
 .table .status {
   width: 50px;
-  font-size: 12px;
+  // font-size: 12px;
 }
 .table .type {
   width: 50px;
-  font-size: 12px;
+  // font-size: 12px;
 }
 .table .method {
   width: 60px;
-  font-size: 12px;
+  // font-size: 12px;
 }
 .table .protocol {
   width: 50px;
 }
 .table .speed {
   width: 80px;
-  font-size: 12px;
+  // font-size: 12px;
 }
 .table .host {
   min-width: 100px;

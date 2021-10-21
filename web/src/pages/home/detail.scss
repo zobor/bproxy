@@ -92,6 +92,9 @@ $labelValueColor: #139dcb;
   padding: 10px 20px;
   display: flex;
   align-items: center;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 .detail .content .body-panel {
   width: 800px;
