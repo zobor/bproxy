@@ -80,12 +80,11 @@ export const isInspectContentType = (headers): boolean => {
   const { accept  ='' } = headers;
 
   return (
-    contentType.includes("application/json") ||
+    contentType.includes("json") ||
     contentType.includes("x-www-form-urlencoded") ||
-    contentType.includes("application/javascript") ||
-    contentType.includes("application/x-javascript") ||
-    contentType.includes("text/css") ||
-    contentType.includes("text/html") ||
+    contentType.includes("javascript") ||
+    contentType.includes("text/") ||
+    contentType.includes("xml") ||
     accept.includes("text/")
   );
 };

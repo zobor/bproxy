@@ -1,6 +1,6 @@
-import IPattern from '../types/pattern';
 import * as _ from 'lodash';
-import { IRule } from '../types/rule';
+import IPattern from './types/pattern';
+import { IRule } from './types/rule';
 
 export const url2regx = (url: string): RegExp => {
   const newUrl = url

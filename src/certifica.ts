@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import settings from './settings';
-import { ICertificateCreateRes, ICertificateInstallRes } from '../types/certificate';
+import { ICertificateCreateRes, ICertificateInstallRes } from './types/certificate';
 import { cm } from './common';
 import lang from './i18n';
 

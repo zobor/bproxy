@@ -9,7 +9,7 @@ import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { cm, getLocalIpAddress } from './common';
 import lang from './i18n';
-import { IConfig } from '../types/config';
+import { IConfig } from './types/config';
 import { isEmpty } from 'lodash';
 import { isLocal, requestJac } from './pageRouter';
 import { io } from './io';

@@ -1,5 +1,5 @@
 import { dataset } from './dataset';
-import LocalLanguage from '../types/i18n';
+import LocalLanguage from './types/i18n';
 
 const { language } = dataset;
 const lang = {

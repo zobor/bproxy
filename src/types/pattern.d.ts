@@ -1,4 +1,4 @@
-import { IRule } from '../types/rule';
+import { IRule } from './types/rule';
 
 export default interface IPattern {
   delay?: number;

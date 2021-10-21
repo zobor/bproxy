@@ -6,9 +6,9 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { rulesPattern } from './rule';
-import IPattern from '../types/pattern';
-import { IRequestOptions } from '../types/request';
-import { IConfig } from '../types/config';
+import IPattern from './types/pattern';
+import { IRequestOptions } from './types/request';
+import { IConfig } from './types/config';
 import { isInspectContentType, utils } from './common';
 import { ioRequest } from './io';
 

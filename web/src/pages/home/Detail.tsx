@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect, useState } from "react";
 import { Ctx } from "../../ctx";
 import { buffer2string } from '../../modules/string';
 import './detail.scss';
@@ -32,7 +32,7 @@ const tabList = [
 
 const Detail = (props: any) => {
   const { state, dispatch } = useContext(Ctx);
-  const [ showBody, setShowBody ] = useState('');
+  const [ showBody, setShowBody ] = useState<ReactElement|string>('');
   const { detail = {} } = props;
   const { showDetail, detailActiveTab } = state;
   const { custom = {} } = detail || {};
@@ -46,8 +46,13 @@ const Detail = (props: any) => {
   useEffect(() => {
     setShowBody('处理中...');
     detail && setTimeout(() => {
-      const body = buffer2string(detail.responseBody, detail.responseHeader['content-encoding']);
-      setShowBody(body);
+      if (detail.responseHeader && detail.responseHeader['content-type']?.includes('image/')) {
+        const body = <div className="image-preview-box"><img className="image-preview" src={detail?.custom?.url} /></div>;
+        setShowBody(body);
+      } else {
+        const body = buffer2string(detail.responseBody, detail.responseHeader['content-encoding']);
+        setShowBody(body);
+      }
     }, 300);
   }, [detailActiveTab, detail]);
 

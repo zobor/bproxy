@@ -1,4 +1,4 @@
-import IDataSet from '../types/dataset';
+import IDataSet from './types/dataset';
 
 export const dataset: IDataSet = {
   debug: true,
