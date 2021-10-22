@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { testRule } from '../../modules/io';
+import { testRule } from '../../modules/socket';
 import './index.scss';
 
 const invoke = async(url: string) => {

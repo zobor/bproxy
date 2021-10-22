@@ -2,10 +2,8 @@ import * as forge from 'node-forge';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
-import settings from './settings';
-import { CertificateCreateRes, CertificateInstallRes } from '../types/certificate';
-import { cm } from './common';
-import lang from './i18n';
+import settings from './config';
+import { ProxyCertificateCreateResponse, ProxyCertificateInstallResponse } from '../types/proxy';
 
 const { pki } = forge;
 const config = settings.certificate;
@@ -13,9 +11,8 @@ let keys;
 
 class Certificate {
   // 创建安装使用的本地证书
-  createCAForInstall(commonName: string): CertificateCreateRes {
-    // const { cert, keys} = dataset;
-    const cert = pki.createCertificate();
+  createCAForInstall(commonName: string): ProxyCertificateCreateResponse {
+    const cert: any = pki.createCertificate();
     cert.publicKey = keys.publicKey;
     cert.serialNumber = `${new Date().getTime()}`;
     cert.validity.notBefore = new Date();
@@ -63,7 +60,7 @@ class Certificate {
     };
   }
 
-  install(caPath?: string): CertificateInstallRes {
+  install(caPath?: string): ProxyCertificateInstallResponse {
     this.init();
     const basePath = caPath || config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
@@ -85,8 +82,8 @@ class Certificate {
       const caCert = caObj.cert;
       const cakey = caObj.key;
 
-      const certPem = pki.certificateToPem(caCert);
-      const keyPem = pki.privateKeyToPem(cakey);
+      const certPem = pki.certificateToPem(caCert as any);
+      const keyPem = pki.privateKeyToPem(cakey as any);
 
       mkdirp.sync(path.dirname(caCertPath));
       fs.writeFileSync(caCertPath, certPem);
@@ -99,12 +96,12 @@ class Certificate {
     };
   }
 
-  init(): CertificateInstallRes {
+  init(): ProxyCertificateInstallResponse {
     keys = pki.rsa.generateKeyPair(config.keySize);
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);
     const caKeyPath = path.resolve(basePath, config.keyFileName);
-    const res: CertificateInstallRes = {
+    const res: ProxyCertificateInstallResponse = {
       caCertPath,
       caKeyPath,
       create: true,
@@ -123,8 +120,8 @@ class Certificate {
       };
     } catch (e) {
       const caObj = this.createCAForInstall(settings.certificate.name);
-      const certPem = pki.certificateToPem(caObj.cert);
-      const keyPem = pki.privateKeyToPem(caObj.key);
+      const certPem = pki.certificateToPem(caObj.cert as any);
+      const keyPem = pki.privateKeyToPem(caObj.key as any);
 
       mkdirp.sync(path.dirname(caCertPath));
       fs.writeFileSync(caCertPath, certPem);
@@ -134,8 +131,8 @@ class Certificate {
 
   }
 
-  createFakeCertificateByDomain(caCert, caKey, domain): CertificateCreateRes {
-    const cert = pki.createCertificate();
+  createFakeCertificateByDomain(caCert, caKey, domain): ProxyCertificateCreateResponse {
+    const cert: any = pki.createCertificate();
     cert.publicKey = keys.publicKey;
 
     cert.serialNumber = `${new Date().getTime()}`;

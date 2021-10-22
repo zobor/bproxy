@@ -1,2 +1,2 @@
 "use strict";
-require('../src/index');
+require('../src/proxy/index');

@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import Pattern from '../types/pattern';
-import { Rule } from '../types/rule';
+import ProxyPattern, { ProxyRule } from '../types/proxy';
 
 export const url2regx = (url: string): RegExp => {
   const newUrl = url
@@ -11,13 +10,13 @@ export const url2regx = (url: string): RegExp => {
   return new RegExp(newUrl);
 };
 
-export const rulesPattern = (rules: Array<Rule>, url: string): Pattern => {
-  const options: Pattern = {
+export const rulesPattern = (rules: Array<ProxyRule>, url: string): ProxyPattern => {
+  const options: ProxyPattern = {
     delay: 0,
     matched: false,
     responseHeaders: {},
   };
-  rules.forEach((rule: Rule) => {
+  rules.forEach((rule: ProxyRule) => {
     if (options.matched) return;
     if (!rule.regx) return;
     if (_.isString(rule.regx) && rule.regx.includes('*')) {

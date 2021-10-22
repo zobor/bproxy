@@ -1,6 +1,7 @@
 import * as path from 'path';
+import { ProxyConfig } from '../types/proxy';
 
-export default {
+const config: ProxyConfig = {
   port: 8888,
   configFile: path.resolve(process.cwd(), 'bproxy.conf.js'),
   downloadPath: '',
@@ -8,7 +9,6 @@ export default {
   sslAll: false,
   host: [],
   rules: [],
-  configPath: '',
   certificate: {
     filename: 'bproxy.ca.crt',
     keyFileName: 'bproxy.ca.key.pem',
@@ -37,3 +37,5 @@ export default {
     },
   },
 }
+
+export default config;

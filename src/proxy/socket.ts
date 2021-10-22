@@ -1,4 +1,4 @@
-import * as nativeApi from './invokes';
+import * as nativeApi from './invoke';
 
 interface InvokeRequestParams {
   url?: string;
@@ -18,8 +18,12 @@ const ioWebInvokeApiInstal = () => {
     socket.on('ioWebInvoke', (payload: any) => {
       const { type, params } = payload;
       if (type && nativeApi[type]) {
-        const rs = nativeApi[type](params);
-        socket.emit('ioWebInvokeCallback', rs);
+        try {
+          const rs = nativeApi[type](params);
+          socket.emit('ioWebInvokeCallback', rs);
+        } catch(err) {
+          socket.emit('ioWebInvokeCallback', err);
+        }
       } else {
         socket.emit('ioWebInvokeCallback', new Error('ioWebInvoke fail, api not found'));
       }

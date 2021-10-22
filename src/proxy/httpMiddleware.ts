@@ -6,9 +6,9 @@ import * as path from 'path';
 import * as url from 'url';
 import { rulesPattern } from './rule';
 import { RequestOptions } from '../types/request';
-import { Config } from '../types/config';
-import { isInspectContentType } from './common';
 import { ioRequest } from './socket';
+import { isInspectContentType } from './utils/is';
+import { ProxyConfig } from '../types/proxy';
 
 export const httpMiddleware = {
   responseByText(text: string, res): void {
@@ -18,7 +18,7 @@ export const httpMiddleware = {
     s.pipe(res);
   },
 
-  async proxy(req: any, res: any, config: Config): Promise<number> {
+  async proxy(req: any, res: any, config: ProxyConfig): Promise<number> {
     const { rules } = config;
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     const resOptions = {
@@ -118,14 +118,13 @@ export const httpMiddleware = {
         followRedirect: false,
       };
       if (['post', 'put'].includes(req.method.toLowerCase())) {
-        options.body = await this.getPOSTBody(req);
+        options.body = await this.getPostBody(req);
       }
       // TODO
       // plugin to install here
       // download file by request.pipe
       // if (
       //     responseOptions?.config?.downloadPath &&
-      //     !dataset.cache[options.url]
       // ) {
       //     const downloadFileName = utils.uuid(12);
       //     const parseUrl = url.parse(options.url);
@@ -152,17 +151,6 @@ export const httpMiddleware = {
         ...requestOption,
       };
 
-    // console.log(rOpts.url, isInspectContentType(rOpts.headers))
-      // if (isInspectContentType(rOpts.headers)) {
-      //   if (rOpts.headers['accept-encoding']) {
-      //     delete rOpts.headers['accept-encoding'];
-      //   }
-      // }
-
-
-      // if (pattern?.matchedRule?.OPTIONS2POST && req.method === 'OPTIONS') {
-      //   rOpts.method = 'POST';
-      // }
       ioRequest({
         url: rOpts.url,
         method: rOpts.method,
@@ -205,7 +193,7 @@ export const httpMiddleware = {
     });
   },
 
-  getPOSTBody(req: any): Promise<Buffer> {
+  getPostBody(req: any): Promise<Buffer> {
     return new Promise((resolve) => {
       const body: Array<Buffer> = [];
       req.on('data', (chunk: Buffer) => {

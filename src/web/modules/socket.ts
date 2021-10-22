@@ -6,11 +6,6 @@ const $socket = io(`ws://${window.location.hostname}:8888`, {
 
 (window as any).$socket = $socket;
 
-$socket.on('test', (data) => {
-  console.log(data);
-});
-
-
 export const testRule = (url: string): Promise<object> =>
   new Promise((resolve, reject) => {
     $socket.on("ioWebInvokeCallback", (rs) => {

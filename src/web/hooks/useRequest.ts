@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { onRequest } from "../modules/io";
+import { onRequest } from "../modules/socket";
 import { arrayBuf2string, parseQueryString, parseRequest } from "../modules/util";
 
 const limit = 20;
@@ -56,7 +56,6 @@ export default () => {
                 data.postData.$$type = 'json';
               }catch (err) {
                 console.error('[error] post data parse fail', err);
-                console.log(data.postData);
               }
             }
           }

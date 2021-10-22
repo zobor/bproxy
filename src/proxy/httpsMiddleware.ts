@@ -5,9 +5,9 @@ import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
-import { Config } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
-import { utils } from './common';
+import { utils } from "./utils/utils";
+import { ProxyConfig } from "../types/proxy";
 
 const { pki } = forge;
 let certInstance;
@@ -52,7 +52,7 @@ export default {
   },
 
   // https代理入口
-  proxy(req: any, socket: any, head: any, config: Config): void {
+  proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
     const { https, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
     const host = urlParsed.host || '';
@@ -87,7 +87,7 @@ export default {
     });
   },
 
-  startLocalHttpsServer(hostname, config: Config): Promise<number> {
+  startLocalHttpsServer(hostname, config: ProxyConfig): Promise<number> {
     return new Promise(resolve => {
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,

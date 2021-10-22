@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 export const isLocal = (url: string): boolean => {
   return !(url.startsWith('http') || url.startsWith('https')) && !url.includes('/socket.io/');
@@ -25,9 +26,11 @@ const html = `
 
 const inspectResponse = (req, res) => {
   const urlMap = {
-    '/inspect': './inspect/index.html',
+    '/inspect': './src/index.html',
   };
   const filepath = (urlMap[req.url] || req.url).replace(/^\//, './');
+
+  console.log('filepath', path.resolve(filepath));
 
   try {
     if (!fs.existsSync(filepath)) {

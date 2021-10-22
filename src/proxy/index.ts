@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import * as pkg from '../../package.json';
 import commands from './command';
-import { cm } from './common';
+import { log } from './utils/utils';
 
 const program = new Command();
 
@@ -19,5 +19,5 @@ program
 commands.run(program as any);
 
 process.on('uncaughtException', (err) => {
-  cm.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
+  log.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
 });

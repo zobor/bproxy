@@ -1,7 +1,6 @@
 import chalk from "chalk";
-import * as os from 'os';
 
-const { log } = console;
+const { log: terminalLog } = console;
 
 function logLevel(level: string) {
   return (target, key, descriptor) => {
@@ -11,7 +10,7 @@ function logLevel(level: string) {
   }
 }
 
-class Common {
+class Logger {
   printf(message: string, level: string): void {
     const info = level === 'info' ? chalk.green('[INFO]') :
     ( level === 'error' ? chalk.redBright('[ERROR]') :
@@ -21,7 +20,7 @@ class Common {
     );
     const msg = typeof message === 'object' ?
       JSON.stringify(message) : message;
-    log(`${info} ${chalk.hex('#ccc')(msg)}`);
+      terminalLog(`${info} ${chalk.hex('#ccc')(msg)}`);
   }
 
   @logLevel('info')
@@ -37,11 +36,8 @@ class Common {
   warn(msg: any) {}
 };
 
-const cm = new Common();
+export const log = new Logger();
 
-export {
-  cm,
-}
 export const utils = {
   guid: (len = 36) => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.slice(0, len).replace(/[xy]/g, function(c) {
@@ -54,34 +50,4 @@ export const utils = {
       .toString('base64')
       .replace(/[/=+]/g, '').slice(0, len);
   },
-}
-
-export const getLocalIpAddress = () => {
-  const ifaces = os.networkInterfaces();
-  const Ips: any = [];
-  for (const dev in ifaces) {
-    (ifaces[dev] || []).forEach((details) => {
-      if (details.family === "IPv4") {
-        Ips.push(details.address);
-      }
-    });
-  }
-  return Ips;
-};
-
-export const isInspectContentType = (headers): boolean => {
-  if (!headers || (!headers['content-type'] && !headers.accept)) {
-    return false;
-  }
-  const contentType = headers['content-type'] || '';
-  const { accept  ='' } = headers;
-
-  return (
-    contentType.includes("json") ||
-    contentType.includes("x-www-form-urlencoded") ||
-    contentType.includes("javascript") ||
-    contentType.includes("text/") ||
-    contentType.includes("xml") ||
-    accept.includes("text/")
-  );
 };

@@ -16,5 +16,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-var-requires': 0,
+    't@typescript-eslint/no-unused-vars': 0,
   },
 }
