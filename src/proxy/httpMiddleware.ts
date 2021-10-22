@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
@@ -9,7 +8,7 @@ import { rulesPattern } from './rule';
 import { RequestOptions } from '../types/request';
 import { Config } from '../types/config';
 import { isInspectContentType } from './common';
-import { ioRequest } from './io';
+import { ioRequest } from './socket';
 
 export const httpMiddleware = {
   responseByText(text: string, res): void {

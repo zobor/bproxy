@@ -100,7 +100,6 @@ class Certificate {
   }
 
   init(): CertificateInstallRes {
-    cm.info(lang.CREATE_CERTING);
     keys = pki.rsa.generateKeyPair(config.keySize);
     const basePath = config.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, config.filename);

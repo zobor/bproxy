@@ -1,18 +1,18 @@
-import { utils } from './common';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from 'http';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import { isEmpty } from 'lodash';
 import settings from './settings';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { cm, getLocalIpAddress } from './common';
 import lang from './i18n';
 import { Config } from '../types/config';
-import { isEmpty } from 'lodash';
-import { isLocal, requestJac } from './pageRouter';
-import { io } from './io';
+import { isLocal, requestJac } from './routers';
+import { io } from './socket';
+import { utils } from './common';
+
 export default class LocalServer {
   static start(port: number, configPath: string): void{
     const { config = {} as any, configPath: confPath = '' } = this.loadUserConfig(configPath, settings);
@@ -83,7 +83,6 @@ export default class LocalServer {
         return res;
       } else {
         try {
-          /* eslint @typescript-eslint/no-var-requires: 0 */
           const userConfig = require(confPath);
           mixConfig = {...defaultSettings, ...userConfig};
           res.configPath = confPath;

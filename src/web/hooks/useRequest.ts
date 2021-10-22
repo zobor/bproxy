@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { onRequest } from "../modules/io";
 import { arrayBuf2string, parseQueryString, parseRequest } from "../modules/util";
 
+const limit = 20;
+
 export default () => {
   const [list, setList] = useState<any>([]);
   useEffect(() => {
@@ -60,7 +62,11 @@ export default () => {
           }
         }
         // done
-        return pre.concat([data]);
+        const newList = pre.concat([data]);
+        if (pre.length > limit) {
+          return newList.slice(newList.length - limit);
+        }
+        return newList;
       });
     })
   }, []);

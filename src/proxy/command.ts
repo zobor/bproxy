@@ -26,7 +26,7 @@ export default {
   },
 
   report(): void {
-    request.get(`http://pingtcss.qq.com/pingd?dm=zobor.me&pvi=67181574951438293&si=s106251574951438294&url=/&arg=&ty=0&rdm=&rurl=&rarg=&adt=&r2=500704279&scr=1440x900&scl=24-bit&lg=zh-cn&tz=-8&ext=version=2.0.14&random=${+new Date}`);
+    request.get(`https://z3.cnzz.com/stat.htm?id=1278865075&r=http%3A%2F%2F192.168.80.17%3A8080%2F&lg=zh-cn&ntime=none&cnzz_eid=117682865-1634900721-null&showp=1920x1080&p=http%3A%2F%2Flocalhost%3A8080%2Ffed.html&t=Bproxy&umuuid=17ca7ad415558d-06ccc278d12621-5a402f16-1fa400-17ca7ad415644b&h=1&rnd=2074161089random=${+new Date}`);
   },
 
   // install and trust certificate

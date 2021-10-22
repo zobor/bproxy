@@ -1,5 +1,3 @@
-import { utils } from './common';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as net from "net";
 import * as https from "https";
 import * as tls from "tls";
@@ -9,6 +7,7 @@ import * as fs from "fs";
 import Certificate from "./certifica";
 import { Config } from '../types/config';
 import { httpMiddleware } from "./httpMiddleware";
+import { utils } from './common';
 
 const { pki } = forge;
 let certInstance;

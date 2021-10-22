@@ -1,39 +1,6 @@
-import * as nativeApi from './invokeApi';
+import * as nativeApi from './invokes';
 
-const instances: any = [];
-
-const ioWebInvokeApiInstal = () => {
-  instances.forEach(socket => {
-    socket.on('ioWebInvoke', (payload: any) => {
-      const { type, params } = payload;
-      if (type && nativeApi[type]) {
-        const rs = nativeApi[type](params);
-        socket.emit('ioWebInvokeCallback', rs);
-      } else {
-        console.error('[error]', 'ioWebInvoke fail, api not found');
-      }
-    })
-  })
-};
-
-export const io = (server) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const $io = require('socket.io')(server);
-  $io.on('connection', function(socket){
-    console.info('a user connected');
-    socket.emit('test', {msg: 'ws connected!'});
-    instances.push(socket);
-    ioWebInvokeApiInstal();
-  });
-}
-
-export const emit = (type: string, msg: any) => {
-  instances.forEach((io) => {
-    io.emit(type, msg);
-  });
-}
-
-interface IoRequestParams {
+interface InvokeRequestParams {
   url?: string;
   method?: string;
   requestHeader?: object;
@@ -43,6 +10,41 @@ interface IoRequestParams {
   responseBody?: any;
   statusCode?: number;
 }
-export const ioRequest = (params: IoRequestParams) => {
+
+let instances: any = [];
+
+const ioWebInvokeApiInstal = () => {
+  instances.forEach(socket => {
+    socket.on('ioWebInvoke', (payload: any) => {
+      const { type, params } = payload;
+      if (type && nativeApi[type]) {
+        const rs = nativeApi[type](params);
+        socket.emit('ioWebInvokeCallback', rs);
+      } else {
+        socket.emit('ioWebInvokeCallback', new Error('ioWebInvoke fail, api not found'));
+      }
+    })
+  })
+};
+
+export const io = (server) => {
+  const $io = require('socket.io')(server);
+  $io.on('connection', function(socket){
+    socket.emit('test', {msg: 'ws connected!'});
+    instances.push(socket);
+    ioWebInvokeApiInstal();
+    socket.on('disconnect', (() => {
+      instances = instances.filter(ins => ins !== socket);
+    }));
+  });
+}
+
+export const emit = (type: string, msg: any) => {
+  instances.forEach((io) => {
+    io.emit(type, msg);
+  });
+}
+
+export const ioRequest = (params: InvokeRequestParams) => {
   emit('request', params);
 };
