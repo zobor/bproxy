@@ -121,3 +121,20 @@ $labelValueColor: #139dcb;
     max-height: 100%;
   }
 }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  caption {
+    background-color: #48C9B0;
+    color: #fff;
+    padding: 5px 0;
+  }
+  td {
+    border: solid 1px #ccc;
+    padding: 3px 20px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+}

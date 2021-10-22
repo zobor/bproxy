@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import chalk from "chalk";
 import * as os from 'os';
 
@@ -63,8 +62,8 @@ export const getLocalIpAddress = () => {
   const ifaces = os.networkInterfaces();
   const Ips: any = [];
   for (const dev in ifaces) {
-    ifaces[dev].forEach((details) => {
-      if (details.family == "IPv4") {
+    (ifaces[dev] || []).forEach((details) => {
+      if (details.family === "IPv4") {
         Ips.push(details.address);
       }
     });

@@ -38,7 +38,7 @@ export default () => {
             origin: item.origin,
           },
           requestHeaders: item.requestHeader,
-          requestParams: item.requestParams,
+          requestParams: item.requestParams || {},
         };
         // handler post body
         if (req.requestBody) {

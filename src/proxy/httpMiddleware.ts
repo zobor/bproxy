@@ -6,27 +6,10 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { rulesPattern } from './rule';
-import Pattern from '../types/pattern';
 import { RequestOptions } from '../types/request';
 import { Config } from '../types/config';
 import { isInspectContentType } from './common';
 import { ioRequest } from './io';
-
-console.log(request);
-// console.log(request({
-//   url: 'https://m.v.qq.com/tvp'
-// }));
-// const request = Request;
-
-// const request = (params: any) => {
-//   return {
-//     on(p: any, fn: any){
-//       return {
-//         pipe(a: any) {}
-//       }
-//     }
-//   }
-// };
 
 export const httpMiddleware = {
   responseByText(text: string, res): void {
@@ -98,7 +81,7 @@ export const httpMiddleware = {
             headers: pattern.matchedRule.requestHeaders || {}
           };
           resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
-          return this.proxyByRequest(req, res, requestOption, resOptions, pattern);
+          return this.proxyByRequest(req, res, requestOption, resOptions);
         }
         // rule.proxy
         else if (_.isString(pattern.matchedRule.proxy)) {
@@ -122,7 +105,7 @@ export const httpMiddleware = {
     }
   },
 
-  async proxyByRequest(req, res, requestOption, responseOptions, pattern: Pattern = {}): Promise<number> {
+  async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
     return new Promise(async () => {
       const rHeaders = { ...req.headers, ...requestOption.headers };
       const options: RequestOptions = {
