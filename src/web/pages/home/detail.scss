@@ -124,10 +124,10 @@ $labelValueColor: #139dcb;
 
 .data-table {
   width: 100%;
+  margin-top: 5px;
   border-collapse: collapse;
   caption {
-    background-color: #48C9B0;
-    color: #fff;
+    border: solid 1px #ccc;
     padding: 5px 0;
   }
   td {

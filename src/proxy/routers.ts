@@ -26,18 +26,26 @@ const html = `
 
 const inspectResponse = (req, res) => {
   const urlMap = {
-    '/inspect': './src/index.html',
+    '/inspect': './dist/index.html',
   };
   const filepath = (urlMap[req.url] || req.url).replace(/^\//, './');
-
-  console.log('filepath', path.resolve(filepath));
 
   try {
     if (!fs.existsSync(filepath)) {
       throw 404;
     }
     const readStream = fs.createReadStream(filepath);
-    res.writeHead(200, {});
+    const headers = {};
+    if (filepath.includes('.html')) {
+      headers['content-type'] = 'text/html; charset=utf-8';
+    } else if (filepath.includes('.js')) {
+      headers['content-type'] = 'text/javascript; charset=utf-8';
+    } else if (filepath.includes('.css')) {
+      headers['content-type'] = 'text/css; charset=utf-8';
+    }  else if (filepath.includes('.svg')) {
+      headers['content-type'] = 'image/svg+xml';
+    }
+    res.writeHead(200, headers);
     readStream.pipe(res);
   } catch(err) {
     res.writeHead(404, {});
@@ -64,7 +72,7 @@ export const requestJac = (req, res, certConfig) => {
       }
       break;
     default:
-      if (req.url.startsWith('/inspect')) {
+      if (req.url.startsWith('/dist') || req.url.startsWith('/inspect')) {
         inspectResponse(req, res);
         return;
       }
