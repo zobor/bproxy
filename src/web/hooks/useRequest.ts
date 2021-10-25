@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { onRequest } from "../modules/socket";
 import { arrayBuf2string, parseQueryString, parseRequest } from "../modules/util";
 
-const limit = 20;
+const limit = 100;
 
 export default () => {
   const [list, setList] = useState<any>([]);

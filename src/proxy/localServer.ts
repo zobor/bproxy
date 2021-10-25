@@ -36,10 +36,10 @@ export default class LocalServer {
       // http
       server.on('request', (req, res) => {
         if (isLocal(req.url || '')) {
+          if (req.url?.includes('/socket.io/')) {
+            return;
+          }
           requestJac(req, res, certConfig);
-          return;
-        }
-        if (req.url?.includes('/socket.io/')) {
           return;
         }
         const $req: any = req;
@@ -78,7 +78,7 @@ export default class LocalServer {
     if (userConfigPath || _.isString(configPath)) {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.conf.js');
       if (!fs.existsSync(confPath)) {
-        console.error('当前目录下没有找到bproxy.conf.js, 是否立即自动创建？');
+        console.error('当前目录下没有找到bproxy.conf.js, 请先创建');
         return res;
       } else {
         try {

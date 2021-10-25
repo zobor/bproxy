@@ -18,6 +18,7 @@
     "@types/react": "^17.0.31",
     "chalk": "2.4.2",
     "commander": "2.20.3",
+    "http-proxy": "^1.18.1",
     "lodash": "4.17.15",
     "mkdirp": "0.5.1",
     "node-forge": "0.10.0",
