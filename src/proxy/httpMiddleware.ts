@@ -213,7 +213,7 @@ export const httpMiddleware = {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
-      res.writeHead(200, resHeaders)
+      res.writeHead(200, resHeaders);
       readStream.pipe(res);
     } catch (err) {
       const s = new Readable();

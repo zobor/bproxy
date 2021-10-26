@@ -1,10 +1,11 @@
+import { ioRequest } from './socket';
 import * as net from "net";
 import * as https from "https";
 import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
-import httpProxy from 'http-proxy';
+// import httpProxy from 'http-proxy';
 import Certificate from "./certifica";
 import { httpMiddleware } from "./httpMiddleware";
 import { createHttpHeader, utils } from "./utils/utils";
@@ -58,32 +59,6 @@ export default {
     const { https: httpsList, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
     const host = (urlParsed.host || '').replace(/:\d+/, '');
-
-    if  (0 && req?.headers['proxy-connection'] === 'keep-alive' && host === 'webm3.dz11.com') {
-      console.log('ws', host, urlParsed.port);
-      const port = urlParsed.port || 80;
-      const socketAgent: any = net.connect(Number(port), host, () => {
-        console.log('connected!', host, port);
-
-        console.log(socketAgent);
-
-        socket.on('error', (err) => {
-          // todo
-          console.log('socketAgent err', err);
-        }).write([
-          'HTTP/1.1 101 Switching Protocols\r\n',
-          'Upgrade: websocket\r\n',
-          'Connection: Upgrade\r\n',
-          "\r\n",
-        ].join(''));
-
-        socketAgent.write(head);
-        socketAgent.pipe(socket).pipe(socketAgent);
-      });
-
-      // return socketAgent.end();;
-      return;
-    }
 
     this.startLocalHttpsServer(urlParsed.hostname, config, req, socket, head).then(localHttpsPort => {
       const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, host);
@@ -158,39 +133,50 @@ export default {
         }
         httpMiddleware.proxy(req, res, config);
       });
-      // if (head && head.length) socket.unshift(head);
-      localServer.on('upgrade', (proxyRes, proxySocket, proxyHead) => {
+      // websocket
+      localServer.on('upgrade', (proxyReq, proxySocket, proxyHead) => {
+          if (proxyReq.method !== "GET" || !proxyReq.headers.upgrade) {
+            proxySocket.destroy();
+            return true;
+          }
+
+          if (proxyReq.headers.upgrade.toLowerCase() !== "websocket") {
+            proxySocket.destroy();
+            return true;
+          }
+          const options = {
+              host: hostname,
+              hostname,
+              port: 443,
+              headers: proxyReq.headers,
+              method: 'GET',
+              rejectUnauthorized: true,
+              agent: false,
+              path: proxyReq.url,
+          };
+          if (!proxyReq.$requestId) {
+            proxyReq.$requestId = utils.guid();
+          }
+          ioRequest({
+            url: `${proxyReq.headers?.origin}${proxyReq.url}`,
+            method: 'ws',
+            requestHeader: proxyReq.headers,
+            requestId: proxyReq.$requestId,
+          });
+          const wsRequest = https.request(options);
+          wsRequest.on('upgrade', (r1, s1, h1) => {
+              const writeStream = createHttpHeader('HTTP/1.1 101 Switching Protocols', r1.headers);
+              proxySocket.write(writeStream);
+              proxySocket.write(h1);
+              s1.pipe(proxySocket).pipe(s1);
+          });
+          wsRequest.end();
+
         // use http proxy handle webSocket
-        const proxy = new httpProxy.createProxyServer({
-          target: `https://${hostname}`,
-        });
-        console.log('req.url', req.url);
-        proxy.ws(proxyRes, proxySocket, proxyHead);
-
-        // use net
-        // const writeStream = createHttpHeader('HTTP/1.1 101 Switching Protocols', proxyRes.headers);
-        // console.log(writeStream);
-        // proxySocket.write(writeStream);
-        // proxySocket.pipe(socket).pipe(proxySocket);
-
-        // const socketAgent = net.connect(443, hostname, () => {
-        //   console.log('connected', hostname, 443);
-        //   const writeStream = createHttpHeader('HTTP/1.1 101 Switching Protocols', {
-        //     'connection': proxyRes.headers['connection'],
-        //     'upgrade': proxyRes.headers['upgrade'],
-        //     'sec-websocket-accept': proxyRes.headers['sec-websocket-accept'],
-        //     'sec-websocket-extensions': proxyRes.headers['sec-websocket-extensions'],
-        //     'server': 'Tengine',
-        //   });
-        //   console.log(writeStream);
-        //   socketAgent.write(writeStream);
-        //   socketAgent.write(proxyHead);
-        //   socketAgent.pipe(proxySocket).pipe(socketAgent);
+        // const proxy = new httpProxy.createProxyServer({
+        //   target: `https://${hostname}`,
         // });
-
-      });
-      localServer.on('response', (a) => {
-        console.log('a', a);
+        // proxy.ws(proxyReq, proxySocket, proxyHead);
       });
       localServer.on("error", err => {
         console.error("localServer.error", err.toString().slice(0, 100));
