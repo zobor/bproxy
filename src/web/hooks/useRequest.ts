@@ -18,7 +18,15 @@ export default () => {
             history.responseHeader = req.responseHeader;
           }
           if (req.responseBody && req.responseBody.byteLength) {
-            history.responseBody = req.responseBody;
+            if (history.custom.method === 'ws' || history.custom.method === 'wss') {
+              if (Array.isArray(history.responseBody)) {
+                history.responseBody.push(req.responseBody)
+              } else {
+                history.responseBody = [req.responseBody];
+              }
+            } else {
+              history.responseBody = req.responseBody;
+            }
           }
           if (req.statusCode) {
             history.custom = history.custom || {};

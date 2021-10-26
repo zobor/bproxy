@@ -162,7 +162,6 @@ export const httpMiddleware = {
         .on("response", function (response) {
           const responseHeader = {...response.headers, ...responseOptions.headers};
           if (
-            // responseHeader['content-length'] < 1024 * 1024 &&
             (isInspectContentType(rOpts.headers) ||
             isInspectContentType(responseHeader))
           ) {

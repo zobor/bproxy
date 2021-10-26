@@ -15,10 +15,8 @@
     "build": "npm run lint && npm run tsc && vite build"
   },
   "dependencies": {
-    "@types/react": "^17.0.31",
     "chalk": "2.4.2",
     "commander": "2.20.3",
-    "http-proxy": "^1.18.1",
     "lodash": "4.17.15",
     "mkdirp": "0.5.1",
     "node-forge": "0.10.0",
@@ -30,6 +28,7 @@
     "@types/jest": "27.0.2",
     "@types/lodash": "4.14.148",
     "@types/node": "12.19.16",
+    "@types/react": "^17.0.31",
     "@types/pako": "1.0.2",
     "@types/qs": "^6.9.7",
     "@types/react-dom": "17.0.0",

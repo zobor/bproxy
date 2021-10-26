@@ -70,8 +70,15 @@ const Detail = (props: any): React.ReactElement<any, any>|null => {
         const body = <div className="image-preview-box"><img className="image-preview" src={detail?.custom?.url} /></div>;
         setShowBody(body);
       } else {
-        const body = buffer2string(detail.responseBody, detail.responseHeader['content-encoding']);
-        setShowBody(body);
+        if (detail.custom.method === 'ws') {
+          const body = detail.responseBody.map((item, idx: number) => (<div key={`${detail.custom.requestId}-ws-body-${idx}`}>
+            {buffer2string(item, '')}
+          </div>));
+          setShowBody(body);
+        }else {
+          const body = buffer2string(detail.responseBody, detail.responseHeader && detail.responseHeader['content-encoding']);
+          setShowBody(body);
+        }
       }
     }, 300);
   }, [detailActiveTab, detail]);

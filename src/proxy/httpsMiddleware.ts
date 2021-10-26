@@ -5,7 +5,6 @@ import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
 import * as fs from "fs";
-// import httpProxy from 'http-proxy';
 import Certificate from "./certifica";
 import { httpMiddleware } from "./httpMiddleware";
 import { createHttpHeader, utils } from "./utils/utils";
@@ -166,17 +165,21 @@ export default {
           const wsRequest = https.request(options);
           wsRequest.on('upgrade', (r1, s1, h1) => {
               const writeStream = createHttpHeader('HTTP/1.1 101 Switching Protocols', r1.headers);
+              s1.on('data', d => {
+                ioRequest({
+                  requestId: proxyReq.$requestId,
+                  responseBody: d,
+                  statusCode: 101,
+                });
+              });
+              s1.on('end', () => {
+                console.log('end');
+              })
               proxySocket.write(writeStream);
               proxySocket.write(h1);
               s1.pipe(proxySocket).pipe(s1);
           });
           wsRequest.end();
-
-        // use http proxy handle webSocket
-        // const proxy = new httpProxy.createProxyServer({
-        //   target: `https://${hostname}`,
-        // });
-        // proxy.ws(proxyReq, proxySocket, proxyHead);
       });
       localServer.on("error", err => {
         console.error("localServer.error", err.toString().slice(0, 100));

@@ -74,3 +74,12 @@ export const createHttpHeader = (line, headers) => {
       .join("\r\n") + "\r\n\r\n"
   );
 };
+
+export const url2regx = (url: string): RegExp => {
+  const newUrl = url
+    .replace(/\./g, '\\.')
+    .replace(/\//g, '\\/')
+    .replace(/\*\*/g, '(\\S+)')
+    .replace(/\*/g, '([^\\/]+)');
+  return new RegExp(newUrl);
+};
