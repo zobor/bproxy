@@ -7,7 +7,7 @@ import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
 import { httpMiddleware } from "./httpMiddleware";
-import { createHttpHeader, utils } from "./utils/utils";
+import { createHttpHeader, utils, isHttpsHostRegMatch } from "./utils/utils";
 import { ProxyConfig } from "../types/proxy";
 
 const { pki } = forge;
@@ -17,22 +17,6 @@ let certificatePem;
 let certificateKeyPem;
 let localCertificate;
 let localCertificateKey;
-
-const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
-  let rs;
-  for (let i = 0, len = httpsList.length; i < len; i++) {
-    if (rs) {
-      break;
-    }
-    const httpsItem = httpsList[i];
-    if (typeof httpsItem === 'string') {
-      rs = httpsItem === hostname;
-    } else {
-      rs = httpsItem.test(hostname.replace(':443'));
-    }
-  }
-  return rs;
-};
 
 interface CertConfig {
   certPath: string;
@@ -59,7 +43,7 @@ export default {
     const urlParsed = url.parse(`https://${req.url}`);
     const host = (urlParsed.host || '').replace(/:\d+/, '');
 
-    this.startLocalHttpsServer(urlParsed.hostname, config, req, socket, head).then(localHttpsPort => {
+    this.startLocalHttpsServer(urlParsed.hostname, config, req, socket, head, urlParsed.port).then(localHttpsPort => {
       const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, host);
       if ( isHttpsMatch ) {
         this.web(socket, head, '127.0.0.1', localHttpsPort);
@@ -92,7 +76,7 @@ export default {
     });
   },
 
-  startLocalHttpsServer(hostname, config: ProxyConfig, req, socket, head): Promise<number> {
+  startLocalHttpsServer(hostname, config: ProxyConfig, req, socket, head, port): Promise<number> {
     return new Promise(resolve => {
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
@@ -146,7 +130,7 @@ export default {
           const options = {
               host: hostname,
               hostname,
-              port: 443,
+              port,
               headers: proxyReq.headers,
               method: 'GET',
               rejectUnauthorized: true,
@@ -158,7 +142,7 @@ export default {
           }
           ioRequest({
             url: `${proxyReq.headers?.origin}${proxyReq.url}`,
-            method: 'ws',
+            method: proxyReq.headers.origin.includes('https:') ? 'WSS': 'WS',
             requestHeader: proxyReq.headers,
             requestId: proxyReq.$requestId,
           });
@@ -173,8 +157,8 @@ export default {
                 });
               });
               s1.on('end', () => {
-                console.log('end');
-              })
+                proxySocket.close();
+              });
               proxySocket.write(writeStream);
               proxySocket.write(h1);
               s1.pipe(proxySocket).pipe(s1);

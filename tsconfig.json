@@ -5,11 +5,13 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "./dist",
+    "declarationDir": "./dist",
     "sourceMap": false,
     "noImplicitAny": false,
     "strict": true,
+    "declaration": true,
     "typeRoots" : [
-      "src/types/",
+      "./src/types/",
     ],
     "allowJs": false,
     "lib": [ "DOM", "DOM.Iterable", "ESNext"],
@@ -18,7 +20,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
   "exclude": [ "test/", "./vite.config.ts" ]
 }

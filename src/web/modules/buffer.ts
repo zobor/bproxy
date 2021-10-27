@@ -17,7 +17,7 @@ export function stringToBytes(str: string): Int8Array {
 }
 
 export function textDecode(buf: Buffer): string{
-  const decode = new TextDecoder();
+  const decode = new TextDecoder('utf-8');
 
   return decode.decode(buf);
 }

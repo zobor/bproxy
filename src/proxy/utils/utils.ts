@@ -83,3 +83,19 @@ export const url2regx = (url: string): RegExp => {
     .replace(/\*/g, '([^\\/]+)');
   return new RegExp(newUrl);
 };
+
+export const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
+  let rs;
+  for (let i = 0, len = httpsList.length; i < len; i++) {
+    if (rs) {
+      break;
+    }
+    const httpsItem = httpsList[i];
+    if (typeof httpsItem === 'string') {
+      rs = httpsItem === hostname;
+    } else {
+      rs = httpsItem.test(hostname.replace(':443'));
+    }
+  }
+  return rs;
+};
