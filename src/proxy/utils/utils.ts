@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from "chalk";
 
 const { log: terminalLog } = console;
@@ -77,10 +78,10 @@ export const createHttpHeader = (line, headers) => {
 
 export const url2regx = (url: string): RegExp => {
   const newUrl = url
-    .replace(/\./g, '\\.')
-    .replace(/\//g, '\\/')
-    .replace(/\*\*/g, '(\\S+)')
-    .replace(/\*/g, '([^\\/]+)');
+    .replace(/\./g, '\.')
+    .replace(/\//g, '\/')
+    .replace(/\*{2,}/g, '(\\S+)$')
+    .replace(/\*/g, '([^\\/]+)$');
   return new RegExp(newUrl);
 };
 

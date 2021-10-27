@@ -1,21 +1,12 @@
+import { Socket } from 'socket.io';
+import { InvokeRequestParams, WebInvokeParams } from '../types/proxy';
 import * as nativeApi from './invoke';
 
-interface InvokeRequestParams {
-  url?: string;
-  method?: string;
-  requestHeader?: object;
-  requestId: string;
-  requestBody?: string;
-  responseHeader?: object;
-  responseBody?: any;
-  statusCode?: number;
-}
+let instances: Socket[] = [];
 
-let instances: any = [];
-
-const ioWebInvokeApiInstal = () => {
-  instances.forEach(socket => {
-    socket.on('ioWebInvoke', (payload: any) => {
+const ioWebInvokeApiInstall = () => {
+  instances.forEach((socket: Socket) => {
+    socket.on('ioWebInvoke', (payload: WebInvokeParams) => {
       const { type, params } = payload;
       if (type && nativeApi[type]) {
         try {
@@ -32,11 +23,11 @@ const ioWebInvokeApiInstal = () => {
 };
 
 export const io = (server) => {
-  const $io = require('socket.io')(server);
-  $io.on('connection', function(socket){
+  const io = require('socket.io')(server);
+  io.on('connection', (socket: Socket) => {
     socket.emit('test', {msg: 'ws connected!'});
     instances.push(socket);
-    ioWebInvokeApiInstal();
+    ioWebInvokeApiInstall();
     socket.on('disconnect', (() => {
       instances = instances.filter(ins => ins !== socket);
     }));

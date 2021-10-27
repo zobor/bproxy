@@ -39,8 +39,9 @@ const findFiles = async (dir) => {
 (async() => {
   const files = await findFiles('./src/types');
   files.forEach(filepath => {
-    const outputPath = process.cwd() + '\\dist' + filepath.replace(process.cwd(), '');
-    console.log(outputPath);
+    const outputPath = process.cwd() + '/dist' + filepath.replace(process.cwd(), '');
+    console.log(filepath, ' ==> ', outputPath);
+
     fs.writeFileSync(outputPath, fs.readFileSync(filepath, 'utf-8'));
   });
 })();

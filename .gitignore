@@ -10,3 +10,4 @@ yarn.lock
 mock/
 node_modules/
 dist/
+coverage/

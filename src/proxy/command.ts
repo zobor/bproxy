@@ -4,7 +4,7 @@ import { spawn } from 'child_process';
 import * as pkg from '../../package.json';
 import Certificate from './certifica';
 import LocalServer from './localServer';
-import { rulesPattern } from './rule';
+import { matcher } from './matcher';
 import { log } from './utils/utils';
 
 export default {
@@ -76,7 +76,7 @@ export default {
     const [, , , url] = params.rawArgs;
     const configPath = params.config;
     const { config = {} as any } = LocalServer.loadUserConfig(configPath, settings);
-    const matchResult = rulesPattern(config.rules, url);
+    const matchResult = matcher(config.rules, url);
     log.info(`匹配结果：${matchResult.matched}`);
     return false;
   }

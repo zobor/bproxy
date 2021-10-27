@@ -13,16 +13,16 @@
     "skipLibCheck": true,
     "typeRoots" : [
       "./src/types/",
+      "node_modules/@types/"
     ],
-    "allowJs": false,
+    "allowJs": true,
     "lib": [ "DOM", "DOM.Iterable", "ESNext"],
     "target": "es2016",
-    "types": ["node"],
+    "types": ["jest", "node"],
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "jsx": "react-jsx",
   },
-  "exclude": [ "test/", "./vite.config.ts" ],
-  "include": ["./src/**/*"]
+  "exclude": [ "./vite.config.ts", "./dist" ],
 }

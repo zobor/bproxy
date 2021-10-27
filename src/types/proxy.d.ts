@@ -89,13 +89,28 @@ export interface ProxyConfig {
 }
 
 
-export default interface ProxyPattern {
+export default interface MatcherResult {
   delay?: number;
   matched?: boolean;
   filepath?: string;
-  matchedRule?: ProxyRule;
-  disableHttpRequest?: boolean;
+  rule?: ProxyRule;
   responseHeaders?: {
     [key: string]: any;
   };
+}
+
+export interface InvokeRequestParams {
+  url?: string;
+  method?: string;
+  requestHeader?: object;
+  requestId: string;
+  requestBody?: string;
+  responseHeader?: object;
+  responseBody?: any;
+  statusCode?: number;
+}
+
+export interface WebInvokeParams {
+  type: string;
+  params: {[key: string]: any};
 }

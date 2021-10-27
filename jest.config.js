@@ -3,9 +3,9 @@
 
 module.exports = {
   // 开启覆盖率检查
-  collectCoverage: false,
+  collectCoverage: true,
 
-  collectCoverageFrom: ['src/*.{js,ts}', 'src/**/*.{js,ts}', '!src/**/*.d.{js,ts}', '!src/**/*.js'],
+  collectCoverageFrom: ['src/proxy/*.{js,ts}', 'src/proxy/**/*.{js,ts}', '!src/**/*.d.{js,ts}', '!src/**/*.js'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',

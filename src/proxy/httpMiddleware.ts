@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
-import { rulesPattern } from './rule';
+import { matcher } from './matcher';
 import { RequestOptions } from '../types/request';
 import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
@@ -20,78 +20,78 @@ export const httpMiddleware = {
 
   async proxy(req: any, res: any, config: ProxyConfig): Promise<number> {
     const { rules } = config;
-    const pattern = rulesPattern(rules, req.httpsURL || req.url);
+    const pattern = matcher(rules, req.httpsURL || req.url);
     const resOptions = {
       headers: {},
     };
     if (pattern.matched) {
       return new Promise(() => {
-        if (!pattern.matchedRule) return;
+        if (!pattern.rule) return;
         if (pattern?.responseHeaders) {
           resOptions.headers = {...pattern.responseHeaders}
         }
-        if (pattern?.matchedRule?.responseHeaders) {
-          resOptions.headers = {...pattern.matchedRule.responseHeaders}
+        if (pattern?.rule?.responseHeaders) {
+          resOptions.headers = {...pattern.rule.responseHeaders}
         }
         // localfile
         // 1. rule.file
-        if (pattern.matchedRule.file) {
+        if (pattern.rule.file) {
           this.proxyLocalFile(
-            pattern.matchedRule.file,
+            pattern.rule.file,
             res,
             resOptions.headers,
           );
         }
         // 2. rule.path
-        else if (pattern.matchedRule.path) {
+        else if (pattern.rule.path) {
           this.proxyLocalFile(
-            path.resolve(pattern.matchedRule.path, pattern.matchedRule.filepath || ''),
+            path.resolve(pattern.rule.path, pattern.rule.filepath || ''),
             res,
             resOptions.headers,
           );
         }
         // 3.1. rule.response.function
-        else if (_.isFunction(pattern.matchedRule.response)) {
-          pattern.matchedRule.response({
+        else if (_.isFunction(pattern.rule.response)) {
+          pattern.rule.response({
             response: res,
             request,
             req,
-            rules: pattern?.matchedRule,
+            rules: pattern?.rule,
           });
         }
         // 3.2.  rule.response.string
-        else if (_.isString(pattern.matchedRule.response)) {
-          this.responseByText(pattern.matchedRule.response, res);
+        else if (_.isString(pattern.rule.response)) {
+          this.responseByText(pattern.rule.response, res);
         }
         // rule.statusCode
-        else if (pattern.matchedRule.statusCode) {
+        else if (pattern.rule.statusCode) {
           res.end();
         }
         // network response
         // 4. rule.redirect
-        else if (_.isString(pattern.matchedRule.redirect)) {
-          req.url = pattern.matchedRule.redirectTarget || pattern.matchedRule.redirect;
+        else if (_.isString(pattern.rule.redirect)) {
+          req.url = pattern.rule.redirectTarget || pattern.rule.redirect;
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
           const requestOption = {
-            headers: pattern.matchedRule.requestHeaders || {}
+            headers: pattern.rule.requestHeaders || {}
           };
           resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
           return this.proxyByRequest(req, res, requestOption, resOptions);
         }
         // rule.proxy
-        else if (_.isString(pattern.matchedRule.proxy)) {
+        else if (_.isString(pattern.rule.proxy)) {
           return this.proxyByRequest(req, res, {
-            proxy: pattern.matchedRule.proxy,
+            proxy: pattern.rule.proxy,
           }, resOptions);
         }
         // rule.host
-        else if (_.isString(pattern.matchedRule.host)) {
+        else if (_.isString(pattern.rule.host)) {
           return this.proxyByRequest(req, res, {
-            hostname: pattern.matchedRule.host,
+            hostname: pattern.rule.host,
           }, resOptions);
         }
         else {
