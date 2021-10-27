@@ -1,11 +1,18 @@
+export interface ResponseCallbackParams {
+  response: any;
+  request: any;
+  req: any;
+  rules: any;
+}
 export interface ProxyRule {
   regx: RegExp | string | Function;
   host?: string;
   file?: string;
   path?: string;
-  response?: Function | string;
+  response?: (params: ResponseCallbackParams) => void | string;
   redirect?: string;
   redirectTarget?: string;
+  rewrite?: (path: string) => string;
   proxy?: string;
   showLog?: boolean;
   download?: boolean;

@@ -23,7 +23,6 @@ export const httpMiddleware = {
     const pattern = rulesPattern(rules, req.httpsURL || req.url);
     const resOptions = {
       headers: {},
-      showLog: pattern?.matchedRule?.showLog
     };
     if (pattern.matched) {
       return new Promise(() => {
@@ -57,6 +56,7 @@ export const httpMiddleware = {
             response: res,
             request,
             req,
+            rules: pattern?.matchedRule,
           });
         }
         // 3.2.  rule.response.string
@@ -95,8 +95,7 @@ export const httpMiddleware = {
           }, resOptions);
         }
         else {
-          console.log('// todo');
-          console.log(pattern);
+          // todo
         }
       });
     } else {
@@ -200,10 +199,6 @@ export const httpMiddleware = {
       });
       req.on('end', () => {
         resolve(Buffer.concat(body));
-      });
-      req.on('error', (err) => {
-        // todo
-        console.error(err);
       });
     });
   },

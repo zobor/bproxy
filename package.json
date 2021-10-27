@@ -13,8 +13,8 @@
     "tsc": "tsc -p .",
     "dev": "vite",
     "web": "vite build",
-    "dts": "dts-gen ./src/types/proxy.d.ts ./dist/types",
-    "build": "rimraf dist && npm run lint && npm run tsc"
+    "dts": "node dts",
+    "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web"
   },
   "dependencies": {
     "chalk": "2.4.2",
@@ -39,7 +39,6 @@
     "@typescript-eslint/parser": "2.7.0",
     "@vitejs/plugin-react": "1.0.0",
     "classnames": "2.3.1",
-    "dts-gen": "^0.6.0",
     "eslint": "^6.6.0",
     "jest": "26.4.2",
     "pako": "2.0.4",

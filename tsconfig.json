@@ -10,6 +10,7 @@
     "noImplicitAny": false,
     "strict": true,
     "declaration": true,
+    "skipLibCheck": true,
     "typeRoots" : [
       "./src/types/",
     ],
@@ -22,5 +23,6 @@
     "experimentalDecorators": true,
     "jsx": "react-jsx",
   },
-  "exclude": [ "test/", "./vite.config.ts" ]
+  "exclude": [ "test/", "./vite.config.ts" ],
+  "include": ["./src/**/*"]
 }

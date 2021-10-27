@@ -38,7 +38,6 @@ export default {
 
   // https代理入口
   proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
-
     const { https: httpsList, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
     const host = (urlParsed.host || '').replace(/:\d+/, '');
@@ -117,7 +116,7 @@ export default {
         httpMiddleware.proxy(req, res, config);
       });
       // websocket
-      localServer.on('upgrade', (proxyReq, proxySocket, proxyHead) => {
+      localServer.on('upgrade', (proxyReq, proxySocket) => {
           if (proxyReq.method !== "GET" || !proxyReq.headers.upgrade) {
             proxySocket.destroy();
             return true;
@@ -155,9 +154,6 @@ export default {
                   responseBody: d,
                   statusCode: 101,
                 });
-              });
-              s1.on('end', () => {
-                proxySocket.close();
               });
               proxySocket.write(writeStream);
               proxySocket.write(h1);

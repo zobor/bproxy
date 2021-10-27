@@ -18,14 +18,14 @@ export const rulesPattern = (rules: Array<ProxyRule>, url: string): ProxyPattern
       options.matched = rule.regx.test(url);
       if (RegExp.$1) {
         if (rule.redirect) {
-          rule.redirectTarget = `${rule.redirect}${RegExp.$1}`;
+          rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
         }
       }
     } else if (_.isString(rule.regx)) {
       options.matched = url.includes(rule.regx);
     } else if (_.isFunction(rule.regx)) {
       options.matched = rule.regx(url);
-      if (options.matched && RegExp.$1) options.filepath = RegExp.$1;
+      if (options.matched && RegExp.$1) options.filepath = rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1;
     }
     // matched and get this rule
     if (options.matched) {
@@ -43,15 +43,15 @@ export const rulesPattern = (rules: Array<ProxyRule>, url: string): ProxyPattern
   //   });
   // }
   // matched rule and add extend headers
-  // if (options.matched) {
-  //   options.responseHeaders = options.responseHeaders || {};
-  //   if (options.disableHttpRequest) {
-  //     options.responseHeaders['X-BPROXY-HOSTIP'] = '127.0.0.1';
-  //   }
-  //   if (!options.disableHttpRequest && options?.matchedRule?.host) {
-  //     options.responseHeaders['X-HOSTIP'] = options.matchedRule.host;
-  //   }
-  //   options.responseHeaders['X-BPROXY-MATCH'] = true;
-  // }
+  if (options.matched) {
+    options.responseHeaders = options.responseHeaders || {};
+    if (options.disableHttpRequest) {
+      options.responseHeaders['x-bproxy-host'] = '127.0.0.1';
+    }
+    if (!options.disableHttpRequest && options?.matchedRule?.host) {
+      options.responseHeaders['x-bproxy-hostip'] = options.matchedRule.host;
+    }
+    options.responseHeaders['x-bproxy-match'] = true;
+  }
   return options;
 }

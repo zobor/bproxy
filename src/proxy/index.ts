@@ -1,5 +1,7 @@
-import { ProxyRule } from '../types/proxy';
+import { ProxyConfig } from '../types/proxy';
 
-export function setConfig(config: ProxyRule) {
-  console.log(config);
+export function setConfig(config: ProxyConfig) {
+  return config;
 }
+
+export { ProxyConfig };
