@@ -80,8 +80,8 @@ export const url2regx = (url: string): RegExp => {
   const newUrl = url
     .replace(/\./g, '\.')
     .replace(/\//g, '\/')
-    .replace(/\*{2,}/g, '(\\S+)$')
-    .replace(/\*/g, '([^\\/]+)$');
+    .replace(/\*{2,}/g, '(\\S+)')
+    .replace(/\*/g, '([^\\/]+)');
   return new RegExp(newUrl);
 };
 

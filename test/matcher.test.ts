@@ -26,7 +26,7 @@ describe('matcher', () => {
   it('regx is string with * / path', () => {
     const rs = matcher([
       {
-        regx: 'https://google.com/*',
+        regx: 'https://google.com/*$',
         redirect: 'http://localhost/',
       }
     ], 'https://google.com/x/y/z/a.js');
