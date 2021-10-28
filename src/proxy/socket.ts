@@ -18,8 +18,8 @@ const ioWebInvokeApiInstall = () => {
       } else {
         socket.emit('ioWebInvokeCallback', new Error('ioWebInvoke fail, api not found'));
       }
-    })
-  })
+    });
+  });
 };
 
 export const io = (server) => {

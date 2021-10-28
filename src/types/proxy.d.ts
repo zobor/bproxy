@@ -4,8 +4,10 @@ export interface ResponseCallbackParams {
   req: any;
   rules: any;
 }
+
+export type MatchRegxFunction = (url: string) => boolean;
 export interface ProxyRule {
-  regx: RegExp | string | Function;
+  regx: RegExp | string | MatchRegxFunction;
   host?: string;
   file?: string;
   path?: string;
@@ -80,10 +82,10 @@ export interface ProxyCertificateCreateResponse {
 export interface ProxyConfig {
   port: number;
   configFile: string;
-  downloadPath: string;
-  https: string[];
-  sslAll: boolean;
-  host: string[];
+  downloadPath?: string;
+  https?: string[];
+  sslAll?: boolean;
+  host?: string[];
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
 }

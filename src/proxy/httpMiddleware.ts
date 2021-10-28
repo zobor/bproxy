@@ -120,30 +120,6 @@ export const httpMiddleware = {
       if (['post', 'put'].includes(req.method.toLowerCase())) {
         options.body = await this.getPostBody(req);
       }
-      // TODO
-      // plugin to install here
-      // download file by request.pipe
-      // if (
-      //     responseOptions?.config?.downloadPath &&
-      // ) {
-      //     const downloadFileName = utils.uuid(12);
-      //     const parseUrl = url.parse(options.url);
-      //     const fileName = (parseUrl.pathname || '').split('/').pop();
-      //     if (fileName) {
-      //         const filetype = fileName.split('.').pop();
-      //         if (filetype) {
-      //             request({
-      //                 ...options,
-      //                 ...requestOption,
-      //             }).pipe(
-      //                 fs.createWriteStream(
-      //                     `${responseOptions.config.downloadPath}/${downloadFileName}.${filetype}`
-      //                 )
-      //             );
-      //             return;
-      //         }
-      //     }
-      // }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {
