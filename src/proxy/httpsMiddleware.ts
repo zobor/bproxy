@@ -7,7 +7,7 @@ import * as forge from "node-forge";
 import * as fs from "fs";
 import Certificate from "./certifica";
 import { httpMiddleware } from "./httpMiddleware";
-import { createHttpHeader, utils, isHttpsHostRegMatch } from "./utils/utils";
+import { createHttpHeader, utils, isHttpsHostRegMatch, log } from "./utils/utils";
 import { ProxyConfig } from "../types/proxy";
 
 const { pki } = forge;
@@ -56,9 +56,9 @@ export default {
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
       socket
-        .on("error", (err) => {
+        .on("error", () => {
           // todo
-          console.log("net error", err);
+          log.warn(`[net.connect error]: ${hostname} ${port}`);
           socketAgent.end();
         })
         .write(
@@ -70,8 +70,8 @@ export default {
       socketAgent.write(head);
       socketAgent.pipe(socket).pipe(socketAgent);
     });
-    socketAgent.on("error", e => {
-      console.error('socketAgent error', JSON.stringify({ err: e.message, hostname, port }).slice(0, 100));
+    socketAgent.on("error", () => {
+      log.warn(`[https socket agent error]: ${hostname} ${port}`);
     });
   },
 
@@ -100,7 +100,7 @@ export default {
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
-          console.error('https server error: ', localAddress);
+          log.warn(`[local server listen error]: ${hostname}`);
           return;
         }
         resolve(localAddress.port);
@@ -161,11 +161,11 @@ export default {
           });
           wsRequest.end();
       });
-      localServer.on("error", err => {
-        console.error("localServer.error", err.toString().slice(0, 100));
+      localServer.on("error", () => {
+        log.warn(`[local server error]: ${hostname}`);
       });
-      localServer.on("clientError", e => {
-        console.error(`localServer.clientError(${hostname})`, JSON.stringify(e).slice(0, 100));
+      localServer.on("clientError", () => {
+        log.warn(`[local server ClientError]: ${hostname}`);
       });
 
     });

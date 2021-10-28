@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 
 export const isLocal = (url: string): boolean => {
   return !(url.startsWith('http') || url.startsWith('https')) && !url.includes('/socket.io/');

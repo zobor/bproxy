@@ -1,4 +1,4 @@
-import { createHttpHeader, url2regx, utils } from '../src/proxy/utils/utils';
+import { createHttpHeader, isHttpsHostRegMatch, url2regx, utils, log } from '../src/proxy/utils/utils';
 
 describe('utils.ts', () => {
   it('utils.guid', () => {
@@ -31,5 +31,16 @@ describe('utils.ts', () => {
     const target = /https:\/\/google.com\/x\/a.js/;
 
     expect(regx.toString() === target.toString()).toBeTruthy();
+  });
+  it('isHttpsHostRegMatch', () => {
+    const list = ['google.com:443', 'baidu.com:443'];
+    expect(isHttpsHostRegMatch(list, 'baidu.com:443')).toBeTruthy();
+  });
+
+  it('log', () => {
+    log.info('123');
+    log.info(123);
+    log.warn({ name: "123" });
+    log.error({ name: "123" });
   });
 });

@@ -9,6 +9,7 @@ import { RequestOptions } from '../types/request';
 import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
 import { ProxyConfig } from '../types/proxy';
+import { log } from './utils/utils';
 
 export const httpMiddleware = {
   responseByText(text: string, res): void {
@@ -185,6 +186,11 @@ export const httpMiddleware = {
             statusCode: response.statusCode,
           });
           res.writeHead(response.statusCode, responseHeader);
+        })
+        .on("error", (err) => {
+          log.warn(`[http request error]: ${err.message}`);
+          res.writeHead(500, {});
+          res.end(err.message);
         })
         // put response to proxy response
         .pipe(res);
