@@ -72,6 +72,7 @@ export default {
     });
     socketAgent.on("error", () => {
       log.warn(`[https socket agent error]: ${hostname} ${port}`);
+      socketAgent.end();
     });
   },
 
@@ -163,9 +164,11 @@ export default {
       });
       localServer.on("error", () => {
         log.warn(`[local server error]: ${hostname}`);
+        localServer.close();
       });
       localServer.on("clientError", () => {
         log.warn(`[local server ClientError]: ${hostname}`);
+        localServer.close();
       });
 
     });

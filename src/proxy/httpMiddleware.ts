@@ -66,7 +66,8 @@ export const httpMiddleware = {
         }
         // rule.statusCode
         else if (pattern.rule.statusCode) {
-          res.end();
+          res.writeHead(pattern.rule.statusCode, {});
+          res.end(pattern.rule.statusCode.toString());
         }
         // network response
         // 4. rule.redirect
