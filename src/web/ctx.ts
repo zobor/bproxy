@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import {cloneDeep} from 'lodash';
+// import {cloneDeep} from 'lodash';
 
 type contextData = {
     [key: string]: any;
@@ -10,17 +10,16 @@ type actionData = {
 
 export const Ctx = createContext({} as contextData);
 
-export const defaultState = () => {
-    const data = {
-      showDetail: false,
-      detailActiveTab: 'custom',
-      requestId: '',
-    };
-
-    return cloneDeep(data);
+export const defaultState = {
+  showDetail: false,
+  detailActiveTab: 'custom',
+  requestId: '',
+  proxySwitch: true,
+  filterType: '',
+  filterString: '',
 };
 
-export const reducer = (state = defaultState(), action: actionData) => {
+export const reducer = (state = defaultState, action: actionData) => {
     const actionMap: contextData = {};
 
     Object.keys(state).forEach((key) => {

@@ -1,0 +1,36 @@
+.controller {
+  background-color: red;
+  padding: 10px 25px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  background-color: rgba(35, 155, 86, 0.8);
+
+  >div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+    &.disabled {
+      > span {
+        color: #D0D3D4;
+      }
+    }
+    >span {
+      margin-top: 5px;
+    }
+    >.anticon {
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      color: #fff;
+      >svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}

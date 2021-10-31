@@ -33,18 +33,12 @@ const routerList = [
     Component: lazy(() => import(/* webpackPrefetch: true */ './pages/home')),
     routerPath: '/',
   },
-  {
-    name: 'Test',
-    path: './pages/ruleTest',
-    Component: lazy(() => import(/* webpackPrefetch: true */ './pages/ruleTest')),
-    routerPath: '/test',
-  },
 ];
 
 
 
 export default () => {
-  const [state, dispatch] = useReducer(reducer, defaultState());
+  const [state, dispatch] = useReducer(reducer, defaultState);
 
   return (
     <div className="app" id="app">

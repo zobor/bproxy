@@ -16,7 +16,7 @@ export function stringToBytes(str: string): Int8Array {
   return out;
 }
 
-export function textDecode(buf: Buffer): string{
+export function textDecode(buf: Int8Array|Buffer): string{
   const decode = new TextDecoder('utf-8');
 
   return decode.decode(buf);
@@ -31,7 +31,7 @@ export function buffer2string(buffer: Buffer, encoding: string): string{
     if (encoding?.includes('gzip')) {
       data = pako.ungzip(new Uint8Array(buffer), {to: "string"});
     } else if (encoding === 'br') {
-      const u8 = BrotliDecode(new Uint8Array(buffer));
+      const u8 = BrotliDecode(new Int8Array(buffer));
       data = textDecode(u8);
     } else {
       data = String.fromCharCode.apply(null, new Uint8Array(buffer) as any);

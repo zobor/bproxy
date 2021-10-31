@@ -26,6 +26,8 @@
     "socket.io": "4.3.1"
   },
   "devDependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@types/antd": "^1.0.0",
     "@types/chalk": "2.2.0",
     "@types/jest": "^27.0.2",
     "@types/lodash": "4.14.148",
@@ -38,10 +40,12 @@
     "@typescript-eslint/eslint-plugin": "^2.7.0",
     "@typescript-eslint/parser": "2.7.0",
     "@vitejs/plugin-react": "1.0.0",
+    "antd": "^4.16.13",
     "classnames": "2.3.1",
     "eslint": "^6.6.0",
     "jest": "26.4.2",
     "pako": "2.0.4",
+    "prettier": "^2.4.1",
     "qs": "6.10.1",
     "react": "17.0.0",
     "react-dom": "17.0.0",

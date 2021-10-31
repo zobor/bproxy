@@ -78,7 +78,7 @@ export default class LocalServer {
     if (userConfigPath || _.isString(configPath)) {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.conf.js');
       if (!fs.existsSync(confPath)) {
-        console.error('当前目录下没有找到bproxy.conf.js, 请先创建');
+        console.error('当前目录下没有找到bproxy.conf.js, 请先创建:', confPath);
         return res;
       } else {
         try {

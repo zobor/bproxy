@@ -104,10 +104,10 @@ export default interface MatcherResult {
 export interface InvokeRequestParams {
   url?: string;
   method?: string;
-  requestHeader?: object;
+  requestHeaders?: object;
   requestId: string;
   requestBody?: string;
-  responseHeader?: object;
+  responseHeaders?: object;
   responseBody?: any;
   statusCode?: number;
 }
@@ -115,4 +115,19 @@ export interface InvokeRequestParams {
 export interface WebInvokeParams {
   type: string;
   params: {[key: string]: any};
+}
+
+export interface RequestHeaders {
+  [key: string]: string;
+}
+
+export interface RequestOptions {
+  method: string;
+  url: string;
+  headers: RequestHeaders;
+  body: Buffer | null;
+  encoding?: string | null;
+  strictSSL?: boolean;
+  rejectUnauthorized?: boolean;
+  followRedirect?: boolean;
 }

@@ -68,8 +68,7 @@ export default {
   // start local proxy server
   start(params: any): void {
     const port = params.port || 0;
-    const configPath = params.config;
-    LocalServer.start(port, configPath);
+    LocalServer.start(port, params.config);
   },
 
   test(params: any): boolean {

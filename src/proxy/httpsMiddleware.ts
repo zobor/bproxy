@@ -143,7 +143,7 @@ export default {
           ioRequest({
             url: `${proxyReq.headers?.origin}${proxyReq.url}`,
             method: proxyReq.headers.origin.includes('https:') ? 'WSS': 'WS',
-            requestHeader: proxyReq.headers,
+            requestHeaders: proxyReq.headers,
             requestId: proxyReq.$requestId,
           });
           const wsRequest = https.request(options);

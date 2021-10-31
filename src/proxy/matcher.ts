@@ -39,15 +39,13 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   });
 
   // matched rule and add extend headers
-  // if (options.matched) {
-  //   options.responseHeaders = options.responseHeaders || {};
-  //   if (options.disableHttpRequest) {
-  //     options.responseHeaders['x-bproxy-host'] = '127.0.0.1';
-  //   }
-  //   if (!options.disableHttpRequest && options?.rule?.host) {
-  //     options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
-  //   }
-  //   options.responseHeaders['x-bproxy-match'] = true;
-  // }
+  if (options.matched) {
+    options.responseHeaders = options.responseHeaders || {};
+    options.responseHeaders['x-bproxy-matched'] = 1;
+    if (options?.rule?.host) {
+      options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
+    }
+    options.responseHeaders['x-bproxy-match'] = true;
+  }
   return options;
 }

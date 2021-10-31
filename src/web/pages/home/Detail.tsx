@@ -22,7 +22,7 @@ const tabList = [
   },
   {
     label: '响应头',
-    value: 'responseHeader',
+    value: 'responseHeaders',
   },
   {
     label: '响应内容',
@@ -66,7 +66,7 @@ const Detail = (props: any): React.ReactElement<any, any>|null => {
   useEffect(() => {
     setShowBody('处理中...');
     detail && setTimeout(() => {
-      if (detail.responseHeader && detail.responseHeader['content-type']?.includes('image/')) {
+      if (detail.responseHeaders && detail.responseHeaders['content-type']?.includes('image/')) {
         const body = <div className="image-preview-box"><img className="image-preview" src={detail?.custom?.url} /></div>;
         setShowBody(body);
       } else {
@@ -76,7 +76,7 @@ const Detail = (props: any): React.ReactElement<any, any>|null => {
           </div>));
           setShowBody(body);
         }else {
-          const body = buffer2string(detail.responseBody, detail.responseHeader && detail.responseHeader['content-encoding']);
+          const body = buffer2string(detail.responseBody, detail.responseHeaders && detail.responseHeaders['content-encoding']);
           setShowBody(body);
         }
       }

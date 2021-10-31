@@ -5,10 +5,9 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { matcher } from './matcher';
-import { RequestOptions } from '../types/request';
 import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
-import { ProxyConfig } from '../types/proxy';
+import { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log } from './utils/utils';
 
 export const httpMiddleware = {
@@ -131,16 +130,16 @@ export const httpMiddleware = {
       ioRequest({
         url: rOpts.url,
         method: rOpts.method,
-        requestHeader: rOpts.headers,
+        requestHeaders: rOpts.headers,
         requestId: req.$requestId,
         requestBody: rOpts.body,
       });
       request(rOpts)
         .on("response", function (response) {
-          const responseHeader = {...response.headers, ...responseOptions.headers};
+          const responseHeaders = {...response.headers, ...responseOptions.headers};
           if (
             (isInspectContentType(rOpts.headers) ||
-            isInspectContentType(responseHeader))
+            isInspectContentType(responseHeaders))
           ) {
             const body: Buffer[] = [];
             response
@@ -159,10 +158,10 @@ export const httpMiddleware = {
             requestId: req.$requestId,
             url: rOpts.url,
             method: rOpts.method,
-            responseHeader,
+            responseHeaders,
             statusCode: response.statusCode,
           });
-          res.writeHead(response.statusCode, responseHeader);
+          res.writeHead(response.statusCode, responseHeaders);
         })
         .on("error", (err) => {
           log.warn(`[http request error]: ${err.message}`);
