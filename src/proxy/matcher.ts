@@ -6,6 +6,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   const options: MatcherResult = {
     delay: 0,
     matched: false,
+    responseHeaders:  {},
   };
   rules.forEach((rule: ProxyRule) => {
     if (options.matched) return;
@@ -40,12 +41,13 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
 
   // matched rule and add extend headers
   if (options.matched) {
-    options.responseHeaders = options.responseHeaders || {};
-    options.responseHeaders['x-bproxy-matched'] = 1;
+    options.responseHeaders['x-bproxy-matched'] = true;
     if (options?.rule?.host) {
       options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
     }
-    options.responseHeaders['x-bproxy-match'] = true;
+    if (options?.rule?.redirectTarget) {
+      options.responseHeaders['x-bproxy-redirect'] = options.rule.redirectTarget;
+    }
   }
   return options;
 }

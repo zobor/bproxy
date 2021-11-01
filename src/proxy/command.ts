@@ -52,6 +52,11 @@ export default {
   // set system proxy
   proxy(proxy: string | boolean, port: number): void {
     const sysProxyPort = port || settings.port;
+    console.log(111, process.platform);
+    if (process.platform !== 'darwin') {
+      log.warn('设置系统代理指令，不支持当前系统');
+      return;
+    }
     if (typeof proxy === 'boolean') {
       log.warn(`Usage:\n${pkg.name} --proxy [off|on]`);
     } else if (proxy === 'on') {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Input from 'antd/es/input';
-import { testRule } from '../../../../modules/socket';
-import JSONFormat from '../../../../libs/jsonFormat';
+import { testRule } from '../../modules/socket';
+import JSONFormat from '../../libs/jsonFormat';
 import 'antd/es/input/style/css';
 import './index.scss';
 

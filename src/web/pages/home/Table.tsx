@@ -2,6 +2,8 @@ import { useContext } from "react";
 import classNames from "classnames";
 import { Ctx } from "../../ctx";
 import './table.scss';
+import { HttpRequestRequest } from '../../../types/web';
+import { formatSeconds } from '../../../proxy/utils/format';
 
 const Table = (props: any) => {
   const { list } = props;
@@ -31,19 +33,23 @@ const Table = (props: any) => {
         </thead>
 
         <tbody>
-          {list.map((req: any) => {
+          {list.map((req: HttpRequestRequest) => {
+            const statusCode = `${req?.custom?.statusCode}`;
             return (
               <tr className={classNames({
                 active: requestId === req?.custom?.requestId,
-              })} onClick={onClick.bind(null, req)} key={req.custom.requestId}>
-                <td className="status">{req.custom.statusCode}</td>
+              })} onClick={onClick.bind(null, req)} key={req?.custom?.requestId}>
+                <td className={classNames({
+                  status: true,
+                  error: statusCode.indexOf('4') === 0 || statusCode.indexOf('5') === 0,
+                })}>{req?.custom?.statusCode}</td>
                 <td className="type">Local</td>
-                <td className="method">{req.custom.method}</td>
-                <td className="protocol">{req.custom.protocol}</td>
-                <td className="host" title={req.custom.host}>{req.custom.host.slice(0,25)}</td>
-                <td className="path" title={req.custom.path}>{req.custom.path.slice(0, 80)}</td>
-                <td className="contentType">{req.responseHeader && (req.responseHeader['content-type']||'').replace(/;\s\S+/, '').slice(0,25)}</td>
-                <td className="speed">{req.requestStartTime && req.requestEndTime ? `${req.requestEndTime - req.requestStartTime}ms` : '-'}</td>
+                <td className="method">{req?.custom?.method}</td>
+                <td className="protocol">{req?.custom?.protocol}</td>
+                <td className="host" title={req?.custom?.host}>{req?.custom?.host?.slice(0,25)}</td>
+                <td className="path" title={req?.custom?.path}>{req?.custom?.path?.slice(0, 80)}</td>
+                <td className="contentType">{req?.responseHeaders && (req?.responseHeaders['content-type']||'').replace(/;\s?\S+/, '').slice(0,25)}</td>
+                <td className="speed">{req.requestStartTime && req.requestEndTime ? `${formatSeconds(req.requestEndTime - req.requestStartTime)}` : '-'}</td>
               </tr>
             );
           })}

@@ -37,8 +37,9 @@ $labelValueColor: #139dcb;
 
 .detail .content .tabs > ul{
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-evenly;
+  height: 40px;
 }
 .detail .content .tabs > ul li {
   text-align: center;
@@ -59,7 +60,7 @@ $labelValueColor: #139dcb;
 }
 .detail .content .form {
   width: 800px;
-  max-height: 70vh;
+  height: calc(100% - 110px);
   margin: 0 auto;
   background-color: $panelBackground;
   color: $panelFontColor;
@@ -92,7 +93,7 @@ $labelValueColor: #139dcb;
   color: #1ABC9C;
   font-weight: bold;
   height: 40px;
-  width: calc(100% - 60px);
+  width: 100%;
   line-height: 40px;
   white-space: nowrap;
   text-overflow: ellipsis;

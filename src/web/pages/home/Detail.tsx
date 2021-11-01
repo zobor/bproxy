@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Ctx } from "../../ctx";
 import { buffer2string } from '../../modules/buffer';
+import JSONFormat from '../../libs/jsonFormat';
 import './detail.scss';
 
 const tabList = [
@@ -66,17 +67,28 @@ const Detail = (props: any): React.ReactElement<any, any>|null => {
   useEffect(() => {
     setShowBody('处理中...');
     detail && setTimeout(() => {
+      // image
       if (detail.responseHeaders && detail.responseHeaders['content-type']?.includes('image/')) {
         const body = <div className="image-preview-box"><img className="image-preview" src={detail?.custom?.url} /></div>;
         setShowBody(body);
       } else {
+        // websocket
         if (detail.custom.method === 'ws') {
           const body = detail.responseBody.map((item, idx: number) => (<div key={`${detail.custom.requestId}-ws-body-${idx}`}>
             {buffer2string(item, '')}
           </div>));
           setShowBody(body);
         }else {
-          const body = buffer2string(detail.responseBody, detail.responseHeaders && detail.responseHeaders['content-encoding']);
+          // text\json
+          let body = buffer2string(detail.responseBody, detail.responseHeaders && detail.responseHeaders['content-encoding']);
+
+          // format json
+          if (detail?.responseHeaders['content-type'].includes('json')) {
+            try {
+              body = JSON.parse(body);
+              body = JSONFormat(body, null, 2, 100);
+            } catch(err) {}
+          }
           setShowBody(body);
         }
       }

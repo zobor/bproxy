@@ -5,7 +5,7 @@ module.exports = {
   // 开启覆盖率检查
   collectCoverage: true,
 
-  collectCoverageFrom: ['src/proxy/*.{js,ts}', 'src/proxy/**/*.{js,ts}', '!src/**/*.d.{js,ts}', '!src/**/*.js'],
+  collectCoverageFrom: ['src/proxy/*.ts', 'src/proxy/**/*.ts', '!src/**/*.d.ts', '!src/**/*.js'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
@@ -17,12 +17,12 @@ module.exports = {
   coverageProvider: 'v8',
 
   // An array of file extensions your modules use
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  moduleFileExtensions: ['ts', 'js'],
   testEnvironment: 'jest-environment-jsdom',
-  testPathIgnorePatterns: ['\\\\node_modules\\\\'],
+  testPathIgnorePatterns: ['\\\\node_modules\\\\', '\\\\dist\\\\'],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
-  testRegex: '/test/.*\\.(test)\\.((t|j)sx?)$',
+  testRegex: '/test/.*\\.(test)\\.(ts)$',
 
   // A map from regular expressions to paths to transformers
   transform: {

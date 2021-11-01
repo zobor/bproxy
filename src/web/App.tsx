@@ -1,4 +1,4 @@
-import React, { useReducer, lazy, Suspense, PropsWithoutRef } from 'react';
+import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef } from 'react';
 import { Route, HashRouter, Switch } from 'react-router-dom';
 import { Ctx, defaultState, reducer } from './ctx';
 import ErrorHandler from './components/ErrorHandler';
@@ -39,6 +39,38 @@ const routerList = [
 
 export default () => {
   const [state, dispatch] = useReducer(reducer, defaultState);
+  const timer = useRef<any>(0);
+
+  useEffect(() => {
+    const historyContext = window.localStorage.getItem('context-data');
+
+    if (historyContext) {
+      try {
+        const data = JSON.parse(historyContext);
+        Object.keys(data).forEach((key: string) => {
+          Promise.resolve().then(() => {
+            const fn = key.slice(0, 1).toUpperCase() + key.slice(1);
+            dispatch({
+              type: `set${fn}`,
+              [key]: data[key],
+            });
+          });
+        });
+      } catch(err) {}
+    }
+    dispatch({ type: "setReady", ready: true });
+  }, []);
+
+  useEffect(() => {
+    if (state.ready) {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+      timer.current = setTimeout(() => {
+        window.localStorage.setItem('context-data', JSON.stringify(state));
+      }, 500);
+    }
+  }, [state]);
 
   return (
     <div className="app" id="app">

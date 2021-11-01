@@ -1,4 +1,5 @@
 import * as qs from 'qs';
+import { FilterParams, HttpRequestRequest } from '../../types/web';
 
 export const parseURL = (url) => {
   const a: HTMLAnchorElement = document.createElement('a');
@@ -29,6 +30,7 @@ export const parseQueryString = (query: string) => {
 export const parseRequest = (req: any) => {
   const { hostname, path, protocol, query, origin } = parseURL(req.url);
   const params = parseQueryString(query);
+  console.log(hostname, path);
 
   return Object.assign(req, {
     host: hostname,
@@ -38,3 +40,25 @@ export const parseRequest = (req: any) => {
     requestParams: params,
   });
 };
+
+export const filterRequestItem = (
+  request: HttpRequestRequest,
+  filter: FilterParams
+) => {
+  const { filterString, filterType } = filter;
+  if (!filterString) {
+    return true;
+  }
+  switch (filterType) {
+    case "url":
+      return request?.custom?.url?.includes(filterString);
+    case "path":
+      return request?.custom?.path?.includes(filterString);
+    case "host":
+      return request?.custom?.host?.includes(filterString);
+    default:
+      return false;
+  }
+};
+
+export const filterRequestList = (list: HttpRequestRequest[], filter: FilterParams) => list.filter((item: HttpRequestRequest) => filterRequestItem(item, filter));

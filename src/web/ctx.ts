@@ -15,8 +15,11 @@ export const defaultState = {
   detailActiveTab: 'custom',
   requestId: '',
   proxySwitch: true,
-  filterType: '',
+  filterType: 'url',
   filterString: '',
+  ready: false,
+  disableCache: false,
+  clean: () => {},
 };
 
 export const reducer = (state = defaultState, action: actionData) => {

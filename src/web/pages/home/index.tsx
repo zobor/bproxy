@@ -9,10 +9,10 @@ import './index.scss';
 const DetailMemo = memo(Detail);
 
 export default () => {
-  const { state } = useContext(Ctx);
-  const { list } = useRequest();
+  const { state, dispatch } = useContext(Ctx);
+  const { requestId, filterString, filterType } = state;
+  const { list, clean } = useRequest(state.proxySwitch, filterType, filterString);
   const [detail, setDetail] = useState<any>(null);
-  const { requestId } = state;
   const detailMemo = useMemo(() => {
     return detail;
   }, [detail?.custom?.requestId]);
@@ -22,6 +22,10 @@ export default () => {
       setDetail(item);
     }
   }, [list, requestId]);
+
+  useEffect(() => {
+    dispatch({ type: 'setClean', clean });
+  }, []);
 
   return <div className="app-main">
     <Controller />

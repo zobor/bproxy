@@ -27,3 +27,8 @@ export interface HttpRequestRequest {
     $$type?: string;
   };
 }
+
+export interface FilterParams {
+  filterType: string;
+  filterString: string;
+}

@@ -22,6 +22,7 @@ describe('matcher', () => {
     ], 'https://google.com/abc_efg.js');
     expect(rs.matched).toBeTruthy();
     expect(rs?.rule?.redirectTarget).toEqual('http://localhost/abc.js');
+    expect(rs?.responseHeaders['x-bproxy-redirect']).toEqual('http://localhost/abc.js');
   });
   it('regx is string with * / path', () => {
     const rs = matcher([

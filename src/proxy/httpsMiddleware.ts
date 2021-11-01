@@ -102,6 +102,7 @@ export default {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
           log.warn(`[local server listen error]: ${hostname}`);
+          localServer.close();
           return;
         }
         resolve(localAddress.port);

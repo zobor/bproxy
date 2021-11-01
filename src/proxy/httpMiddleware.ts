@@ -71,6 +71,7 @@ export const httpMiddleware = {
         // network response
         // 4. rule.redirect
         else if (_.isString(pattern.rule.redirect)) {
+          req.requestOriginUrl = req.url;
           req.url = pattern.rule.redirectTarget || pattern.rule.redirect;
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
@@ -80,7 +81,7 @@ export const httpMiddleware = {
           const requestOption = {
             headers: pattern.rule.requestHeaders || {}
           };
-          resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
+          // resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
           return this.proxyByRequest(req, res, requestOption, resOptions);
         }
         // rule.proxy
@@ -128,7 +129,7 @@ export const httpMiddleware = {
       };
 
       ioRequest({
-        url: rOpts.url,
+        url: req.requestOriginUrl || options.url,
         method: rOpts.method,
         requestHeaders: rOpts.headers,
         requestId: req.$requestId,
@@ -138,8 +139,10 @@ export const httpMiddleware = {
         .on("response", function (response) {
           const responseHeaders = {...response.headers, ...responseOptions.headers};
           if (
-            (isInspectContentType(rOpts.headers) ||
-            isInspectContentType(responseHeaders))
+            isInspectContentType({
+              ...rOpts.headers,
+              ...responseHeaders,
+            })
           ) {
             const body: Buffer[] = [];
             response
@@ -154,9 +157,10 @@ export const httpMiddleware = {
                 });
               });
           }
+
           ioRequest({
             requestId: req.$requestId,
-            url: rOpts.url,
+            url: req.requestOriginUrl || options.url,
             method: rOpts.method,
             responseHeaders,
             statusCode: response.statusCode,
@@ -164,7 +168,7 @@ export const httpMiddleware = {
           res.writeHead(response.statusCode, responseHeaders);
         })
         .on("error", (err) => {
-          log.warn(`[http request error]: ${err.message}`);
+          log.warn(`[http request error]: ${err.message}\n${rOpts.url}`);
           res.writeHead(500, {});
           res.end(err.message);
         })

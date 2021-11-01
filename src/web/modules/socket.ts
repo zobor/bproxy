@@ -22,5 +22,6 @@ export const testRule = (url: string): Promise<object> =>
   });
 
 export const onRequest = (callback: any) => {
-  $socket.on('request', callback)
+  $socket.removeAllListeners('request');
+  $socket.on('request', callback);
 };

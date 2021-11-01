@@ -3,6 +3,7 @@
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  height: calc(100% - 70px);
 }
 .table {
   width: 100%;
@@ -33,22 +34,22 @@
 }
 .table .status {
   width: 50px;
-  // font-size: 12px;
+  &.error {
+    background-color:red;
+    color: #fff;
+  }
 }
 .table .type {
-  width: 50px;
-  // font-size: 12px;
+  width: 60px;
 }
 .table .method {
-  width: 70px;
-  // font-size: 12px;
+  width: 90px;
 }
 .table .protocol {
-  width: 50px;
+  width: 60px;
 }
 .table .speed {
   width: 80px;
-  // font-size: 12px;
 }
 .table .host {
   min-width: 100px;
