@@ -1,3 +1,4 @@
+import { matcher } from './../proxy/matcher';
 export interface ResponseCallbackParams {
   response: any;
   request: any;
@@ -102,6 +103,7 @@ export default interface MatcherResult {
 }
 
 export interface InvokeRequestParams {
+  matched?: boolean;
   url?: string;
   method?: string;
   requestHeaders?: object;

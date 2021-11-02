@@ -30,7 +30,6 @@ export const parseQueryString = (query: string) => {
 export const parseRequest = (req: any) => {
   const { hostname, path, protocol, query, origin } = parseURL(req.url);
   const params = parseQueryString(query);
-  console.log(hostname, path);
 
   return Object.assign(req, {
     host: hostname,

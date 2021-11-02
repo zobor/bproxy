@@ -3,7 +3,8 @@
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100% - 70px);
+  height: calc(100% - 90px);
+  padding-bottom: 20px;
 }
 .table {
   width: 100%;
@@ -16,7 +17,6 @@
   word-wrap: break-word;
   word-break: break-all;
   white-space: pre-wrap;
-  color: #212F3C;
   vertical-align: middle;
   border-bottom: solid 1px #eee;
 }
@@ -28,18 +28,28 @@
   background-color: #efefef;
   cursor: pointer;
 }
-.table tbody tr.active {
-  background-color: #48C9B0;
-  color: #000;
+.table tbody tr {
+  color: #B2BABB;
+  :nth-child(1) {
+    color: #58D68D
+  }
+  &.matched {
+    color: #212F3C;
+  }
+  &.active {
+    background: #ccc;
+  }
+  &.error {
+    color: red;
+    :nth-child(1) {
+      color: red;
+    }
+  }
 }
 .table .status {
   width: 50px;
-  &.error {
-    background-color:red;
-    color: #fff;
-  }
 }
-.table .type {
+.table .matched {
   width: 60px;
 }
 .table .method {

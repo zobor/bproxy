@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { Ctx } from "../../ctx";
 import './table.scss';
@@ -9,6 +9,7 @@ const Table = (props: any) => {
   const { list } = props;
   const { state, dispatch } = useContext(Ctx);
   const { requestId } = state;
+  const $table = useRef<HTMLTableElement>(null);
   const onClick = (req: any) => {
     dispatch({ type: "setShowDetail", showDetail: true });
     if (req.custom.requestId) {
@@ -16,13 +17,23 @@ const Table = (props: any) => {
     }
   };
 
+  useEffect(() => {
+    if ($table.current) {
+      setTimeout(() => {
+          $table.current?.querySelector('tbody tr:last-child')?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      });
+    }
+  }, [list.length]);
+
   return (
     <div className="table-box scrollbar-style">
-      <table className="table">
+      <table className="table" ref={$table}>
         <thead>
           <tr>
             <td>状态</td>
-            <td>type</td>
+            <td>匹配</td>
             <td>方式</td>
             <td>协议</td>
             <td>域名</td>
@@ -38,12 +49,13 @@ const Table = (props: any) => {
             return (
               <tr className={classNames({
                 active: requestId === req?.custom?.requestId,
+                error: statusCode.indexOf('4') === 0 || statusCode.indexOf('5') === 0,
+                matched: req.matched,
               })} onClick={onClick.bind(null, req)} key={req?.custom?.requestId}>
                 <td className={classNames({
                   status: true,
-                  error: statusCode.indexOf('4') === 0 || statusCode.indexOf('5') === 0,
                 })}>{req?.custom?.statusCode}</td>
-                <td className="type">Local</td>
+                <td className="matched">{req.matched ? '✔' : '✘'}</td>
                 <td className="method">{req?.custom?.method}</td>
                 <td className="protocol">{req?.custom?.protocol}</td>
                 <td className="host" title={req?.custom?.host}>{req?.custom?.host?.slice(0,25)}</td>

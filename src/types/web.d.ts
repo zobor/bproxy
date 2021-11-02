@@ -1,4 +1,6 @@
+import { matcher } from './../proxy/matcher';
 export interface HttpRequestRequest {
+  matched: boolean;
   requestStartTime?: number;
   requestEndTime?: number;
   time?: number;

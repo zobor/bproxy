@@ -7,7 +7,7 @@ import * as url from 'url';
 import { matcher } from './matcher';
 import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
-import { ProxyConfig, RequestOptions } from '../types/proxy';
+import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log } from './utils/utils';
 
 export const httpMiddleware = {
@@ -20,81 +20,92 @@ export const httpMiddleware = {
 
   async proxy(req: any, res: any, config: ProxyConfig): Promise<number> {
     const { rules } = config;
-    const pattern = matcher(rules, req.httpsURL || req.url);
+    const matcherResult = matcher(rules, req.httpsURL || req.url);
     const resOptions = {
       headers: {},
     };
-    if (pattern.matched) {
+    if (matcherResult.matched) {
       return new Promise(() => {
-        if (!pattern.rule) return;
-        if (pattern?.responseHeaders) {
-          resOptions.headers = {...pattern.responseHeaders}
+        if (!matcherResult.rule) return;
+        if (matcherResult?.responseHeaders) {
+          resOptions.headers = {...matcherResult.responseHeaders}
         }
-        if (pattern?.rule?.responseHeaders) {
-          resOptions.headers = {...pattern.rule.responseHeaders}
+        if (matcherResult?.rule?.responseHeaders) {
+          resOptions.headers = {...matcherResult.rule.responseHeaders}
         }
         // localfile
         // 1. rule.file
-        if (pattern.rule.file) {
+        if (matcherResult.rule.file) {
           this.proxyLocalFile(
-            pattern.rule.file,
+            matcherResult.rule.file,
             res,
             resOptions.headers,
           );
         }
         // 2. rule.path
-        else if (pattern.rule.path) {
+        else if (matcherResult.rule.path) {
           this.proxyLocalFile(
-            path.resolve(pattern.rule.path, pattern.rule.filepath || ''),
+            path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''),
             res,
             resOptions.headers,
           );
         }
         // 3.1. rule.response.function
-        else if (_.isFunction(pattern.rule.response)) {
-          pattern.rule.response({
+        else if (_.isFunction(matcherResult.rule.response)) {
+          matcherResult.rule.response({
             response: res,
             request,
             req,
-            rules: pattern?.rule,
+            rules: matcherResult?.rule,
           });
         }
         // 3.2.  rule.response.string
-        else if (_.isString(pattern.rule.response)) {
-          this.responseByText(pattern.rule.response, res);
+        else if (_.isString(matcherResult.rule.response)) {
+          this.responseByText(matcherResult.rule.response, res);
         }
         // rule.statusCode
-        else if (pattern.rule.statusCode) {
-          res.writeHead(pattern.rule.statusCode, {});
-          res.end(pattern.rule.statusCode.toString());
+        else if (matcherResult.rule.statusCode) {
+          res.writeHead(matcherResult.rule.statusCode, {});
+          res.end(matcherResult.rule.statusCode.toString());
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+          });
+          console.log({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+          });
         }
         // network response
         // 4. rule.redirect
-        else if (_.isString(pattern.rule.redirect)) {
+        else if (_.isString(matcherResult.rule.redirect)) {
           req.requestOriginUrl = req.url;
-          req.url = pattern.rule.redirectTarget || pattern.rule.redirect;
+          req.url = matcherResult.rule.redirectTarget || matcherResult.rule.redirect;
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
           const requestOption = {
-            headers: pattern.rule.requestHeaders || {}
+            headers: matcherResult.rule.requestHeaders || {}
           };
-          // resOptions.headers['X-BPROXY-REDIRECT'] = req.url;
-          return this.proxyByRequest(req, res, requestOption, resOptions);
+          return this.proxyByRequest(req, res, requestOption, resOptions, matcherResult);
         }
         // rule.proxy
-        else if (_.isString(pattern.rule.proxy)) {
+        else if (_.isString(matcherResult.rule.proxy)) {
           return this.proxyByRequest(req, res, {
-            proxy: pattern.rule.proxy,
-          }, resOptions);
+            proxy: matcherResult.rule.proxy,
+          }, resOptions, matcherResult);
         }
         // rule.host
-        else if (_.isString(pattern.rule.host)) {
+        else if (_.isString(matcherResult.rule.host)) {
           return this.proxyByRequest(req, res, {
-            hostname: pattern.rule.host,
-          }, resOptions);
+            hostname: matcherResult.rule.host,
+          }, resOptions, matcherResult);
         }
         else {
           // todo
@@ -105,9 +116,12 @@ export const httpMiddleware = {
     }
   },
 
-  async proxyByRequest(req, res, requestOption, responseOptions): Promise<number> {
+  async proxyByRequest(req, res, requestOption, responseOptions, matcherResult?: MatcherResult): Promise<number> {
     return new Promise(async () => {
       const rHeaders = { ...req.headers, ...requestOption.headers };
+      if (!_.isEmpty(requestOption)) {
+        ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => rHeaders[key] && delete rHeaders[key]);
+      }
       const options: RequestOptions = {
         url: req.httpsURL || req.url,
         method: req.method,
@@ -134,6 +148,7 @@ export const httpMiddleware = {
         requestHeaders: rOpts.headers,
         requestId: req.$requestId,
         requestBody: rOpts.body,
+        matched: matcherResult?.matched,
       });
       request(rOpts)
         .on("response", function (response) {

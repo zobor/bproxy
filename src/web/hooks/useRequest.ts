@@ -9,7 +9,7 @@ import {
   parseRequest,
 } from "../modules/util";
 
-const limit = 100;
+const limit = 300;
 
 export default (proxySwitch: boolean, filterType, filterString): { list: HttpRequestRequest[]; clean: () => void } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
@@ -64,6 +64,7 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
         // request start but no response
         const item = parseRequest(req);
         const data: HttpRequestRequest = {
+          matched: !!req.matched,
           requestStartTime: Date.now(),
           custom: {
             requestId: item.requestId,
@@ -77,6 +78,9 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
           requestHeaders: item.requestHeaders,
           requestParams: item.requestParams || {},
         };
+        if (req.statusCode && data.custom) {
+            data.custom.statusCode = req.statusCode;
+        }
         // handler post body
         if (req.requestBody) {
           if (
