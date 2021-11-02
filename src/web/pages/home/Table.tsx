@@ -33,7 +33,7 @@ const Table = (props: any) => {
         <thead>
           <tr>
             <td>状态</td>
-            <td>匹配</td>
+            <td className="matched">匹配</td>
             <td>方式</td>
             <td>协议</td>
             <td>域名</td>

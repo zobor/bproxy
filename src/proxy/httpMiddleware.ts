@@ -135,6 +135,12 @@ export const httpMiddleware = {
       if (['post', 'put'].includes(req.method.toLowerCase())) {
         options.body = await this.getPostBody(req);
       }
+      if (req.httpVersion !== '2.0' && !req.headers?.connection) {
+        options.headers.connection = 'keep-alive';
+      }
+      if (req.httpVersion === '1.0' && options.headers['transfer-encoding']) {
+        delete options.headers['transfer-encoding'];
+      }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {
@@ -183,7 +189,7 @@ export const httpMiddleware = {
           res.writeHead(response.statusCode, responseHeaders);
         })
         .on("error", (err) => {
-          log.warn(`[http request error]: ${err.message}\n${rOpts.url}`);
+          log.warn(`[http request error]: ${err.message}\n\turl--->${rOpts.url}`);
           res.writeHead(500, {});
           res.end(err.message);
         })

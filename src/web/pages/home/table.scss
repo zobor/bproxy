@@ -29,7 +29,7 @@
   cursor: pointer;
 }
 .table tbody tr {
-  color: #B2BABB;
+  color: #A6ACAF;
   :nth-child(1) {
     color: #58D68D
   }
@@ -37,13 +37,18 @@
     color: #212F3C;
   }
   &.active {
-    background: #ccc;
+    background: #efefef;
   }
   &.error {
     color: red;
     :nth-child(1) {
       color: red;
     }
+  }
+}
+.table {
+  td.matched {
+    text-align: center;
   }
 }
 .table .status {
