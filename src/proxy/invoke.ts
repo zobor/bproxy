@@ -2,6 +2,7 @@ import LocalServer from './localServer';
 import { matcher } from './matcher';
 import settings from './config';
 import dataset from './utils/dataset';
+import { getLocalIpAddress } from './utils/ip';
 
 export const test = (url: string) => {
   const { configPath } = dataset;
@@ -11,3 +12,7 @@ export const test = (url: string) => {
 
   return matchResult;
 }
+
+export const getLocalIp = () => {
+  return getLocalIpAddress();
+};

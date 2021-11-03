@@ -16,6 +16,7 @@ import useBool from "../../hooks/useBool";
 import { Ctx } from "../../ctx";
 import classNames from "classnames";
 import Filter from '../../components/Filter';
+import Install from "../../components/Install";
 
 const RuleTestModal = ({ visible, onClose }) => {
   return (
@@ -45,12 +46,24 @@ const FilterModal = ({ visible, onClose }) => {
   );
 };
 
+const InstallModal = ({ visible, onClose }) => {
+  return <Modal onCancel={onClose}
+  visible={visible}
+  width={1000}
+  footer={null}
+  title="安装HTTPS证书">
+    <Install />
+  </Modal>
+};
+
 const Controller = () => {
   const { state, dispatch } = useContext(Ctx);
   const { proxySwitch, clean, disableCache, filterString } = state;
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
+  const { state: isShowInstall, toggle: toggleShowInstall } =
+    useBool(false);
 
   const toggleSwitch = useCallback(() => {
     dispatch({ type: "setProxySwitch", proxySwitch: !proxySwitch });
@@ -76,7 +89,7 @@ const Controller = () => {
         <ClearOutlined />
         <span>清理日志</span>
       </div>
-      <div>
+      <div onClick={toggleShowInstall}>
         <WifiOutlined />
         <span>Wi-Fi证书</span>
       </div>
@@ -93,21 +106,22 @@ const Controller = () => {
         <FilterOutlined />
         <span>过滤规则</span>
       </div>
-      <div
+      {/* <div
         className={classNames({
           disabled: !disableCache,
         })}
       >
         <CloudDownloadOutlined />
         <span>禁用缓存</span>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <MacCommandOutlined />
         <span>系统代理</span>
-      </div>
+      </div> */}
 
       <RuleTestModal onClose={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onClose={toggleShowFilter} visible={isShowFilter} />
+      <InstallModal onClose={toggleShowInstall} visible={isShowInstall} />
     </div>
   );
 };

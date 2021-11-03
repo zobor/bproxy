@@ -1,7 +1,7 @@
 {
   "name": "bproxy",
-  "version": "4.1.0",
-  "description": "nodejs proxy tool",
+  "version": "5.0.2",
+  "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
   },
@@ -46,6 +46,7 @@
     "jest": "26.4.2",
     "pako": "2.0.4",
     "prettier": "^2.4.1",
+    "qrcode": "^1.4.4",
     "qs": "6.10.1",
     "react": "17.0.0",
     "react-dom": "17.0.0",
@@ -64,7 +65,7 @@
     "url": "https://github.com/zobor/bproxy"
   },
   "keywords": [
-    "nodejs proxy,bproxy"
+    "开发代理工具"
   ],
   "author": {
     "name": "zobor",

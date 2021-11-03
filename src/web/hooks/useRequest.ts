@@ -5,6 +5,7 @@ import { onRequest } from "../modules/socket";
 import {
   arrayBuf2string,
   filterRequestItem,
+  filterRequestList,
   parseQueryString,
   parseRequest,
 } from "../modules/util";
@@ -23,15 +24,16 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
       }
       setList((pre: any) => {
         // merge history request and response
-        const history = pre.find(
+        const list = filterRequestList(pre, { filterType, filterString });
+        const history = list.find(
           (item: any) => item.custom.requestId === req.requestId
         );
-        const index = pre.findIndex(item => item.custom.requestId === req.requestId);
+        const index = list.findIndex(item => item?.custom?.requestId === req.requestId);
 
         // append keys to previours
         if (history) {
           history.requestEndTime = Date.now();
-          history.time = history.requestEndTime - history.requestStartTime;
+          history.requestStartTime && (history.time = history.requestEndTime - history.requestStartTime);
           // responseHeaders
           if (req.responseHeaders) {
             history.responseHeaders = req.responseHeaders;
@@ -39,13 +41,13 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
           // responseBody
           if (req.responseBody && req.responseBody.byteLength) {
             if (
-              history.custom.method === "ws" ||
-              history.custom.method === "wss"
+              history?.custom?.method === "ws" ||
+              history?.custom?.method === "wss"
             ) {
               if (Array.isArray(history.responseBody)) {
                 history.responseBody.push(req.responseBody);
               } else {
-                history.responseBody = [req.responseBody];
+                history.responseBody && (history.responseBody = [req.responseBody]);
               }
             } else {
               history.responseBody = req.responseBody;
@@ -54,10 +56,10 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
           // statusCode
           if (req.statusCode) {
             history.custom = history.custom || {};
-            history.custom.statusCode = req.statusCode || "";
+            history.custom.statusCode = req.statusCode || 0;
           }
           pre[index] = history;
-          return [...pre];
+          return [...list];
         }
 
         // new request

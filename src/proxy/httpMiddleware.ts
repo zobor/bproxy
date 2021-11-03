@@ -193,7 +193,7 @@ export const httpMiddleware = {
           res.writeHead(response.statusCode, responseHeaders);
         })
         .on("error", (err) => {
-          log.warn(`[http request error]: ${err.message}\n\turl--->${rOpts.url}`);
+          log.warn(`[http request error]: ${err.message}\n  url--->${rOpts.url}`);
           res.writeHead(500, {});
           res.end(err.message);
         })

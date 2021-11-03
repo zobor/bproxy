@@ -17,15 +17,15 @@ const Table = (props: any) => {
     }
   };
 
-  useEffect(() => {
-    if ($table.current) {
-      setTimeout(() => {
-          $table.current?.querySelector('tbody tr:last-child')?.scrollIntoView({
-          behavior: 'smooth',
-        });
-      });
-    }
-  }, [list.length]);
+  // useEffect(() => {
+  //   if ($table.current) {
+  //     setTimeout(() => {
+  //         $table.current?.querySelector('tbody tr:last-child')?.scrollIntoView({
+  //         behavior: 'smooth',
+  //       });
+  //     });
+  //   }
+  // }, [list.length]);
 
   return (
     <div className="table-box scrollbar-style">
