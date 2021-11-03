@@ -9,5 +9,8 @@ export default defineConfig({
     outDir: './dist',
     emptyOutDir: false,
   },
+  server: {
+    port: 8889,
+  },
   plugins: [react()]
 })

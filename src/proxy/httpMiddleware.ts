@@ -120,7 +120,11 @@ export const httpMiddleware = {
     return new Promise(async () => {
       const rHeaders = { ...req.headers, ...requestOption.headers };
       if (!_.isEmpty(requestOption)) {
-        ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => rHeaders[key] && delete rHeaders[key]);
+        ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => {
+          rHeaders[key] && delete rHeaders[key];
+          rHeaders['pragma'] = 'no-cache';
+          rHeaders['cache-control'] = 'no-cache';
+        });
       }
       const options: RequestOptions = {
         url: req.httpsURL || req.url,
