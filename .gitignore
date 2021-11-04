@@ -5,7 +5,7 @@ npm-debug.log
 .idea
 package-lock.json
 *.swp
-bproxy.conf.js
+bproxy.config.js
 yarn.lock
 mock/
 node_modules/
