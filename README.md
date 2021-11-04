@@ -193,3 +193,7 @@ interface ProxyConfig {
 }
 ```
 
+更多配置：[https://github.com/zobor/bproxy/blob/master/bproxy.config.md](https://github.com/zobor/bproxy/blob/master/bproxy.config.md)
+
+历史版本：[https://github.com/zobor/bproxy/blob/master/changelog.md](https://github.com/zobor/bproxy/blob/master/changelog.md)
+

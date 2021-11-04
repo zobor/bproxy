@@ -14,6 +14,7 @@ import dataset from './utils/dataset';
 import { userConfirm } from './utils/confirm';
 import bproxyConfig from './config';
 import beautify from '../web/libs/jsonFormat';
+
 export default class LocalServer {
   static async start(port: number, configPath: string): Promise<void>{
     const { config = {} as any, configPath: confPath = '' } = await this.loadUserConfig(configPath, settings);
@@ -81,11 +82,13 @@ export default class LocalServer {
 
     const requireUserConfig = (confPath: string) => {
       try {
-          const userConfig = require(confPath);
-          mixConfig = {...defaultSettings, ...userConfig};
-          res.configPath = confPath;
-          res.config = mixConfig;
-        } catch(err){}
+        const userConfig = require(confPath);
+        mixConfig = { ...defaultSettings, ...userConfig };
+        res.configPath = confPath;
+        res.config = mixConfig;
+      } catch (err: any) {
+        log.error(err.message);
+      }
     };
 
     if (userConfigPath || _.isString(configPath)) {
@@ -96,13 +99,14 @@ export default class LocalServer {
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
           const template: string[] = [
-            '/* eslint-disable import/no-extraneous-dependencies */',
-            'const { setConfig } = require(\'bproxy\');',
-            `const config = setConfig(${beautify(defaultConfig, null, 2, 100)});`,
+            `const config = ${beautify(defaultConfig, null, 2, 100)};`,
             'module.exports = config;',
           ];
 
-          fs.writeFileSync(confPath, template.join('\n'));
+          fs.writeFileSync(confPath, template.join('\n\n'));
+        } else {
+          log.info('请手动创建 bproxy.config.js 文件');
+          process.exit();
         }
       }
       requireUserConfig(confPath);

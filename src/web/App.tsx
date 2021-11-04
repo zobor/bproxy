@@ -1,7 +1,6 @@
 import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef } from 'react';
 import { Route, HashRouter, Switch } from 'react-router-dom';
 import { Ctx, defaultState, reducer } from './ctx';
-import ErrorHandler from './components/ErrorHandler';
 import './App.scss';
 
 const keepAliveCache: Record<string, React.MemoExoticComponent<React.ComponentType<any>>> = {};
@@ -30,12 +29,10 @@ const routerList = [
   {
     name: 'Home',
     path: './pages/home',
-    Component: lazy(() => import(/* webpackPrefetch: true */ './pages/home')),
+    Component: lazy(() => import('./pages/home')),
     routerPath: '/',
   },
 ];
-
-
 
 export default () => {
   const [state, dispatch] = useReducer(reducer, defaultState);
@@ -47,13 +44,11 @@ export default () => {
     if (historyContext) {
       try {
         const data = JSON.parse(historyContext);
-        Object.keys(data).forEach((key: string) => {
-          Promise.resolve().then(() => {
-            const fn = key.slice(0, 1).toUpperCase() + key.slice(1);
-            dispatch({
-              type: `set${fn}`,
-              [key]: data[key],
-            });
+        Object.keys(data).filter((key: string) => key !== 'requestId').forEach((key: string) => {
+          const fn = key.slice(0, 1).toUpperCase() + key.slice(1);
+          dispatch({
+            type: `set${fn}`,
+            [key]: data[key],
           });
         });
       } catch(err) {}
@@ -75,7 +70,6 @@ export default () => {
   return (
     <div className="app" id="app">
       <Ctx.Provider value={{ state, dispatch }}>
-        <ErrorHandler>
           <HashRouter>
             <Switch>
               {
@@ -83,7 +77,6 @@ export default () => {
               }
             </Switch>
           </HashRouter>
-        </ErrorHandler>
       </Ctx.Provider>
     </div>
   );

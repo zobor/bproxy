@@ -10,7 +10,7 @@ const config: ProxyConfig = {
   rules: [
     {
       regx: 'baidu.com/bproxy',
-      response: 'hello bproxy',
+      response: 'hello bproxy\n',
     }
   ],
   certificate: {
