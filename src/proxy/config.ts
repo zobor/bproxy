@@ -3,12 +3,16 @@ import { ProxyConfig } from '../types/proxy';
 
 const config: ProxyConfig = {
   port: 8888,
-  configFile: path.resolve(process.cwd(), 'bproxy.conf.js'),
-  downloadPath: '',
+  configFile: path.resolve(process.cwd(), 'bproxy.config.js'),
   https: [],
-  sslAll: false,
+  sslAll: true,
   host: [],
-  rules: [],
+  rules: [
+    {
+      regx: 'baidu.com/bproxy',
+      response: 'hello bproxy',
+    }
+  ],
   certificate: {
     filename: 'bproxy.ca.crt',
     keyFileName: 'bproxy.ca.key.pem',

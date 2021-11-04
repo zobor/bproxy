@@ -18,17 +18,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ioRequest = exports.emit = exports.io = void 0;
 const nativeApi = __importStar(require("./invoke"));
 let instances = [];
 const ioWebInvokeApiInstall = () => {
     instances.forEach((socket) => {
-        socket.on('ioWebInvoke', (payload) => {
+        socket.on('ioWebInvoke', (payload) => __awaiter(void 0, void 0, void 0, function* () {
             const { type, params } = payload;
             if (type && nativeApi[type]) {
                 try {
-                    const rs = nativeApi[type](params);
+                    const rs = yield nativeApi[type](params);
                     socket.emit('ioWebInvokeCallback', rs);
                 }
                 catch (err) {
@@ -38,7 +47,7 @@ const ioWebInvokeApiInstall = () => {
             else {
                 socket.emit('ioWebInvokeCallback', new Error('ioWebInvoke fail, api not found'));
             }
-        });
+        }));
     });
 };
 const io = (server) => {

@@ -4,6 +4,6 @@ declare const _default: {
     install(): void;
     proxy(proxy: string | boolean, port: number): void;
     start(params: any): void;
-    test(params: any): boolean;
+    test(params: any): Promise<boolean>;
 };
 export default _default;

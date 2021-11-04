@@ -11,17 +11,19 @@ import { getLocalIpAddress } from './utils/ip';
 import { log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
 import dataset from './utils/dataset';
-
+import { userConfirm } from './utils/confirm';
+import bproxyConfig from './config';
+import beautify from '../web/libs/jsonFormat';
 export default class LocalServer {
-  static start(port: number, configPath: string): void{
-    const { config = {} as any, configPath: confPath = '' } = this.loadUserConfig(configPath, settings);
+  static async start(port: number, configPath: string): Promise<void>{
+    const { config = {} as any, configPath: confPath = '' } = await this.loadUserConfig(configPath, settings);
     dataset.configPath = configPath;
     if (_.isEmpty(config) || _.isEmpty(confPath)) {
       return;
     }
     let appConfig = config;
-    // watch config file change
-    // update config without restart app
+    port && (appConfig.port = port);
+    // 监听配置文件
     fs.watchFile(confPath, { interval: 1000 }, () => {
       log.info(`配置文件已更新: ${confPath}`);
       try {
@@ -63,31 +65,44 @@ export default class LocalServer {
     });
   }
 
-  static loadUserConfig(configPath: string, defaultSettings: ProxyConfig): {
+  static async loadUserConfig(configPath: string, defaultSettings: ProxyConfig): Promise<{
     configPath?: string;
     config?: ProxyConfig;
-  } {
+  }> {
     let mixConfig, userConfigPath;
     const res: {
       configPath?: string;
       config?: ProxyConfig;
     } = {};
+
     if (_.isBoolean(configPath) || _.isUndefined(configPath)) {
       userConfigPath = '.';
     }
-    if (userConfigPath || _.isString(configPath)) {
-      const confPath = path.resolve(userConfigPath || configPath, 'bproxy.conf.js');
-      if (!fs.existsSync(confPath)) {
-        console.error('当前目录下没有找到bproxy.conf.js, 请先创建:', confPath);
-        return res;
-      } else {
-        try {
+
+    const requireUserConfig = (confPath: string) => {
+      try {
           const userConfig = require(confPath);
           mixConfig = {...defaultSettings, ...userConfig};
           res.configPath = confPath;
           res.config = mixConfig;
         } catch(err){}
+    };
+
+    if (userConfigPath || _.isString(configPath)) {
+      const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
+      if (!fs.existsSync(confPath)) {
+        const userInput = await userConfirm(`当前目录没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
+        if (userInput.toString().toLocaleUpperCase() === 'Y') {
+          const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
+          const template: string[] = [
+            'const { setConfig } = require(\'bproxy\');',
+            `const config = setConfig(${beautify(defaultConfig, null, 2, 100)});`,
+            'module.exports = config;',
+          ];
+          fs.writeFileSync(confPath, template.join('\n'));
+        }
       }
+      requireUserConfig(confPath);
     }
     return res;
   }

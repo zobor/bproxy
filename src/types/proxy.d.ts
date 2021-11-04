@@ -1,4 +1,3 @@
-import { matcher } from './../proxy/matcher';
 export interface ResponseCallbackParams {
   response: any;
   request: any;
@@ -7,17 +6,17 @@ export interface ResponseCallbackParams {
 }
 
 export type MatchRegxFunction = (url: string) => boolean;
+export type ResponseHandler = (params: ResponseCallbackParams) => void;
 export interface ProxyRule {
   regx: RegExp | string | MatchRegxFunction;
   host?: string;
   file?: string;
   path?: string;
-  response?: (params: ResponseCallbackParams) => void | string;
+  response?: string | ResponseHandler;
   redirect?: string;
   redirectTarget?: string;
   rewrite?: (path: string) => string;
   proxy?: string;
-  showLog?: boolean;
   download?: boolean;
   responseHeaders?: {
     [key: string]: any;
@@ -90,7 +89,6 @@ export interface ProxyConfig {
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
 }
-
 
 export default interface MatcherResult {
   delay?: number;

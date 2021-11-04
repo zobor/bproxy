@@ -24,5 +24,5 @@
     "experimentalDecorators": true,
     "jsx": "react-jsx",
   },
-  "exclude": [ "./vite.config.ts", "./dist" ],
+  "exclude": [ "./vite.config.ts", "./dist", "./bproxy.*.js" ],
 }

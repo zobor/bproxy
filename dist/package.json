@@ -1,10 +1,11 @@
 {
     "name": "bproxy",
-    "version": "5.0.3",
+    "version": "5.0.4",
     "description": "开发代理工具",
     "bin": {
         "bproxy": "./bin/bproxy"
     },
+    "main": "./dist/src/proxy/index.js",
     "scripts": {
         "prepublish": "npm run build",
         "lint": "eslint src --ext .ts",
@@ -33,6 +34,7 @@
         "@types/lodash": "4.14.148",
         "@types/node": "12.19.16",
         "@types/pako": "1.0.2",
+        "@types/qrcode": "^1.4.1",
         "@types/qs": "^6.9.7",
         "@types/react": "^17.0.31",
         "@types/react-dom": "17.0.0",
@@ -65,7 +67,7 @@
         "url": "https://github.com/zobor/bproxy"
     },
     "keywords": [
-        "开发代理工具"
+        "代理工具"
     ],
     "author": {
         "name": "zobor",

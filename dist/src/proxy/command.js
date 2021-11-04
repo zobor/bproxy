@@ -60,7 +60,8 @@ exports.default = {
         });
     },
     report() {
-        request.get(`https://z3.cnzz.com/stat.htm?id=1278865075&r=http%3A%2F%2Fregx.vip%2F&lg=zh-cn&ntime=none&cnzz_eid=117682865-1634900721-null&showp=1920x1080&p=http%3A%2F%2Fregx.vip%2Fbproxy&t=Bproxy&umuuid=17ca7ad415558d-06ccc278d12621-5a402f16-1fa400-17ca7ad415644b&h=1&rnd=${parseInt((+new Date / 1000).toString(), 10)}`);
+        const url = `https://z3.cnzz.com/stat.htm?id=1278865075&r=http%3A%2F%2Fregx.vip%2F&lg=zh-cn&ntime=none&cnzz_eid=117682865-1634900721-null&showp=1920x1080&p=http%3A%2F%2Fregx.vip%2Fbproxy%2F${pkg.version}&t=Bproxy&umuuid=17ca7ad415558d-06ccc278d12621-5a402f16-1fa400-17ca7ad415644b&h=1&rnd=${parseInt((+new Date / 1000).toString(), 10)}`;
+        request.get(url);
     },
     install() {
         const ca = new certifica_1.default();
@@ -86,7 +87,6 @@ exports.default = {
     },
     proxy(proxy, port) {
         const sysProxyPort = port || config_1.default.port;
-        console.log(111, process.platform);
         if (process.platform !== 'darwin') {
             utils_1.log.warn('设置系统代理指令，不支持当前系统');
             return;
@@ -110,11 +110,13 @@ exports.default = {
         localServer_1.default.start(port, params.config);
     },
     test(params) {
-        const [, , , url] = params.rawArgs;
-        const configPath = params.config;
-        const { config = {} } = localServer_1.default.loadUserConfig(configPath, config_1.default);
-        const matchResult = (0, matcher_1.matcher)(config.rules, url);
-        utils_1.log.info(`匹配结果：${matchResult.matched}`);
-        return false;
+        return __awaiter(this, void 0, void 0, function* () {
+            const [, , , url] = params.rawArgs;
+            const configPath = params.config;
+            const { config = {} } = yield localServer_1.default.loadUserConfig(configPath, config_1.default);
+            const matchResult = (0, matcher_1.matcher)(config.rules, url);
+            utils_1.log.info(`匹配结果：${matchResult.matched}`);
+            return false;
+        });
     }
 };

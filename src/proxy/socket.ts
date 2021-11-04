@@ -6,11 +6,11 @@ let instances: Socket[] = [];
 
 const ioWebInvokeApiInstall = () => {
   instances.forEach((socket: Socket) => {
-    socket.on('ioWebInvoke', (payload: WebInvokeParams) => {
+    socket.on('ioWebInvoke', async(payload: WebInvokeParams) => {
       const { type, params } = payload;
       if (type && nativeApi[type]) {
         try {
-          const rs = nativeApi[type](params);
+          const rs = await nativeApi[type](params);
           socket.emit('ioWebInvokeCallback', rs);
         } catch(err) {
           socket.emit('ioWebInvokeCallback', err);

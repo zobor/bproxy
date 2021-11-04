@@ -24,7 +24,8 @@ export default {
   },
 
   report(): void {
-    request.get(`https://z3.cnzz.com/stat.htm?id=1278865075&r=http%3A%2F%2Fregx.vip%2F&lg=zh-cn&ntime=none&cnzz_eid=117682865-1634900721-null&showp=1920x1080&p=http%3A%2F%2Fregx.vip%2Fbproxy&t=Bproxy&umuuid=17ca7ad415558d-06ccc278d12621-5a402f16-1fa400-17ca7ad415644b&h=1&rnd=${parseInt((+new Date / 1000).toString(), 10)}`);
+    const url = `https://z3.cnzz.com/stat.htm?id=1278865075&r=http%3A%2F%2Fregx.vip%2F&lg=zh-cn&ntime=none&cnzz_eid=117682865-1634900721-null&showp=1920x1080&p=http%3A%2F%2Fregx.vip%2Fbproxy%2F${pkg.version}&t=Bproxy&umuuid=17ca7ad415558d-06ccc278d12621-5a402f16-1fa400-17ca7ad415644b&h=1&rnd=${parseInt((+new Date / 1000).toString(), 10)}`;
+    request.get(url);
   },
 
   // install and trust certificate
@@ -52,7 +53,6 @@ export default {
   // set system proxy
   proxy(proxy: string | boolean, port: number): void {
     const sysProxyPort = port || settings.port;
-    console.log(111, process.platform);
     if (process.platform !== 'darwin') {
       log.warn('设置系统代理指令，不支持当前系统');
       return;
@@ -76,10 +76,10 @@ export default {
     LocalServer.start(port, params.config);
   },
 
-  test(params: any): boolean {
+  async test(params: any): Promise<boolean> {
     const [, , , url] = params.rawArgs;
     const configPath = params.config;
-    const { config = {} as any } = LocalServer.loadUserConfig(configPath, settings);
+    const { config = {} as any } = await LocalServer.loadUserConfig(configPath, settings);
     const matchResult = matcher(config.rules, url);
     log.info(`匹配结果：${matchResult.matched}`);
     return false;
