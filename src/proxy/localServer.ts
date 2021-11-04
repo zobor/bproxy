@@ -92,13 +92,16 @@ export default class LocalServer {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
       if (!fs.existsSync(confPath)) {
         const userInput = await userConfirm(`当前目录没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
+
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
           const template: string[] = [
+            '/* eslint-disable import/no-extraneous-dependencies */',
             'const { setConfig } = require(\'bproxy\');',
             `const config = setConfig(${beautify(defaultConfig, null, 2, 100)});`,
             'module.exports = config;',
           ];
+
           fs.writeFileSync(confPath, template.join('\n'));
         }
       }
