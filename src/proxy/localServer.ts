@@ -2,18 +2,21 @@ import * as http from 'http';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import request from 'request';
 import settings from './config';
+import * as pkg from '../../package.json';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { isLocal, requestJac } from './routers';
 import { io } from './socket';
 import { getLocalIpAddress } from './utils/ip';
-import { log, utils } from './utils/utils';
+import { compareVersion, log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
 import dataset from './utils/dataset';
 import { userConfirm } from './utils/confirm';
 import bproxyConfig from './config';
 import beautify from '../web/libs/jsonFormat';
+import chalk from 'chalk';
 
 export default class LocalServer {
   static async start(port: number, configPath: string): Promise<void>{
@@ -61,9 +64,14 @@ export default class LocalServer {
       });
     });
     const ips = getLocalIpAddress();
+    log.info(`本地代理服务器启动成功: `);
     ips.forEach((ip: string) => {
-      log.info(`本地代理服务器启动成功: http://${ip}:${appConfig.port}`);
+      console.log(`\t${chalk.green(`http://${ip}:${appConfig.port}`)}`)
     });
+    log.info('网络日志查看: ');
+    console.log(`\t${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
+
+    await this.checkUpdate();
   }
 
   static async loadUserConfig(configPath: string, defaultSettings: ProxyConfig): Promise<{
@@ -112,5 +120,37 @@ export default class LocalServer {
       requireUserConfig(confPath);
     }
     return res;
+  }
+
+  static checkUpdate(): Promise<string> {
+    return new Promise((resolve) => {
+      const url1 = 'https://external.githubfast.com/https/raw.githubusercontent.com/zobor/bproxy/master/package.json';
+      const url2 = 'https://raw.githubusercontent.com/zobor/bproxy/master/package.json';
+      const parse = (str) => {
+        try {
+          const json = JSON.parse(str);
+          if (compareVersion(json.version, pkg.version) === 1) {
+            log.info(`bproxy有新版本(${json.version})可以更新.当前版本(${pkg.version})`);
+            console.log(`\t全局更新：\t${chalk.green('npm i bproxy@latest -g')}`);
+            console.log(`\t或者项目内更新:\t${chalk.green('npm i bproxy -D')}`);
+            resolve(json.version);
+          } else {
+            resolve('');
+          }
+        } catch(err) {}
+      };
+      request(url1, (err, response, body) => {
+        if (err) {
+          request(url2, (e, r, b) => {
+            if (!e && b) {
+              parse(b);
+            }
+          });
+        }
+        if (!err && body) {
+          parse(body);
+        }
+      });
+    });
   }
 }

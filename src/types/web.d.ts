@@ -1,5 +1,3 @@
-import { matcher } from './../proxy/matcher';
-
 export type ResponseBody = Buffer | Int8Array | Uint8Array;
 export interface HttpRequestRequest {
   matched: boolean;

@@ -15,11 +15,9 @@ const html = `
   <title>Bproxy</title>
 </head>
 <body>
-<style>
-.btn {display: inline-flex;align-items: center;padding: 5px 10px; background: blue; color: #fff; justify-content: center; font-size: 16px; text-decoration: none; border-radius: 5px; margin: 0 10px;}
-</style>
-<a class="btn" href="/install">安装证书</a>
-<a class="btn" href="/inspect">日志</a>
+<script>
+window.location.replace('/inspect');
+</script>
 </body>
 </html>
 `;

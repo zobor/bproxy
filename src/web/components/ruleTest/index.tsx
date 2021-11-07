@@ -22,7 +22,8 @@ export default () => {
   };
 
   return <div className="test-page">
-    <Input onKeyDown={onEnterPress} />
-    <pre><code>{result}</code></pre>
+    <h2>检测目标URL是否跟你的rule匹配</h2>
+    <Input placeholder="请输入要检测的URL地址，按回车确认" onKeyDown={onEnterPress} />
+    {result ? <pre><code>{result}</code></pre> : null}
   </div>
 }
