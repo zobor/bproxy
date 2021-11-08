@@ -56,7 +56,16 @@ const InstallModal = ({ visible, onClose }) => {
   </Modal>
 };
 
-const Controller = () => {
+interface ControllerProps {
+  connected?: boolean;
+}
+
+const Disconnected = () => <div className="disconnected">
+  bproxy 已经停止工作，等待连接中...
+</div>
+
+const Controller = (props: ControllerProps) => {
+  const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
   const { proxySwitch, clean, disableCache, filterString } = state;
 
@@ -73,6 +82,10 @@ const Controller = () => {
       clean();
     }
   };
+
+  if (!connected) {
+    return <Disconnected />
+  }
 
   return (
     <div className="controller">

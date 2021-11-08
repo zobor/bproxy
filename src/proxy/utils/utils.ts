@@ -100,3 +100,14 @@ export const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   }
   return rs;
 };
+
+export const versionString2Number = (version): number => version.split('.').reduce((pre, cur, index) => {
+  return pre + Number(cur) * (100 ** (3 - index));
+}, 0);
+
+export const compareVersion = (v1: string, v2: string): number => {
+  const n1 = versionString2Number(v1);
+  const n2 = versionString2Number(v2);
+
+  return n1 === n2 ? 0 : n1 > n2 ? 1 : 0
+};

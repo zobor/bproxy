@@ -9,7 +9,7 @@ B Proxy 是一个代理工具，为提高效率而生。
 
 ## 安装
 
-可以选择安装全局命令行指令，多个项目共用一个代理工具。也可以在项目中单独使用。
+可以选择安装全局命令行指令。
 
 ```bash
 npm i bproxy -g
@@ -67,6 +67,29 @@ bproxy -s
 curl -x http://127.0.0.1:8888 http://baidu.com/bproxy
 // output
 test
+```
+
+### 项目中使用
+安装到bproxy到项目
+```bash
+npm i bproxy -g
+```
+添加bproxy启动脚本
+`package.json`
+```json
+{
+    "scripts": {
+        "proxy": "bproxy"
+    }
+}
+```
+
+启动代理：
+```
+// 安装证书
+npm run proxy -i
+// 启动代理
+npm run proxy -s
 ```
 
 ## 核心功能
@@ -154,9 +177,7 @@ config.rules.push({
 
 ### 抓包视图
 
-![](https://sta-op.douyucdn.cn/butterfly-java/2021/11/04/9647ad27b97ba02ee68d9ef85c705228.png)
-
-![](https://sta-op-test.douyucdn.cn/front-publish/fed-ci-weekly-develop/kiDVmQVax5y7lVR9U0w4W5ELUU4TQjs8-1635128256557.png)
+<img src="https://sta-op.douyucdn.cn/butterfly-java/2021/11/08/0e0883720037694d531619024db18857.png" style="zoom:50%;" />
 
 ### 配置概览
 ```ts
@@ -193,7 +214,7 @@ interface ProxyConfig {
 }
 ```
 
-更多配置：[https://github.com/zobor/bproxy/blob/master/bproxy.config.md](https://github.com/zobor/bproxy/blob/master/bproxy.config.md)
-
-历史版本：[https://github.com/zobor/bproxy/blob/master/changelog.md](https://github.com/zobor/bproxy/blob/master/changelog.md)
+### 更多
+- [更多配置](https://github.com/zobor/bproxy/blob/master/bproxy.config.md)
+- [历史版本](https://github.com/zobor/bproxy/blob/master/changelog.md)
 

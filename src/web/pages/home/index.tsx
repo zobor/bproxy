@@ -16,6 +16,7 @@ export default () => {
   const detailMemo = useMemo(() => {
     return detail;
   }, [detail?.custom?.requestId]);
+  const [connected, setConnected] = useState(true);
   useEffect(() => {
     const item = list.find((item: any) => item.custom.requestId === requestId);
     if (item) {
@@ -25,10 +26,14 @@ export default () => {
 
   useEffect(() => {
     dispatch({ type: 'setClean', clean });
+
+    setInterval(() => {
+      setConnected((window as any)?.$socket?.connected);
+    }, 2000);
   }, []);
 
   return <div className="app-main">
-    <Controller />
+    <Controller connected={connected} />
     <Table list={list} />
     <DetailMemo detail={detailMemo} />
   </div>

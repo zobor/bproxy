@@ -1,4 +1,4 @@
-import { createHttpHeader, isHttpsHostRegMatch, url2regx, utils, log } from '../src/proxy/utils/utils';
+import { createHttpHeader, isHttpsHostRegMatch, url2regx, utils, log, compareVersion } from '../src/proxy/utils/utils';
 
 describe('utils.ts', () => {
   it('utils.guid', () => {
@@ -42,5 +42,12 @@ describe('utils.ts', () => {
     log.info(123);
     log.warn({ name: "123" });
     log.error({ name: "123" });
+  });
+
+  it('compareVersion', () => {
+    expect(compareVersion('1.0.0', '1.0.0')).toEqual(0);
+    expect(compareVersion('1.0.1', '1.0.0')).toEqual(1);
+    expect(compareVersion('1.1.0', '1.0.10')).toEqual(1);
+    expect(compareVersion('5.1.1', '5.0.100')).toEqual(1);
   });
 });

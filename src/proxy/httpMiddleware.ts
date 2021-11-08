@@ -73,12 +73,6 @@ export const httpMiddleware = {
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
           });
-          console.log({
-            requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
-            method: req.method,
-            statusCode: matcherResult.rule.statusCode,
-          });
         }
         // network response
         // 4. rule.redirect

@@ -34,3 +34,15 @@
     }
   }
 }
+
+.disconnected {
+  background-color:goldenrod;
+  color: #000;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  margin-bottom: 10px;
+  height: 70px;
+}
