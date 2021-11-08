@@ -22,7 +22,7 @@
     "commander": "2.20.3",
     "inquirer": "8.2.0",
     "lodash": "4.17.21",
-    "mkdirp": "0.5.1",
+    "mkdirp": "1.0.4",
     "node-forge": "0.10.0",
     "request": "2.88.2",
     "socket.io": "4.3.1"
