@@ -9,7 +9,26 @@ B Proxy 是一个代理工具，为提高效率而生。
 
 ## 安装
 
-可以选择安装全局命令行指令。
+推荐安装到项目下
+```bash
+npm i bproxy -D
+```
+
+修改`package.json`，添加scripts
+```json
+{
+  "scripts": {
+    "proxy": "bproxy"
+  }
+}
+```
+
+启动项目下的代理调试
+```
+npm run proxy -s
+```
+
+也可以选择安装全局命令行指令。
 
 ```bash
 npm i bproxy -g
