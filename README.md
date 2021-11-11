@@ -25,7 +25,7 @@ npm i bproxy -D
 
 启动项目下的代理调试
 ```
-npm run proxy -s
+npm run proxy -- -s
 ```
 
 也可以选择安装全局命令行指令。
