@@ -47,6 +47,7 @@ export default {
       log.info('证书安装失败');
     } else {
       log.warn('自动安装证书目前只支持MacOS系统，其他系统请双击证书安装！');
+      log.info('安装证书指引: https://github.com/zobor/bproxy/wiki/windows%E7%B3%BB%E7%BB%9F%E4%B8%8B%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6');
     }
   },
 

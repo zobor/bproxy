@@ -22,7 +22,6 @@ module.exports = config;
 | sslAll     | boolean     | true                                | 是否抓取全部https请求，优先级高于https配置 |
 | host       | string[]    | []                                  | host配置                                   |
 | rules      | ProxyRule[] | []                                  | 代理规则列表                               |
-|
 
 ## rules
 
