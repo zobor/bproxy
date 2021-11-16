@@ -27,6 +27,12 @@ interface CertConfig {
   certPath: string;
 }
 
+interface WebOthers {
+  originHost?: string;
+  originPort?: number;
+  fakeServer?: any;
+}
+
 export default {
   beforeStart(): CertConfig {
     certInstance = new Certificate();
@@ -54,24 +60,36 @@ export default {
       socket,
       head,
       urlParsed.port
-    ).then((localHttpsPort) => {
+    ).then(({
+      port: localHttpsPort,
+      fakeServer
+    }) => {
       const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, host);
       if (isHttpsMatch) {
-        this.web(socket, head, "127.0.0.1", localHttpsPort, req);
+        this.web(socket, head, "127.0.0.1", localHttpsPort, req, {
+          originHost: urlParsed.hostname || '',
+          originPort: urlParsed.port ? Number(urlParsed.port) : 0,
+          fakeServer,
+        });
       } else {
-        this.web(socket, head, urlParsed.hostname, urlParsed.port, req);
+        this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
+          fakeServer,
+        });
       }
     });
   },
 
-  web(socket, head, hostname, port, req): void {
+  web(socket, head, hostname, port, req, others: WebOthers = {}): void {
+    const $hostname = others.originHost || hostname;
+    const $port = others.originPort || port;
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
       socket
-        .on("error", () => {
+        .on("error", (err) => {
           // todo
-          log.warn(`[net.connect error]: ${hostname} ${port}`);
+          // log.warn(`[socket error]: ${$hostname}:${$port}-->${err.code}`);
           socketAgent.end();
+          socketAgent.destroy();
         })
         .write(
           createHttpHeader(
@@ -87,9 +105,25 @@ export default {
       socketAgent.pipe(socket).pipe(socketAgent);
     });
     socketAgent.on("error", () => {
-      log.warn(`[https socket agent error]: ${hostname} ${port}`);
+      log.warn(`[https socket agent error]: ${$hostname} ${$port}`);
       socketAgent.end();
     });
+    // socketAgent.on('end', () => {
+    //   console.log('end', $hostname, $port);
+    //   socketAgent.end();
+    //   socketAgent.destroy();
+    // });
+
+    setTimeout(() => {
+      if (socketAgent.destroyed) {
+        return;
+      }
+      log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
+      others?.fakeServer?.close();
+      socketAgent?.end();
+      socketAgent?.destroy();
+      socket?.end();
+    }, (12 * 1000));
   },
 
   startLocalHttpsServer(
@@ -99,7 +133,10 @@ export default {
     socket,
     head,
     port
-  ): Promise<number> {
+  ): Promise<{
+    port: number;
+    fakeServer: any;
+  }> {
     return new Promise((resolve) => {
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
@@ -128,7 +165,10 @@ export default {
           localServer.close();
           return;
         }
-        resolve(localAddress.port);
+        resolve({
+          port: localAddress.port,
+          fakeServer: localServer,
+        });
       });
       localServer.on("request", (req, res) => {
         const $req = req as any;
