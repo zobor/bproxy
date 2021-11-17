@@ -9,6 +9,8 @@ import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log } from './utils/utils';
+import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
+import { stringToBytes } from '../web/modules/buffer';
 
 export const httpMiddleware = {
   responseByText(text: string, res, responseHeaders): void {
@@ -37,18 +39,34 @@ export const httpMiddleware = {
         // localfile
         // 1. rule.file
         if (matcherResult.rule.file) {
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
+          });
           this.proxyLocalFile(
             matcherResult.rule.file,
             res,
             resOptions.headers,
+            req,
           );
         }
         // 2. rule.path
         else if (matcherResult.rule.path) {
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
+          });
           this.proxyLocalFile(
             path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''),
             res,
             resOptions.headers,
+            req,
           );
         }
         // 3.1. rule.response.function
@@ -59,10 +77,24 @@ export const httpMiddleware = {
             req,
             rules: matcherResult?.rule,
           });
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
+          });
         }
         // 3.2.  rule.response.string
         else if (_.isString(matcherResult.rule.response)) {
           this.responseByText(matcherResult.rule.response, res, resOptions.headers);
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
+          });
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
@@ -73,6 +105,7 @@ export const httpMiddleware = {
             url: req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
           });
         }
         // network response
@@ -209,18 +242,45 @@ export const httpMiddleware = {
     });
   },
 
-  proxyLocalFile(filepath: string, res: any, resHeaders: any = {}): void {
+  proxyLocalFile(filepath: string, res: any, resHeaders: any = {}, req: any): void {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
-      res.writeHead(200, resHeaders);
+      const suffix = getFileTypeFromSuffix(filepath);
+      const fileContentType = getResponseContentType(suffix);
+      const headers = resHeaders;
+      if (fileContentType && !headers['content-type']) {
+        headers['content-type'] = fileContentType;
+      }
+      res.writeHead(200, headers);
       readStream.pipe(res);
+
+      let responseBody = '不支持预览';
+      if (['json', 'js', 'css', 'html'].includes(suffix)) {
+        responseBody  =fs.readFileSync(filepath, 'utf-8');
+      }
+
+      ioRequest({
+        requestId: req.$requestId,
+        url: req.url,
+        method: req.method,
+        responseHeaders: headers,
+        statusCode: 200,
+        responseBody: stringToBytes(responseBody),
+      });
     } catch (err) {
       const s = new Readable();
       res.writeHead(404, {});
       s.push('404: Not Found or Not Access');
       s.push(null);
       s.pipe(res);
+      ioRequest({
+        requestId: req.$requestId,
+        url: req.url,
+        method: req.method,
+        responseHeaders: {},
+        statusCode: 404,
+      });
     }
   },
 }
