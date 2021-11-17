@@ -82,6 +82,7 @@ export default {
   web(socket, head, hostname, port, req, others: WebOthers = {}): void {
     const $hostname = others.originHost || hostname;
     const $port = others.originPort || port;
+    let timer;
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
       socket
@@ -108,14 +109,20 @@ export default {
       log.warn(`[https socket agent error]: ${$hostname} ${$port}`);
       socketAgent.end();
     });
+    socketAgent.on('close', () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    })
     // socketAgent.on('end', () => {
     //   console.log('end', $hostname, $port);
     //   socketAgent.end();
     //   socketAgent.destroy();
     // });
 
-    setTimeout(() => {
-      if (socketAgent.destroyed) {
+    timer = setTimeout(() => {
+      if (socketAgent.destroyed || others?.fakeServer.$url || others?.fakeServer?.$upgrade) {
         return;
       }
       log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
@@ -123,7 +130,7 @@ export default {
       socketAgent?.end();
       socketAgent?.destroy();
       socket?.end();
-    }, (12 * 1000));
+    }, (5 * 1000));
   },
 
   startLocalHttpsServer(
@@ -179,6 +186,7 @@ export default {
           $req.$requestId = utils.guid();
         }
         httpMiddleware.proxy(req, res, config);
+        (localServer as any).$url = $req.httpsURL;
       });
       // websocket
       localServer.on("upgrade", (proxyReq, proxySocket) => {
@@ -191,6 +199,7 @@ export default {
           proxySocket.destroy();
           return true;
         }
+        (localServer as any).$upgrade = true;
         const options = {
           host: hostname,
           hostname,
