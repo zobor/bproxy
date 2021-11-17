@@ -11,8 +11,9 @@ import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log } from './utils/utils';
 
 export const httpMiddleware = {
-  responseByText(text: string, res): void {
+  responseByText(text: string, res, responseHeaders): void {
     const s = new Readable();
+    res.writeHead(200, responseHeaders || {});
     s.push(text);
     s.push(null);
     s.pipe(res);
@@ -61,7 +62,7 @@ export const httpMiddleware = {
         }
         // 3.2.  rule.response.string
         else if (_.isString(matcherResult.rule.response)) {
-          this.responseByText(matcherResult.rule.response, res);
+          this.responseByText(matcherResult.rule.response, res, resOptions.headers);
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
