@@ -21,12 +21,4 @@ describe('command.ts', () => {
         }
         expect(error === undefined).toBeTruthy();
     });
-    it('run.start', () => {
-        try {
-            command_1.default.start({ port: 8888, config: './' });
-        }
-        catch (err) {
-            console.log(err);
-        }
-    });
 });

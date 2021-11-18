@@ -55,23 +55,32 @@ exports.default = {
         const { https: httpsList, sslAll } = config;
         const urlParsed = url.parse(`https://${req.url}`);
         const host = (urlParsed.host || "").replace(/:\d+/, "");
-        this.startLocalHttpsServer(urlParsed.hostname, config, req, socket, head, urlParsed.port).then((localHttpsPort) => {
+        this.startLocalHttpsServer(urlParsed.hostname, config, req, socket, head, urlParsed.port).then(({ port: localHttpsPort, fakeServer }) => {
             const isHttpsMatch = sslAll || (0, utils_1.isHttpsHostRegMatch)(httpsList, host);
             if (isHttpsMatch) {
-                this.web(socket, head, "127.0.0.1", localHttpsPort, req);
+                this.web(socket, head, "127.0.0.1", localHttpsPort, req, {
+                    originHost: urlParsed.hostname || '',
+                    originPort: urlParsed.port ? Number(urlParsed.port) : 0,
+                    fakeServer,
+                });
             }
             else {
-                this.web(socket, head, urlParsed.hostname, urlParsed.port, req);
+                this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
+                    fakeServer,
+                });
             }
         });
     },
-    web(socket, head, hostname, port, req) {
+    web(socket, head, hostname, port, req, others = {}) {
+        const $hostname = others.originHost || hostname;
+        const $port = others.originPort || port;
+        let timer;
         const socketAgent = net.connect(port, hostname, () => {
             const agent = "bproxy Agent";
             socket
-                .on("error", () => {
-                utils_1.log.warn(`[net.connect error]: ${hostname} ${port}`);
+                .on("error", (err) => {
                 socketAgent.end();
+                socketAgent.destroy();
             })
                 .write((0, utils_1.createHttpHeader)(`HTTP/${req.httpVersion} 200 Connection Established`, {
                 "Proxy-agent": `${agent}`,
@@ -80,9 +89,26 @@ exports.default = {
             socketAgent.pipe(socket).pipe(socketAgent);
         });
         socketAgent.on("error", () => {
-            utils_1.log.warn(`[https socket agent error]: ${hostname} ${port}`);
+            utils_1.log.warn(`[https socket agent error]: ${$hostname} ${$port}`);
             socketAgent.end();
         });
+        socketAgent.on('close', () => {
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+        });
+        timer = setTimeout(() => {
+            var _a, _b;
+            if (socketAgent.destroyed || (others === null || others === void 0 ? void 0 : others.fakeServer.$url) || ((_a = others === null || others === void 0 ? void 0 : others.fakeServer) === null || _a === void 0 ? void 0 : _a.$upgrade)) {
+                return;
+            }
+            utils_1.log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
+            (_b = others === null || others === void 0 ? void 0 : others.fakeServer) === null || _b === void 0 ? void 0 : _b.close();
+            socketAgent === null || socketAgent === void 0 ? void 0 : socketAgent.end();
+            socketAgent === null || socketAgent === void 0 ? void 0 : socketAgent.destroy();
+            socket === null || socket === void 0 ? void 0 : socket.end();
+        }, (5 * 1000));
     },
     startLocalHttpsServer(hostname, config, req, socket, head, port) {
         return new Promise((resolve) => {
@@ -106,7 +132,10 @@ exports.default = {
                     localServer.close();
                     return;
                 }
-                resolve(localAddress.port);
+                resolve({
+                    port: localAddress.port,
+                    fakeServer: localServer,
+                });
             });
             localServer.on("request", (req, res) => {
                 const $req = req;
@@ -117,6 +146,7 @@ exports.default = {
                     $req.$requestId = utils_1.utils.guid();
                 }
                 httpMiddleware_1.httpMiddleware.proxy(req, res, config);
+                localServer.$url = $req.httpsURL;
             });
             localServer.on("upgrade", (proxyReq, proxySocket) => {
                 var _a;
@@ -128,6 +158,7 @@ exports.default = {
                     proxySocket.destroy();
                     return true;
                 }
+                localServer.$upgrade = true;
                 const options = {
                     host: hostname,
                     hostname,

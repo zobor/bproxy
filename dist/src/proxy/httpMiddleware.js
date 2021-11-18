@@ -42,9 +42,12 @@ const matcher_1 = require("./matcher");
 const socket_1 = require("./socket");
 const is_1 = require("./utils/is");
 const utils_1 = require("./utils/utils");
+const file_1 = require("./utils/file");
+const buffer_1 = require("../web/modules/buffer");
 exports.httpMiddleware = {
-    responseByText(text, res) {
+    responseByText(text, res, responseHeaders) {
         const s = new stream_1.Readable();
+        res.writeHead(200, responseHeaders || {});
         s.push(text);
         s.push(null);
         s.pipe(res);
@@ -68,10 +71,24 @@ exports.httpMiddleware = {
                         resOptions.headers = Object.assign({}, matcherResult.rule.responseHeaders);
                     }
                     if (matcherResult.rule.file) {
-                        this.proxyLocalFile(matcherResult.rule.file, res, resOptions.headers);
+                        (0, socket_1.ioRequest)({
+                            requestId: req.$requestId,
+                            url: req.requestOriginUrl || req.url,
+                            method: req.method,
+                            statusCode: matcherResult.rule.statusCode,
+                            requestHeaders: req.headers,
+                        });
+                        this.proxyLocalFile(matcherResult.rule.file, res, resOptions.headers, req);
                     }
                     else if (matcherResult.rule.path) {
-                        this.proxyLocalFile(path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''), res, resOptions.headers);
+                        (0, socket_1.ioRequest)({
+                            requestId: req.$requestId,
+                            url: req.requestOriginUrl || req.url,
+                            method: req.method,
+                            statusCode: matcherResult.rule.statusCode,
+                            requestHeaders: req.headers,
+                        });
+                        this.proxyLocalFile(path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''), res, resOptions.headers, req);
                     }
                     else if (_.isFunction(matcherResult.rule.response)) {
                         matcherResult.rule.response({
@@ -80,9 +97,23 @@ exports.httpMiddleware = {
                             req,
                             rules: matcherResult === null || matcherResult === void 0 ? void 0 : matcherResult.rule,
                         });
+                        (0, socket_1.ioRequest)({
+                            requestId: req.$requestId,
+                            url: req.requestOriginUrl || req.url,
+                            method: req.method,
+                            statusCode: matcherResult.rule.statusCode,
+                            requestHeaders: req.headers,
+                        });
                     }
                     else if (_.isString(matcherResult.rule.response)) {
-                        this.responseByText(matcherResult.rule.response, res);
+                        this.responseByText(matcherResult.rule.response, res, resOptions.headers);
+                        (0, socket_1.ioRequest)({
+                            requestId: req.$requestId,
+                            url: req.requestOriginUrl || req.url,
+                            method: req.method,
+                            statusCode: matcherResult.rule.statusCode,
+                            requestHeaders: req.headers,
+                        });
                     }
                     else if (matcherResult.rule.statusCode) {
                         res.writeHead(matcherResult.rule.statusCode, {});
@@ -92,6 +123,7 @@ exports.httpMiddleware = {
                             url: req.requestOriginUrl || req.url,
                             method: req.method,
                             statusCode: matcherResult.rule.statusCode,
+                            requestHeaders: req.headers,
                         });
                     }
                     else if (_.isString(matcherResult.rule.redirect)) {
@@ -213,12 +245,30 @@ exports.httpMiddleware = {
             });
         });
     },
-    proxyLocalFile(filepath, res, resHeaders = {}) {
+    proxyLocalFile(filepath, res, resHeaders = {}, req) {
         try {
             fs.accessSync(filepath, fs.constants.R_OK);
             const readStream = fs.createReadStream(filepath);
-            res.writeHead(200, resHeaders);
+            const suffix = (0, file_1.getFileTypeFromSuffix)(filepath);
+            const fileContentType = (0, file_1.getResponseContentType)(suffix);
+            const headers = resHeaders;
+            if (fileContentType && !headers['content-type']) {
+                headers['content-type'] = fileContentType;
+            }
+            res.writeHead(200, headers);
             readStream.pipe(res);
+            let responseBody = '不支持预览';
+            if (['json', 'js', 'css', 'html'].includes(suffix)) {
+                responseBody = fs.readFileSync(filepath, 'utf-8');
+            }
+            (0, socket_1.ioRequest)({
+                requestId: req.$requestId,
+                url: req.url,
+                method: req.method,
+                responseHeaders: headers,
+                statusCode: 200,
+                responseBody: (0, buffer_1.stringToBytes)(responseBody),
+            });
         }
         catch (err) {
             const s = new stream_1.Readable();
@@ -226,6 +276,13 @@ exports.httpMiddleware = {
             s.push('404: Not Found or Not Access');
             s.push(null);
             s.pipe(res);
+            (0, socket_1.ioRequest)({
+                requestId: req.$requestId,
+                url: req.url,
+                method: req.method,
+                responseHeaders: {},
+                statusCode: 404,
+            });
         }
     },
 };
