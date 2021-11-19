@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compareVersion = exports.versionString2Number = exports.isHttpsHostRegMatch = exports.url2regx = exports.createHttpHeader = exports.utils = exports.log = void 0;
+exports.stringToBytes = exports.compareVersion = exports.versionString2Number = exports.isHttpsHostRegMatch = exports.url2regx = exports.createHttpHeader = exports.utils = exports.log = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const { log: terminalLog } = console;
 function logLevel(level) {
@@ -128,3 +128,10 @@ const compareVersion = (v1, v2) => {
     return n1 === n2 ? 0 : n1 > n2 ? 1 : 0;
 };
 exports.compareVersion = compareVersion;
+function stringToBytes(str) {
+    const out = new Int8Array(str.length);
+    for (let i = 0; i < str.length; ++i)
+        out[i] = str.charCodeAt(i);
+    return out;
+}
+exports.stringToBytes = stringToBytes;

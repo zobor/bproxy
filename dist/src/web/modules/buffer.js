@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buffer2string = exports.textDecode = exports.stringToBytes = exports.bytesToString = exports.isBuffer = void 0;
+exports.buffer2string = exports.textDecode = exports.bytesToString = exports.isBuffer = void 0;
 const pako = __importStar(require("pako"));
 const brDecode_1 = require("../modules/brDecode");
 function isBuffer(v) {
@@ -30,13 +30,6 @@ function bytesToString(bytes) {
     return String.fromCharCode.apply(null, new Int32Array(bytes));
 }
 exports.bytesToString = bytesToString;
-function stringToBytes(str) {
-    const out = new Int8Array(str.length);
-    for (let i = 0; i < str.length; ++i)
-        out[i] = str.charCodeAt(i);
-    return out;
-}
-exports.stringToBytes = stringToBytes;
 function textDecode(buf) {
     const decode = new TextDecoder('utf-8');
     return decode.decode(buf);
