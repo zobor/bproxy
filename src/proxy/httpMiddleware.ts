@@ -8,9 +8,8 @@ import { matcher } from './matcher';
 import { ioRequest } from './socket';
 import { isInspectContentType } from './utils/is';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
-import { log } from './utils/utils';
+import { log, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
-import { stringToBytes } from '../web/modules/buffer';
 
 export const httpMiddleware = {
   responseByText(text: string, res, responseHeaders): void {
