@@ -9,13 +9,6 @@ export function bytesToString(bytes: any): string{
   return String.fromCharCode.apply(null, new Int32Array(bytes) as any);
 }
 
-export function stringToBytes(str: string): Int8Array {
-  const out = new Int8Array(str.length);
-  for (let i = 0; i < str.length; ++i) out[i] = str.charCodeAt(i);
-
-  return out;
-}
-
 export function textDecode(buf: Int8Array|Buffer): string{
   const decode = new TextDecoder('utf-8');
 

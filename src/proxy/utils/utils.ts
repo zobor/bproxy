@@ -111,3 +111,10 @@ export const compareVersion = (v1: string, v2: string): number => {
 
   return n1 === n2 ? 0 : n1 > n2 ? 1 : 0
 };
+
+export function stringToBytes(str: string): Int8Array {
+  const out = new Int8Array(str.length);
+  for (let i = 0; i < str.length; ++i) out[i] = str.charCodeAt(i);
+
+  return out;
+}
