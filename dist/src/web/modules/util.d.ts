@@ -12,3 +12,5 @@ export declare const parseQueryString: (query: string) => qs.ParsedQs;
 export declare const parseRequest: (req: any) => any;
 export declare const filterRequestItem: (request: HttpRequestRequest, filter: FilterParams) => boolean | undefined;
 export declare const filterRequestList: (list: HttpRequestRequest[], filter: FilterParams) => HttpRequestRequest[];
+export declare const rand: (min: any, max: any) => number;
+export declare const getRandStr: (len?: number) => string;

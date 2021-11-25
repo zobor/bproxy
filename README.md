@@ -135,7 +135,7 @@ config.rules.push({
 // map file
 config.rules.push({
   regx: 'https://douyu.com/static/a.js',
-  path: '/path/to/your/folder/a.js'
+  file: '/path/to/your/folder/a.js'
 });
 ```
 

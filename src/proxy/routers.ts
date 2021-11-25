@@ -59,6 +59,7 @@ export const requestJac = (req, res, certConfig) => {
         const readStream = fs.createReadStream(certConfig.certPath);
         res.writeHead(200, {
           'content-type': 'application/x-x509-ca-cert; charset=utf-8',
+          'Content-Disposition': 'attachment;filename=bproxy.ca.cer',
         });
         readStream.pipe(res);
       } catch(err) {

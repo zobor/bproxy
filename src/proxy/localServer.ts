@@ -27,12 +27,14 @@ export default class LocalServer {
     }
     let appConfig = config;
     port && (appConfig.port = port);
+    dataset.config = appConfig;
     // 监听配置文件
     fs.watchFile(confPath, { interval: 1000 }, () => {
       log.info(`配置文件已更新: ${confPath}`);
       try {
         delete require.cache[require.resolve(confPath)];
         appConfig = require(confPath);
+        dataset.config = appConfig;
       } catch(err){}
     });
     const server = new http.Server();

@@ -43,7 +43,6 @@ const socket_1 = require("./socket");
 const is_1 = require("./utils/is");
 const utils_1 = require("./utils/utils");
 const file_1 = require("./utils/file");
-const buffer_1 = require("../web/modules/buffer");
 exports.httpMiddleware = {
     responseByText(text, res, responseHeaders) {
         const s = new stream_1.Readable();
@@ -267,7 +266,7 @@ exports.httpMiddleware = {
                 method: req.method,
                 responseHeaders: headers,
                 statusCode: 200,
-                responseBody: (0, buffer_1.stringToBytes)(responseBody),
+                responseBody: (0, utils_1.stringToBytes)(responseBody),
             });
         }
         catch (err) {

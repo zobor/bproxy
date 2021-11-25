@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import Input from 'antd/es/input';
-import { testRule } from '../../modules/socket';
+import { bridgeInvoke } from '../../modules/socket';
 import JSONFormat from '../../libs/jsonFormat';
 import 'antd/es/input/style/css';
 import './index.scss';
 
 const invoke = async(url: string) => {
-  const rs = await testRule(url);
+  const rs = await bridgeInvoke({
+    api: 'test',
+    params: url,
+  });
   return rs;
 }
 

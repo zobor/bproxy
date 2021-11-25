@@ -15,4 +15,5 @@ export declare const url2regx: (url: string) => RegExp;
 export declare const isHttpsHostRegMatch: (httpsList: any, hostname: any) => boolean;
 export declare const versionString2Number: (version: any) => number;
 export declare const compareVersion: (v1: string, v2: string) => number;
+export declare function stringToBytes(str: string): Int8Array;
 export {};

@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filterRequestList = exports.filterRequestItem = exports.parseRequest = exports.parseQueryString = exports.arrayBuf2string = exports.parseURL = void 0;
+exports.getRandStr = exports.rand = exports.filterRequestList = exports.filterRequestItem = exports.parseRequest = exports.parseQueryString = exports.arrayBuf2string = exports.parseURL = void 0;
 const qs = __importStar(require("qs"));
 const parseURL = (url) => {
     const a = document.createElement('a');
@@ -78,3 +78,13 @@ const filterRequestItem = (request, filter) => {
 exports.filterRequestItem = filterRequestItem;
 const filterRequestList = (list, filter) => list.filter((item) => (0, exports.filterRequestItem)(item, filter));
 exports.filterRequestList = filterRequestList;
+const rand = (min, max) => {
+    return parseInt(Math.random() * (max - min + 1) + min, 10);
+};
+exports.rand = rand;
+const getRandStr = (len = 12) => {
+    const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const max = base.length - 1;
+    return Array(len).fill(0).map((_, idx) => base[(0, exports.rand)(idx === 0 ? 10 : 0, max)]).join('');
+};
+exports.getRandStr = getRandStr;

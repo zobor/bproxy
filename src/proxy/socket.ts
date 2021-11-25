@@ -7,16 +7,25 @@ let instances: Socket[] = [];
 const ioWebInvokeApiInstall = () => {
   instances.forEach((socket: Socket) => {
     socket.on('ioWebInvoke', async(payload: WebInvokeParams) => {
-      const { type, params } = payload;
+      const { type, params, id } = payload;
       if (type && nativeApi[type]) {
         try {
           const rs = await nativeApi[type](params);
-          socket.emit('ioWebInvokeCallback', rs);
+          socket.emit('ioWebInvokeCallback', {
+            data: rs,
+            id,
+          });
         } catch(err) {
-          socket.emit('ioWebInvokeCallback', err);
+          socket.emit('ioWebInvokeCallback', {
+            error: err,
+            id,
+          });
         }
       } else {
-        socket.emit('ioWebInvokeCallback', new Error('ioWebInvoke fail, api not found'));
+        socket.emit('ioWebInvokeCallback', {
+          error: new Error('ioWebInvoke fail, api not found'),
+          id,
+        });
       }
     });
   });

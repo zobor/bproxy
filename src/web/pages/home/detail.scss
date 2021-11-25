@@ -68,6 +68,36 @@ $labelValueColor: #139dcb;
   border-radius: $panelBorderRadius;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
+
+  &.json {
+    &::before {
+      content: '数据格式：json';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      color: #fff;
+      background: green;
+      text-align: center;
+      line-height: 20px;
+    }
+  }
+  &.formData {
+    &::before {
+      content: '数据格式：formData';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      color: #fff;
+      background: green;
+      text-align: center;
+      line-height: 20px;
+    }
+  }
 }
 .detail .content .form .form-item {
   display: flex;
@@ -129,8 +159,11 @@ $labelValueColor: #139dcb;
   margin-top: 5px;
   border-collapse: collapse;
   caption {
-    border: solid 1px #ccc;
+    border: solid 1px transparent;
     padding: 5px 0;
+    text-align: center;
+    background: #5DADE2;
+    color: #fff;
   }
   td {
     border: solid 1px #ccc;

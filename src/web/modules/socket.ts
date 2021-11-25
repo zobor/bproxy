@@ -1,33 +1,30 @@
 import { io } from "socket.io-client";
+import { getRandStr } from './util';
 
-const $socket = io(`ws://${window.location.hostname}:8888`, {
+const { port } = location;
+
+const $socket = io(`ws://${window.location.hostname}:${port === '8889' ? '8888' : port}`, {
   transports: ['websocket'],
 });
 
 (window as any).$socket = $socket;
 
-export const testRule = (url: string): Promise<object> =>
-  new Promise((resolve, reject) => {
-    $socket.on("ioWebInvokeCallback", (rs) => {
-      resolve(rs);
-    });
-    $socket.emit("ioWebInvoke", {
-      type: "test",
-      params: url,
-    });
+interface BridgeInvokeParams {
+  api: string;
+  params?: any;
+}
 
-    setTimeout(() => {
-      reject(new Error('invoke timeout'));
-    }, 5000);
-  });
-
-export const getServerIp = () => new Promise((resolve, reject) => {
-  $socket.on("ioWebInvokeCallback", (rs) => {
-    resolve(rs);
+export const bridgeInvoke = ({ api, params = {} }: BridgeInvokeParams) => new Promise((resolve, reject) => {
+  const guid = getRandStr(32);
+  $socket.on("ioWebInvokeCallback", ({data, err, id}) => {
+    if (id === guid) {
+      resolve(data);
+    }
   });
   $socket.emit("ioWebInvoke", {
-    type: "getLocalIp",
-    params: {},
+    type: api,
+    params,
+    id: guid,
   });
 
   setTimeout(() => {
