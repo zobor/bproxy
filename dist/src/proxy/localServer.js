@@ -59,11 +59,13 @@ class LocalServer {
             }
             let appConfig = config;
             port && (appConfig.port = port);
+            dataset_1.default.config = appConfig;
             fs.watchFile(confPath, { interval: 1000 }, () => {
                 utils_1.log.info(`配置文件已更新: ${confPath}`);
                 try {
                     delete require.cache[require.resolve(confPath)];
                     appConfig = require(confPath);
+                    dataset_1.default.config = appConfig;
                 }
                 catch (err) { }
             });

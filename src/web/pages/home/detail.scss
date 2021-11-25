@@ -159,8 +159,11 @@ $labelValueColor: #139dcb;
   margin-top: 5px;
   border-collapse: collapse;
   caption {
-    border: solid 1px #ccc;
+    border: solid 1px transparent;
     padding: 5px 0;
+    text-align: center;
+    background: #5DADE2;
+    color: #fff;
   }
   td {
     border: solid 1px #ccc;

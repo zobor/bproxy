@@ -1,37 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onRequest = exports.getServerIp = exports.testRule = void 0;
+exports.onRequest = exports.bridgeInvoke = void 0;
 const socket_io_client_1 = require("socket.io-client");
-const $socket = (0, socket_io_client_1.io)(`ws://${window.location.hostname}:8888`, {
+const util_1 = require("./util");
+const { port } = location;
+const $socket = (0, socket_io_client_1.io)(`ws://${window.location.hostname}:${port === '8889' ? '8888' : port}`, {
     transports: ['websocket'],
 });
 window.$socket = $socket;
-const testRule = (url) => new Promise((resolve, reject) => {
-    $socket.on("ioWebInvokeCallback", (rs) => {
-        resolve(rs);
+const bridgeInvoke = ({ api, params = {} }) => new Promise((resolve, reject) => {
+    const guid = (0, util_1.getRandStr)(32);
+    $socket.on("ioWebInvokeCallback", ({ data, err, id }) => {
+        if (id === guid) {
+            resolve(data);
+        }
     });
     $socket.emit("ioWebInvoke", {
-        type: "test",
-        params: url,
+        type: api,
+        params,
+        id: guid,
     });
     setTimeout(() => {
         reject(new Error('invoke timeout'));
     }, 5000);
 });
-exports.testRule = testRule;
-const getServerIp = () => new Promise((resolve, reject) => {
-    $socket.on("ioWebInvokeCallback", (rs) => {
-        resolve(rs);
-    });
-    $socket.emit("ioWebInvoke", {
-        type: "getLocalIp",
-        params: {},
-    });
-    setTimeout(() => {
-        reject(new Error('invoke timeout'));
-    }, 5000);
-});
-exports.getServerIp = getServerIp;
+exports.bridgeInvoke = bridgeInvoke;
 const onRequest = (callback) => {
     $socket.removeAllListeners('request');
     $socket.on('request', callback);

@@ -20,7 +20,10 @@ const jsonFormat_1 = __importDefault(require("../../libs/jsonFormat"));
 require("antd/es/input/style/css");
 require("./index.scss");
 const invoke = (url) => __awaiter(void 0, void 0, void 0, function* () {
-    const rs = yield (0, socket_1.testRule)(url);
+    const rs = yield (0, socket_1.bridgeInvoke)({
+        api: 'test',
+        params: url,
+    });
     return rs;
 });
 exports.default = () => {

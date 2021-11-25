@@ -31,6 +31,7 @@ export interface ProxyRule {
 
 export interface ProxyDataSet {
   configPath?: string;
+  config?: ProxyConfig;
 }
 
 export interface ProxyCertificateConfig {
@@ -115,6 +116,7 @@ export interface InvokeRequestParams {
 export interface WebInvokeParams {
   type: string;
   params: {[key: string]: any};
+  id: string;
 }
 
 export interface RequestHeaders {

@@ -145,6 +145,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     return null;
   }
 
+  console.log(detail);
+
   return (
     <div className={`detail ${showDetail ? "open" : ""}`}>
       <div className="mask" onClick={onClose} />
@@ -185,7 +187,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           <div
             className={classNames({
               "form scrollbar-style": true,
-              [detail[detailActiveTab].$$type]:
+              [detail[detailActiveTab] && detail[detailActiveTab].$$type]:
                 detail &&
                 detail[detailActiveTab] &&
                 !!detail[detailActiveTab].$$type,
@@ -207,12 +209,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               : null}
             <CookiesView cookies={cookies} />
           </div>
-        ) : null}
-        {detailActiveTab === "responseBody" ? (
-          <div className="body-panel scrollbar-style">
+        ) : <div className="body-panel scrollbar-style">
             {showBody || "不支持预览"}
-          </div>
-        ) : null}
+          </div>}
       </div>
     </div>
   );
