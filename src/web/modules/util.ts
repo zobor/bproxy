@@ -61,3 +61,13 @@ export const filterRequestItem = (
 };
 
 export const filterRequestList = (list: HttpRequestRequest[], filter: FilterParams) => list.filter((item: HttpRequestRequest) => filterRequestItem(item, filter));
+
+
+export const rand = (min, max) => {
+    return parseInt(Math.random() * (max - min + 1) + min, 10);
+};
+export const getRandStr = (len = 12) => {
+    const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const max = base.length - 1;
+    return Array(len).fill(0).map((_, idx) => base[rand(idx === 0 ? 10 : 0, max)]).join('');
+};

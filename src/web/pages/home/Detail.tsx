@@ -4,6 +4,7 @@ import { buffer2string } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import "./detail.scss";
 import classNames from 'classnames';
+import Tooltip from 'antd/es/tooltip';
 
 const tabList = [
   {
@@ -149,11 +150,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       <div className="mask" onClick={onClose} />
       <div className="content">
         <div className="url" onClick={openUrl.bind(null, custom.url)}>
-          {custom
-            ? `${custom.statusCode || "Pendding"} ${custom.method} ${
-                custom.origin
-              }${custom.path}`
-            : ""}
+          {custom ? (
+            <Tooltip title={custom.url}>
+              {custom.statusCode || "Pendding"} {custom.method} {custom.origin}
+              {custom.path}
+            </Tooltip>
+          ) : (
+            ""
+          )}
         </div>
         <div className="tabs">
           <ul>
@@ -177,22 +181,29 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           </ul>
         </div>
 
-        {detailActiveTab !== "responseBody" ? (
-          <div className={classNames({
-            'form scrollbar-style': true,
-            [detail[detailActiveTab].$$type]: !!detail[detailActiveTab].$$type,
-          })}>
-            {detail && detail[detailActiveTab]
-              ? Object.keys(detail[detailActiveTab]).filter(key => key !== '$$type').map((key) => (
-                  <div className="form-item" key={key}>
-                    <label>{key}:</label>
-                    <div className="form-item-value">
-                      {typeof detail[detailActiveTab][key] === "object"
-                        ? JSON.stringify(detail[detailActiveTab][key])
-                        : detail[detailActiveTab][key]}
+        {detail && detailActiveTab !== "responseBody" ? (
+          <div
+            className={classNames({
+              "form scrollbar-style": true,
+              [detail[detailActiveTab].$$type]:
+                detail &&
+                detail[detailActiveTab] &&
+                !!detail[detailActiveTab].$$type,
+            })}
+          >
+            {detail[detailActiveTab]
+              ? Object.keys(detail[detailActiveTab])
+                  .filter((key) => key !== "$$type")
+                  .map((key) => (
+                    <div className="form-item" key={key}>
+                      <label>{key}:</label>
+                      <div className="form-item-value">
+                        {typeof detail[detailActiveTab][key] === "object"
+                          ? JSON.stringify(detail[detailActiveTab][key])
+                          : detail[detailActiveTab][key]}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))
               : null}
             <CookiesView cookies={cookies} />
           </div>

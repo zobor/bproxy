@@ -8,7 +8,6 @@ export const test = async (url: string) => {
   const { configPath } = dataset;
   const { config = {} as any } = await LocalServer.loadUserConfig(configPath || '', settings);
   const matchResult = matcher(config.rules, url);
-  console.log('匹配完成',Date.now(),  matchResult);
 
   return matchResult;
 }
@@ -16,3 +15,9 @@ export const test = async (url: string) => {
 export const getLocalIp = async() => {
   return getLocalIpAddress();
 };
+
+export const getLocalProxyPort = async() => {
+  const { config } = dataset;
+
+  return config?.port;
+}

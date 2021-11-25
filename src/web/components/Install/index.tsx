@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { getServerIp } from '../../modules/socket';
+import { bridgeInvoke } from '../../modules/socket';
 import './index.scss';
 
 const help = `
@@ -17,19 +17,27 @@ export default () => {
   };
 
   useEffect(() => {
-    getServerIp().then((list) => {
-      const ips = Array.isArray(list) ? list : [];
-      const [ip] = ips.filter((item: string) => item !== '127.0.0.1');
-      if (ip) {
-        const url = `http://${ip}:8888/install`;
-        render(url);
-        setHref(url);
-      }
+    bridgeInvoke({
+      api: "getLocalProxyPort",
+    }).then((port) => {
+      bridgeInvoke({
+        api: "getLocalIp",
+      }).then((list) => {
+        console.log(list);
+        const ips = Array.isArray(list) ? list : [];
+        const [ip] = ips.filter((item: string) => item !== "127.0.0.1");
+        if (ip) {
+          const url = `http://${ip}:${port}/install`;
+          render(url);
+          setHref(url);
+        }
+      });
     });
   }, []);
   return <div className="install-modal">
     <h2>手机扫码，可以安装证书</h2>
     <div className="tip-text">请保持手机跟PC在一个局域网内</div>
+    <div className="url">{href}</div>
     <canvas ref={$canvas} />
     <pre><code>{help}</code></pre>
     <div><a href={href}>点击下载证书</a></div>
