@@ -1,3 +1,7 @@
+export interface NormalObject {
+  [key: string]: any;
+}
+
 export interface ResponseCallbackParams {
   response: any;
   request: any;

@@ -17,6 +17,7 @@ import { Ctx } from "../../ctx";
 import classNames from "classnames";
 import Filter from '../../components/Filter';
 import Install from "../../components/Install";
+import SystemProxy from '../../components/SystemProxy';
 
 const RuleTestModal = ({ visible, onClose }) => {
   return (
@@ -56,6 +57,17 @@ const InstallModal = ({ visible, onClose }) => {
   </Modal>
 };
 
+const SystemProxylModal = ({ visible, onClose }) => {
+  return <Modal onCancel={onClose}
+  visible={visible}
+  width={1000}
+  footer={null}
+  destroyOnClose
+  title="系统代理开关">
+    <SystemProxy />
+  </Modal>
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -72,6 +84,9 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } =
+    useBool(false);
+
+  const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -127,14 +142,15 @@ const Controller = (props: ControllerProps) => {
         <CloudDownloadOutlined />
         <span>禁用缓存</span>
       </div> */}
-      {/* <div>
+      <div onClick={toggleShowSystemProxy}>
         <MacCommandOutlined />
         <span>系统代理</span>
-      </div> */}
+      </div>
 
       <RuleTestModal onClose={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onClose={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onClose={toggleShowInstall} visible={isShowInstall} />
+      <SystemProxylModal onClose={toggleShowSystemProxy} visible={isShowSystemProxy} />
     </div>
   );
 };

@@ -1,11 +1,12 @@
 import * as request from 'request';
 import settings from './config';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import * as pkg from '../../package.json';
 import Certificate from './certifica';
 import LocalServer from './localServer';
 import { matcher } from './matcher';
 import { log } from './utils/utils';
+import { setActiveNetworkProxyStatus } from './system';
 
 export default {
   async run(params: any): Promise<string> {
@@ -61,13 +62,9 @@ export default {
     if (typeof proxy === 'boolean') {
       log.warn(`Usage:\n${pkg.name} --proxy [off|on]`);
     } else if (proxy === 'on') {
-      spawn('networksetup', ['-setautoproxystate', 'Wi-Fi', 'off']);
-      spawn('networksetup', ['-setwebproxy', 'Wi-Fi', '127.0.0.1', `${sysProxyPort}`]);
-      spawn('networksetup', ['-setsecurewebproxy', 'Wi-Fi', '127.0.0.1', `${sysProxyPort}`]);
+      setActiveNetworkProxyStatus('on');
     } else if (proxy === 'off') {
-      spawn('networksetup', ['-setautoproxystate', 'Wi-Fi', 'off']);
-      spawn('networksetup', ['-setwebproxystate', 'Wi-Fi', 'off']);
-      spawn('networksetup', ['-setsecurewebproxystate', 'Wi-Fi', 'off']);
+      setActiveNetworkProxyStatus('off');
     }
   },
 
