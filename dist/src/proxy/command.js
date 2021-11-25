@@ -39,6 +39,7 @@ const certifica_1 = __importDefault(require("./certifica"));
 const localServer_1 = __importDefault(require("./localServer"));
 const matcher_1 = require("./matcher");
 const utils_1 = require("./utils/utils");
+const system_1 = require("./system");
 exports.default = {
     run(params) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -96,14 +97,10 @@ exports.default = {
             utils_1.log.warn(`Usage:\n${pkg.name} --proxy [off|on]`);
         }
         else if (proxy === 'on') {
-            (0, child_process_1.spawn)('networksetup', ['-setautoproxystate', 'Wi-Fi', 'off']);
-            (0, child_process_1.spawn)('networksetup', ['-setwebproxy', 'Wi-Fi', '127.0.0.1', `${sysProxyPort}`]);
-            (0, child_process_1.spawn)('networksetup', ['-setsecurewebproxy', 'Wi-Fi', '127.0.0.1', `${sysProxyPort}`]);
+            (0, system_1.setActiveNetworkProxyStatus)('on');
         }
         else if (proxy === 'off') {
-            (0, child_process_1.spawn)('networksetup', ['-setautoproxystate', 'Wi-Fi', 'off']);
-            (0, child_process_1.spawn)('networksetup', ['-setwebproxystate', 'Wi-Fi', 'off']);
-            (0, child_process_1.spawn)('networksetup', ['-setsecurewebproxystate', 'Wi-Fi', 'off']);
+            (0, system_1.setActiveNetworkProxyStatus)('off');
         }
     },
     start(params) {

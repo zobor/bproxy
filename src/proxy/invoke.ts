@@ -3,6 +3,7 @@ import { matcher } from './matcher';
 import settings from './config';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
+export * from './system';
 
 export const test = async (url: string) => {
   const { configPath } = dataset;
