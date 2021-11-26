@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import * as mkdirp from 'mkdirp';
 import LocalServer from './localServer';
 import { matcher } from './matcher';
 import settings from './config';
@@ -22,3 +25,37 @@ export const getLocalProxyPort = async() => {
 
   return config?.port;
 }
+
+export const getConfigFile = () => {
+  const { configPath } = dataset;
+
+  return configPath;
+};
+
+export const mapFile = (params: {
+  regx: string;
+  file: string;
+  configFilePath: string;
+  content: string;
+}) => {
+  const { regx, file, configFilePath, content } = params;
+  const mockFilePath = `./mock/${file}`;
+  const rule = `
+config.rules.push({
+  regx: '${regx}',
+  file: '${mockFilePath}'
+});
+  `;
+  let success = true;
+  try {
+    mkdirp.sync('./mock');
+    fs.writeFileSync(mockFilePath, content);
+    const configText = fs.readFileSync(path.resolve(configFilePath), 'utf-8');
+    const newConfig = configText.replace('module.exports', `\n${rule}\nmodule.exports`);
+    fs.writeFileSync(path.resolve(configFilePath), newConfig);
+  } catch(err) {
+    success = false;
+  }
+
+  return success;
+};

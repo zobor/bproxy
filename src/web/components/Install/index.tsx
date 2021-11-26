@@ -23,7 +23,6 @@ export default () => {
       bridgeInvoke({
         api: "getLocalIp",
       }).then((list) => {
-        console.log(list);
         const ips = Array.isArray(list) ? list : [];
         const [ip] = ips.filter((item: string) => item !== "127.0.0.1");
         if (ip) {

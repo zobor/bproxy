@@ -173,3 +173,16 @@ $labelValueColor: #139dcb;
     white-space: pre-wrap;
   }
 }
+
+.body-panel {
+  position: relative;
+  .handlers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fxied;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}

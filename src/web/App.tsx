@@ -2,6 +2,7 @@ import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef }
 import { Route, HashRouter, Switch } from 'react-router-dom';
 import { Ctx, defaultState, reducer } from './ctx';
 import './App.scss';
+import { omit } from 'lodash';
 
 const keepAliveCache: Record<string, React.MemoExoticComponent<React.ComponentType<any>>> = {};
 
@@ -44,7 +45,7 @@ export default () => {
     if (historyContext) {
       try {
         const data = JSON.parse(historyContext);
-        Object.keys(data).filter((key: string) => key !== 'requestId').forEach((key: string) => {
+        Object.keys(data).filter(key => key !=='requestId').filter((key: string) => key !== 'requestId').forEach((key: string) => {
           const fn = key.slice(0, 1).toUpperCase() + key.slice(1);
           dispatch({
             type: `set${fn}`,
@@ -62,7 +63,7 @@ export default () => {
         clearTimeout(timer.current);
       }
       timer.current = setTimeout(() => {
-        window.localStorage.setItem('context-data', JSON.stringify(state));
+        window.localStorage.setItem('context-data', JSON.stringify(omit(state, 'requestId')));
       }, 500);
     }
   }, [state]);
