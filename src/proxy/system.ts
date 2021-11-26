@@ -1,4 +1,6 @@
 import { spawnSync } from "child_process";
+import os from 'os';
+import { obj } from './polyfill';
 
 export const getNetworkServices = (): string[] => {
   const txt = spawnSync('networksetup', ['-listallnetworkservices']).stdout.toString();
@@ -48,13 +50,13 @@ export const setActiveNetworkProxy = ({host, port}: {host: string; port: string}
 };
 
 export const getNetworkHttpProxyInfo = (deviceName: string) => {
-  return Object.fromEntries(spawnSync('networksetup', ['-getwebproxy', deviceName]).stdout.toString().split('\n').filter(item => !!item).map(item => {
+  return obj.fromEntries(spawnSync('networksetup', ['-getwebproxy', deviceName]).stdout.toString().split('\n').filter(item => !!item).map(item => {
     return item.split(': ');
   }));
 };
 
 export const getNetworkHttpsProxyInfo = (deviceName: string) => {
-  return Object.fromEntries(spawnSync('networksetup', ['-getsecurewebproxy', deviceName]).stdout.toString().split('\n').filter(item => !!item).map(item => {
+  return obj.fromEntries(spawnSync('networksetup', ['-getsecurewebproxy', deviceName]).stdout.toString().split('\n').filter(item => !!item).map(item => {
     return item.split(': ');
   }));
 };
@@ -85,3 +87,8 @@ export const getActiveNetworkProxyStatus = () => {
 
   return result;
 };
+
+export const getOsName = () => {
+  return os.platform();
+}
+
