@@ -1,4 +1,5 @@
 import { useCallback, useContext } from "react";
+import classNames from "classnames";
 import {
   PlayCircleOutlined,
   WifiOutlined,
@@ -6,66 +7,65 @@ import {
   MacCommandOutlined,
   ClearOutlined,
   FilterOutlined,
-  CloudDownloadOutlined,
 } from "@ant-design/icons";
 import Modal from "antd/es/modal";
 import RuleTest from "../../components/ruleTest";
-import "antd/es/modal/style/css";
-import "./controller.scss";
 import useBool from "../../hooks/useBool";
 import { Ctx } from "../../ctx";
-import classNames from "classnames";
 import Filter from '../../components/Filter';
 import Install from "../../components/Install";
 import SystemProxy from '../../components/SystemProxy';
 
-const RuleTestModal = ({ visible, onClose }) => {
+import "antd/es/modal/style/css";
+import "./controller.scss";
+
+const ControllerDialog = ({ title, children, ...others }) => {
   return (
-    <Modal
+    <Modal centered title={title} footer={null} width={1000} {...others}>
+      {children}
+    </Modal>
+  );
+}
+
+const RuleTestModal = (props) => {
+  return (
+    <ControllerDialog
       title="匹配规则校验"
-      onCancel={onClose}
-      visible={visible}
-      footer={null}
-      width={1000}
+      {...props}
     >
       <RuleTest />
-    </Modal>
+    </ControllerDialog>
   );
 };
 
-const FilterModal = ({ visible, onClose }) => {
+const FilterModal = (props) => {
   return (
-    <Modal
-      onCancel={onClose}
-      visible={visible}
-      width={1000}
-      footer={null}
+    <ControllerDialog
       title="过滤HTTP日志"
+      {...props}
     >
       <Filter />
-    </Modal>
+    </ControllerDialog>
   );
 };
 
-const InstallModal = ({ visible, onClose }) => {
-  return <Modal onCancel={onClose}
-  visible={visible}
-  width={1000}
-  footer={null}
-  title="安装HTTPS证书">
+const InstallModal = (props) => {
+  return <ControllerDialog
+    title="安装HTTPS证书"
+    {...props}
+  >
     <Install />
-  </Modal>
+  </ControllerDialog>
 };
 
-const SystemProxylModal = ({ visible, onClose }) => {
-  return <Modal onCancel={onClose}
-  visible={visible}
-  width={1000}
-  footer={null}
-  destroyOnClose
-  title="系统代理开关">
+const SystemProxylModal = (props) => {
+  return <ControllerDialog
+    destroyOnClose
+    title="系统代理开关"
+    {...props}
+  >
     <SystemProxy />
-  </Modal>
+  </ControllerDialog>
 };
 
 interface ControllerProps {
@@ -134,23 +134,15 @@ const Controller = (props: ControllerProps) => {
         <FilterOutlined />
         <span>过滤规则</span>
       </div>
-      {/* <div
-        className={classNames({
-          disabled: !disableCache,
-        })}
-      >
-        <CloudDownloadOutlined />
-        <span>禁用缓存</span>
-      </div> */}
       <div onClick={toggleShowSystemProxy}>
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
 
-      <RuleTestModal onClose={toggleShowRuleTest} visible={isShowRuleTest} />
-      <FilterModal onClose={toggleShowFilter} visible={isShowFilter} />
-      <InstallModal onClose={toggleShowInstall} visible={isShowInstall} />
-      <SystemProxylModal onClose={toggleShowSystemProxy} visible={isShowSystemProxy} />
+      <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
+      <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
+      <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
+      <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
     </div>
   );
 };

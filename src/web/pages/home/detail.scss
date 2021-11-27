@@ -2,168 +2,189 @@ $modalBackground: #1B4F72;
 $panelBackground: #1d1f21;
 $panelFontColor: #fff;
 $panelBorderRadius: 5px;
-$maskBackground: rgba(0,0,0,0.5);
+$maskBackground: rgba(0,0,0,0.8);
 $labelKeyColor: #f94962;
 $labelValueColor: #139dcb;
 
 /* 数据详情 */
-.detail .mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: $maskBackground;
-  display: none;
-}
-.detail .content {
-  position: absolute;
-  top: 0;
-  left: 150vw;
-  width: 90vw;
-  bottom: 0;
-  transition: all 0.25s ease-in-out;
-  background-color: $modalBackground;
-  border-left: solid 5px #000;
-  border-bottom: solid 5px #000;
-  color: #fff;
-}
-.detail.open .content {
-  left: 10vw;
-}
-.detail.open .mask {
-  display: block;
-}
+.detail {
+  .mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $maskBackground;
+    display: none;
+  }
+  .content {
+    position: absolute;
+    top: 0;
+    left: 150vw;
+    width: 90vw;
+    bottom: 0;
+    transition: all 0.25s ease-in-out;
+    background-color: $modalBackground;
+    border-left: solid 5px #000;
+    border-bottom: solid 5px #000;
+    color: #fff;
 
-.detail .content .tabs > ul{
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-evenly;
-  height: 40px;
-}
-.detail .content .tabs > ul li {
-  text-align: center;
-  cursor: pointer;
-  padding-bottom: 5px;
-  font-weight: bold;
-  font-size: 17px;
-  padding: 10 20px;
-}
-.detail .content .tabs > ul li.active {
-  color: #D35400;
-  background-image: var(--rainbow-gradient,#fff);
-  background-repeat: repeat;
-  background-size: 100%;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  filter: drop-shadow(0 0 2rem #000);
-}
-.detail .content .form {
-  width: 800px;
-  height: calc(100% - 110px);
-  margin: 0 auto;
-  background-color: $panelBackground;
-  color: $panelFontColor;
-  padding: 50px;
-  border-radius: $panelBorderRadius;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-
-  &.json {
-    &::before {
-      content: '数据格式：json';
-      position: absolute;
-      top: 0;
-      left: 0;
+    .url {
+      background-color: #000;
+      color: #1ABC9C;
+      font-weight: bold;
+      height: 40px;
       width: 100%;
-      height: 20px;
-      color: #fff;
-      background: green;
-      text-align: center;
-      line-height: 20px;
+      line-height: 40px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      padding: 0 20px;
+      cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .body-panel {
+      width: 800px;
+      height: calc(100% - 110px);
+      margin: 0 auto;
+      word-wrap: break-word;
+      word-break: break-all;
+      white-space: pre-wrap;
+      background-color: $panelBackground;
+      color: #aaa;
+      padding: 50px;
+      border-radius: $panelBorderRadius;
+      overflow-y: auto;
+      overflow-x: hidden;
+      line-height: 1.5;
+      .image-preview-box {
+        text-align: center;
+      }
+      .image-preview {
+        max-width: 100%;
+        max-height: 100%;
+      }
+    }
+
+    .tabs > ul{
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-evenly;
+      height: 40px;
+
+      li {
+        text-align: center;
+        cursor: pointer;
+        padding-bottom: 5px;
+        font-weight: bold;
+        font-size: 17px;
+        padding: 10 20px;
+
+        &.active {
+          color: #D35400;
+          background-image: var(--rainbow-gradient,#fff);
+          background-repeat: repeat;
+          background-size: 100%;
+          -webkit-text-fill-color: transparent;
+          -webkit-background-clip: text;
+          filter: drop-shadow(0 0 2rem #000);
+        }
+      }
+    }
+
+    .form {
+      width: 800px;
+      height: calc(100% - 110px);
+      margin: 0 auto;
+      background-color: $panelBackground;
+      color: $panelFontColor;
+      padding: 10px 30px;
+      border-radius: $panelBorderRadius;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+
+      .form-item {
+        display: flex;
+        font-size: 16px;
+
+        label {
+          width: 20%;
+          text-align: right;
+          font-weight: bold;
+          color: $labelKeyColor;
+        }
+
+        .form-item-value {
+          flex: 1;
+          padding-left: 5px;
+          word-wrap: break-word;
+          word-break: break-all;
+          white-space: pre-wrap;
+          color: $labelValueColor;
+        }
+      }
+
+      &.json {
+        &::before {
+          content: '数据格式：json';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 20px;
+          color: #fff;
+          background: green;
+          text-align: center;
+          line-height: 20px;
+        }
+      }
+      &.formData {
+        &::before {
+          content: '数据格式：formData';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 20px;
+          color: #fff;
+          background: green;
+          text-align: center;
+          line-height: 20px;
+        }
+      }
     }
   }
-  &.formData {
-    &::before {
-      content: '数据格式：formData';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 20px;
-      color: #fff;
-      background: green;
-      text-align: center;
-      line-height: 20px;
+
+  &.open {
+    .content {
+      left: 10vw;
+    }
+    .mask {
+      display: block;
     }
   }
 }
-.detail .content .form .form-item {
-  display: flex;
-  padding: 5px 0;
-  font-size: 16px;
-}
-.detail .content .form .form-item label {
-  width: 30%;
-  text-align: right;
-  font-weight: bold;
-  color: $labelKeyColor;
-}
-.detail .content .form .form-item .form-item-value {
-  flex: 1;
-  padding-left: 5px;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;
-  color: $labelValueColor;
-}
-.detail .content .url {
-  background-color: #000;
-  color: #1ABC9C;
-  font-weight: bold;
-  height: 40px;
-  width: 100%;
-  line-height: 40px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding: 0 20px;
-  cursor: pointer;
-}
-.detail .content .body-panel {
-  width: 800px;
-  height: 70vh;
-  margin: 0 auto;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;
-  background-color: $panelBackground;
-  color: #aaa;
-  padding: 50px;
-  border-radius: $panelBorderRadius;
-  overflow-y: auto;
-  overflow-x: hidden;
-  line-height: 1.5;
-  .image-preview-box {
-    text-align: center;
-  }
-  .image-preview {
-    max-width: 100%;
-    max-height: 100%;
-  }
-}
+
 
 .data-table {
   width: 100%;
   margin-top: 5px;
   border-collapse: collapse;
+  font-size: 13px;
   caption {
     border: solid 1px transparent;
     padding: 5px 0;
     text-align: center;
-    background: #5DADE2;
+    background: #EB984E;
     color: #fff;
+    caption-side: top;
+  }
+  thead {
+    margin-top: 40px;
   }
   td {
     border: solid 1px #ccc;
@@ -171,6 +192,9 @@ $labelValueColor: #139dcb;
     word-wrap: break-word;
     word-break: break-all;
     white-space: pre-wrap;
+    &:nth-child(1) {
+      font-weight: bold;
+    }
   }
 }
 
@@ -180,9 +204,5 @@ $labelValueColor: #139dcb;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: fxied;
-    bottom: 0;
-    left: 0;
-    right: 0;
   }
 }

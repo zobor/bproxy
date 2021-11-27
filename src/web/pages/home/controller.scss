@@ -1,10 +1,10 @@
 .controller {
   background-color: red;
   padding: 10px 25px;
-  border-radius: 20px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   background-color: rgba(35, 155, 86, 0.8);
 
   >div{
@@ -20,11 +20,11 @@
       }
     }
     >span {
-      margin-top: 5px;
+      font-size: 13px;
     }
     >.anticon {
-      width: 25px;
-      height: 25px;
+      width: 19px;
+      height: 19px;
       cursor: pointer;
       color: #fff;
       >svg {
@@ -37,12 +37,12 @@
 
 .disconnected {
   background-color:goldenrod;
-  color: #000;
-  font-size: 17px;
+  color: red;
+  font-size: 20px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 7px;
   margin-bottom: 10px;
-  height: 70px;
 }

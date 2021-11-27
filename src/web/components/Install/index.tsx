@@ -37,8 +37,8 @@ export default () => {
     <h2>手机扫码，可以安装证书</h2>
     <div className="tip-text">请保持手机跟PC在一个局域网内</div>
     <div className="url">{href}</div>
+    <div><a href={href}>点击下载证书</a></div>
     <canvas ref={$canvas} />
     <pre><code>{help}</code></pre>
-    <div><a href={href}>点击下载证书</a></div>
   </div>
 }

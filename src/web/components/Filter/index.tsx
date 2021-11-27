@@ -11,7 +11,7 @@ const typesList: string[] = ["host", "path", "url"];
 
 export default () => {
   const { state, dispatch } = useContext(Ctx);
-  const { filterType, filterString } = state;
+  const { filterType, filterString, highlight } = state;
   const setType = (val: string) => {
     dispatch({ type: 'setFilterType', filterType: val });
   };
@@ -21,6 +21,11 @@ export default () => {
   const onTextChange = (e) => {
     setFilter(e.target.value.trim());
   };
+  const onHighlighChange = (e) => {
+    const v = e.target.value.trim();
+    dispatch({ type: 'setHighlight', highlight: v });
+  };
+
   return <div>
     <Form>
       <Form.Item label="过滤方式">
@@ -32,6 +37,10 @@ export default () => {
       </Form.Item>
       <Form.Item label="过滤值">
         <Input allowClear value={filterString} onChange={onTextChange} />
+      </Form.Item>
+      <hr />
+      <Form.Item label="高亮">
+        <Input allowClear value={highlight} onChange={onHighlighChange} />
       </Form.Item>
     </Form>
   </div>

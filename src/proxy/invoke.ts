@@ -1,19 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import * as mkdirp from 'mkdirp';
-import LocalServer from './localServer';
 import { matcher } from './matcher';
-import settings from './config';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
 export * from './system';
 
 export const test = async (url: string) => {
-  const { configPath } = dataset;
-  const { config = {} as any } = await LocalServer.loadUserConfig(configPath || '', settings);
-  const matchResult = matcher(config.rules, url);
+  const { config } = dataset;
+  if (config) {
+    const matchResult = matcher(config.rules, url);
 
-  return matchResult;
+    return matchResult;
+  }
+
+  return {};
 }
 
 export const getLocalIp = async() => {

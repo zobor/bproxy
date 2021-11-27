@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Switch from 'antd/es/switch';
+import message from "antd/es/message";
 import { bridgeInvoke } from "../../modules/socket";
 
 import 'antd/es/switch/style/css';
+import 'antd/es/message/style/css';
 
 export default () => {
   const [networks, setNetworks] = useState<any>({});
@@ -30,6 +32,9 @@ export default () => {
           port,
         },
       });
+      message.success(`已成功开启系统代理：http://127.0.0.1:${port}`);
+    } else {
+      message.success('已关闭系统代理');
     }
   }, [port]);
 

@@ -15,8 +15,6 @@ import 'antd/es/button/style/css';
 import "./detail.scss";
 import { tabList } from "./settings";
 
-
-
 const CookiesView = (props: {
   cookies: string[];
 }): React.ReactElement<any, any> | null => {
@@ -58,7 +56,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { custom = {} } = detail || {};
   const contentType = get(detail, 'responseHeaders["content-type"]');
   const isJson = contentType?.includes('/json');
-  const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ");
+  const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ").filter(item => !!item);
 
   // view text
   useEffect(() => {
@@ -129,7 +127,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     }});
     return rs;
   };
-  const onMockFile = (data: any, content: string) => {
+  const onMockFile = async(data: any, content: string) => {
     if (!content) {
       message.error('内容为空，无法写入文件');
       return;
@@ -139,7 +137,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     const arr = path.split('/');
     const filename = (arr.length > 3 ? arr.slice(arr.length - 3) : arr).join('_') + '.json';
     const isConfirm = confirm(`是否写入mock文件到项目中？\n文件名: ${filename}`);
-    isConfirm && writeFile(path, filename, content);
+    if (isConfirm) {
+      const success = await writeFile(path, filename, content);
+      if (success) {
+        message.success('文件写入成功! bproxy配置文件已更新! ');
+      } else {
+        message.error('文件写入失败');
+      }
+    }
   };
 
   if (!showDetail) {
@@ -151,7 +156,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       <div className="mask" onClick={onClose} />
       <div className="content">
         {/* URL */}
-        <div className="url" onClick={openUrl.bind(null, custom.url)}>
+        <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
           {custom ? (
             <Tooltip title={custom.url}>
               <div style={{ display: "flex" }}>
@@ -208,7 +213,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                       <div className="form-item-value">
                         {isObject(detail[detailActiveTab][key])
                           ? JSON.stringify(detail[detailActiveTab][key])
-                          : detail[detailActiveTab][key]}
+                          : detail[detailActiveTab][key].toString()}
                       </div>
                     </div>
                   ))
@@ -219,19 +224,20 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           </div>
         ) : (
           <div className="body-panel scrollbar-style">
-            {showBody || "不支持预览"}
-
             {isJson && showBody ? (
               <div className="handlers">
-                <Button
-                  shape="round"
-                  type="primary"
-                  onClick={onMockFile.bind(null, detail, showBody)}
-                >
-                  mock当前请求
-                </Button>
+                <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
+                  <Button
+                    shape="round"
+                    type="primary"
+                    onClick={onMockFile.bind(null, detail, showBody)}
+                  >
+                    mock当前请求
+                  </Button>
+                </Tooltip>
               </div>
             ) : null}
+            {showBody || "不支持预览"}
           </div>
         )}
       </div>
