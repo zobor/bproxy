@@ -10,8 +10,8 @@ const DetailMemo = memo(Detail);
 
 export default () => {
   const { state, dispatch } = useContext(Ctx);
-  const { requestId, filterString, filterType } = state;
-  const { list, clean } = useRequest(state.proxySwitch, filterType, filterString);
+  const { requestId, filterString, filterType, updateRequestListFlag } = state;
+  const { list, clean } = useRequest(state.proxySwitch, filterType, filterString, updateRequestListFlag);
   const [detail, setDetail] = useState<any>(null);
   const detailMemo = useMemo(() => {
     return detail;

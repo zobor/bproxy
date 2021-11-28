@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import Switch from 'antd/es/switch';
-import message from "antd/es/message";
 import { bridgeInvoke } from "../../modules/socket";
-
-import 'antd/es/switch/style/css';
-import 'antd/es/message/style/css';
+import { message, Switch } from "../UI";
 
 export default () => {
   const [networks, setNetworks] = useState<any>({});
@@ -69,6 +65,7 @@ export default () => {
   }
 
   return <div>
+    <h4>开启系统代理之后，系统上的http(s)请求会通过bproxy代理，显示在列表里了</h4>
     {Object.keys(networks).map(key => (
       <div style={{padding: '10px 0'}}>
         {key}: <Switch checkedChildren="开启" unCheckedChildren="关闭" defaultChecked checked={networks[key]} onChange={(checked) => {onChange(checked, key)}} />

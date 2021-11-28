@@ -8,7 +8,6 @@ import {
   ClearOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
-import Modal from "antd/es/modal";
 import RuleTest from "../../components/ruleTest";
 import useBool from "../../hooks/useBool";
 import { Ctx } from "../../ctx";
@@ -16,8 +15,8 @@ import Filter from '../../components/Filter';
 import Install from "../../components/Install";
 import SystemProxy from '../../components/SystemProxy';
 
-import "antd/es/modal/style/css";
 import "./controller.scss";
+import { Modal } from "../../components/UI";
 
 const ControllerDialog = ({ title, children, ...others }) => {
   return (
@@ -30,7 +29,7 @@ const ControllerDialog = ({ title, children, ...others }) => {
 const RuleTestModal = (props) => {
   return (
     <ControllerDialog
-      title="匹配规则校验"
+      title="检测目标URL是否跟你的rule匹配"
       {...props}
     >
       <RuleTest />
@@ -41,10 +40,11 @@ const RuleTestModal = (props) => {
 const FilterModal = (props) => {
   return (
     <ControllerDialog
+    destroyOnClose
       title="过滤HTTP日志"
       {...props}
     >
-      <Filter />
+      <Filter visible={props.visible} />
     </ControllerDialog>
   );
 };

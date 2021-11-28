@@ -1,15 +1,15 @@
-import Form from 'antd/es/form';
-import Input from 'antd/es/input';
-import Radio from 'antd/es/radio';
-import 'antd/es/radio/style/css';
-import 'antd/es/input/style/css';
-import 'antd/es/form/style/css';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Ctx } from '../../ctx';
+import { Form, Input, Radio } from '../UI';
 
 const typesList: string[] = ["host", "path", "url"];
 
-export default () => {
+interface FilterComponentProps {
+  visible?: boolean;
+}
+
+export default (props: FilterComponentProps) => {
+  const { visible } = props
   const { state, dispatch } = useContext(Ctx);
   const { filterType, filterString, highlight } = state;
   const setType = (val: string) => {
@@ -26,8 +26,14 @@ export default () => {
     dispatch({ type: 'setHighlight', highlight: v });
   };
 
+  useEffect(() => {
+    return () => {
+      dispatch({ type: 'setUpdateRequestListFlag', updateRequestListFlag: Date.now()})
+    }
+  }, []);
+
   return <div>
-    <Form>
+    <Form labelCol={{span: 3}} wrapperCol={{span: 15}}>
       <Form.Item label="过滤方式">
           <Radio.Group value={filterType} onChange={e => setType(e.target.value)}>
           {
@@ -36,11 +42,11 @@ export default () => {
         </Radio.Group>
       </Form.Item>
       <Form.Item label="过滤值">
-        <Input allowClear value={filterString} onChange={onTextChange} />
+        <Input placeholder="过滤功能会更新当前的列表" allowClear value={filterString} onChange={onTextChange} />
       </Form.Item>
       <hr />
       <Form.Item label="高亮">
-        <Input allowClear value={highlight} onChange={onHighlighChange} />
+        <Input placeholder="高亮不会修改列表，但是可以标记出来匹配上的列表元素" allowClear value={highlight} onChange={onHighlighChange} />
       </Form.Item>
     </Form>
   </div>

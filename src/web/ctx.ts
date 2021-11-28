@@ -20,6 +20,7 @@ export const defaultState = {
   highlight: '',
   ready: false,
   disableCache: false,
+  updateRequestListFlag: 0,
   clean: () => {},
 };
 

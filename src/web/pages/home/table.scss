@@ -8,9 +8,16 @@
 }
 .table {
   width: 100%;
+  // table-layout: fixed;
+  position: relative;
 
   thead {
-    background-color: #F1C40F;
+    // table-layout: fixed;
+    tr {
+      position: sticky;
+      top: 0;
+      background-color: #F1C40F;
+    }
     td {
       font-weight: normal;
       border-color: transparent;

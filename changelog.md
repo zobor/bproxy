@@ -1,4 +1,8 @@
 # bproxy changelog
+
+## 5.0.19
+- 新功能：快速mock文件
+
 ## 5.0.18
 - 支持UI界面控制系统代理开关（MacOS）
 

@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import classNames from 'classnames';
-import Tooltip from 'antd/es/tooltip';
-import Button from "antd/es/button";
 import message from "antd/es/message";
 import { get, isObject } from 'lodash';
 
@@ -9,11 +7,10 @@ import { Ctx } from "../../ctx";
 import { buffer2string } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
-
-
-import 'antd/es/button/style/css';
-import "./detail.scss";
 import { tabList } from "./settings";
+
+import "./detail.scss";
+import { Button, Tooltip } from "../../components/UI";
 
 const CookiesView = (props: {
   cookies: string[];
@@ -237,7 +234,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                 </Tooltip>
               </div>
             ) : null}
-            {showBody || "不支持预览"}
+            <div className="response-viewer">
+              {showBody || "不支持预览"}
+            </div>
           </div>
         )}
       </div>
