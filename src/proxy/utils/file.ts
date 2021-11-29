@@ -11,6 +11,7 @@ export function getResponseContentType(suffix) {
     'js': 'text/javascript; charset=UTF-8',
     'json': 'application/json; charset=UTF-8',
     'css': 'text/css; charset=utf-8',
+    'scss': 'text/css; charset=utf-8',
     'svg': 'image/svg+xml',
     'png': 'image/png',
     'jpg': 'image/jpg',

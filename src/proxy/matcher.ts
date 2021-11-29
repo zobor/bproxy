@@ -20,8 +20,12 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     // RegExp
     if (_.isRegExp(rule.regx)) {
       options.matched = rule.regx.test(url);
-      if (RegExp.$1 && rule.redirect) {
-        rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
+      if (RegExp.$1 ) {
+        if (rule.redirect) {
+          rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
+        } else if (rule.path) {
+          rule.filepath = `${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
+        }
       }
     } else if (_.isString(rule.regx)) {
       // string
