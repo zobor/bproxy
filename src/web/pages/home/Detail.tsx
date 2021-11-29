@@ -8,9 +8,10 @@ import { buffer2string } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
-
-import "./detail.scss";
 import { Button, Tooltip } from "../../components/UI";
+
+import '../../libs/code-prettify.css';
+import "./detail.scss";
 
 const CookiesView = (props: {
   cookies: string[];
@@ -88,7 +89,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           if (isJson) {
             try {
               body = JSON.parse(body);
-              body = JSONFormat(body, null, 2, 100);
+              body = JSONFormat(body);
             } catch (err) {}
           }
           setShowBody(body);
@@ -143,6 +144,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       }
     }
   };
+
+  useEffect(() => {
+    if (isJson && showBody) {
+      setTimeout(() => {
+        (window as any)?.PR?.prettyPrint();
+      }, 500);
+    }
+  }, [isJson, showBody]);
 
   if (!showDetail) {
     return null;
@@ -235,7 +244,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               </div>
             ) : null}
             <div className="response-viewer">
-              {showBody || "不支持预览"}
+              {isJson ? <pre className="prettyprint lang-json">{showBody}</pre> : showBody}
             </div>
           </div>
         )}

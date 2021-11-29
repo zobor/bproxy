@@ -15,7 +15,7 @@ import { ProxyConfig } from '../types/proxy';
 import dataset from './utils/dataset';
 import { userConfirm } from './utils/confirm';
 import bproxyConfig from './config';
-import beautify from '../web/libs/jsonFormat';
+import JSONFormat from '../web/libs/jsonFormat';
 import chalk from 'chalk';
 
 export default class LocalServer {
@@ -112,7 +112,7 @@ export default class LocalServer {
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
           const template: string[] = [
-            `const config = ${beautify(defaultConfig, null, 2, 100)};`,
+            `const config = ${JSONFormat(defaultConfig)};`,
             'module.exports = config;',
           ];
 

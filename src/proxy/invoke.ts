@@ -4,12 +4,25 @@ import * as mkdirp from 'mkdirp';
 import { matcher } from './matcher';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
+import { isRegExp } from './utils/is';
+import { get } from 'lodash';
 export * from './system';
 
 export const test = async (url: string) => {
   const { config } = dataset;
   if (config) {
     const matchResult = matcher(config.rules, url);
+    console.log(matchResult);
+
+    for (const key in matchResult) {
+      if (key === 'rule') {
+        for (const k in matchResult.rule) {
+          if (k === 'regx' && matchResult && matchResult.rule && matchResult.rule[k]) {
+            matchResult.rule[k] = matchResult.rule[k].toString();
+          }
+        }
+      }
+    }
 
     return matchResult;
   }

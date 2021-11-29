@@ -18,8 +18,9 @@ export default () => {
   const onEnterPress = async(e: any) => {
     if(e.keyCode === 13 && e.target.value) {
       const rs = await invoke(e.target.value.trim());
+      console.log(rs);
       try {
-        setResult(JSONFormat(rs, null, 2, 100));
+        setResult(JSONFormat(rs));
       } catch(err) {}
     }
   };
