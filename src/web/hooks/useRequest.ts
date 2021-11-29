@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InvokeRequestParams } from "../../types/proxy";
 import { HttpRequestRequest } from "../../types/web";
 import { onRequest } from "../modules/socket";
@@ -12,8 +12,9 @@ import {
 
 const limit = 300;
 
-export default (proxySwitch: boolean, filterType, filterString): { list: HttpRequestRequest[]; clean: () => void } => {
+export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
+  const lastUpdateFlag = useRef<number>(updateRequestListFlag);
   const clean = () => {
     setList([]);
   };
@@ -121,6 +122,20 @@ export default (proxySwitch: boolean, filterType, filterString): { list: HttpReq
       });
     });
   }, [proxySwitch, filterString, filterType]);
+
+  useEffect(() => {
+    if (!proxySwitch) {
+      return;
+    }
+    if (lastUpdateFlag.current !== updateRequestListFlag) {
+      setList((pre: any) => {
+        const list = filterRequestList(pre, { filterType, filterString });
+
+        return list;
+      });
+      lastUpdateFlag.current = updateRequestListFlag;
+    }
+  }, [proxySwitch, updateRequestListFlag, filterType, filterString]);
 
   return {
     list,

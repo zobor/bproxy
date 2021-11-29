@@ -1,32 +1,4 @@
-
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
-body {
-  background-color: #fff;
-  // font-family: "Work Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif,Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  // font-family: Mija,-apple-system,BlinkMacSystemFont,Roboto,"Roboto Slab","Droid Serif","Segoe UI",system-ui,Arial,sans-serif;
-  // font-family: -apple-system,system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  font-size: 14px;
-}
-
+$appPadding: 5px;
 .app {
   position: absolute;
   top: 0;
@@ -37,26 +9,10 @@ body {
 }
 .app-main {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
+  top: $appPadding;
+  left: $appPadding;
+  right: $appPadding;
+  bottom: $appPadding;
   overflow: hidden;
 }
 
-.scrollbar-style::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollbar-style::-webkit-scrollbar-track {
-  border-radius: 3px;
-  background: #eee;
-}
-.scrollbar-style::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: #EC7063;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-}
-
-:root {
-  --rainbow-gradient: linear-gradient(-90deg,#adfbda 0,#35c3ff 30%,#fda399 50%,#76d880 70%,#ebf38b 90%,#adfbda 100%);
-}

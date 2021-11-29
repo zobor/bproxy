@@ -17,8 +17,10 @@ export const defaultState = {
   proxySwitch: true,
   filterType: 'url',
   filterString: '',
+  highlight: '',
   ready: false,
   disableCache: false,
+  updateRequestListFlag: 0,
   clean: () => {},
 };
 

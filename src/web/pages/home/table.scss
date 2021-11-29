@@ -8,68 +8,91 @@
 }
 .table {
   width: 100%;
-}
-.table thead {
-  background-color: #F1C40F;
-}
-.table td {
-  padding: 5px 10px;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;
-  vertical-align: middle;
-  border-bottom: solid 1px #eee;
-}
-.table thead td {
-  font-weight: bold;
-  border-color: transparent;
-}
-.table tbody tr:hover {
-  background-color: #efefef;
-  cursor: pointer;
-}
-.table tbody tr {
-  color: #A6ACAF;
-  :nth-child(1) {
-    color: #58D68D
-  }
-  &.matched {
-    color: #212F3C;
-  }
-  &.active {
-    background: #efefef;
-  }
-  &.error {
-    color: red;
-    :nth-child(1) {
-      color: red;
+  // table-layout: fixed;
+  position: relative;
+
+  thead {
+    // table-layout: fixed;
+    tr {
+      position: sticky;
+      top: 0;
+      background-color: #F1C40F;
+    }
+    td {
+      font-weight: normal;
+      border-color: transparent;
     }
   }
-}
-.table {
-  td.matched {
-    text-align: center;
+
+  td {
+    padding: 1px 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    vertical-align: middle;
+    border-bottom: solid 1px #eee;
+    &.matched {
+      text-align: center;
+    }
   }
+
+  tbody {
+    tr {
+      color: #A6ACAF;
+      :nth-child(1) {
+        color: #58D68D
+      }
+      &:hover {
+        background-color: #efefef;
+        cursor: pointer;
+      }
+      &.matched {
+        color: #212F3C;
+        color: #2E86C1;
+        font-weight: bold;
+      }
+      &.active {
+        background: #58D68D;
+        color: #fff;
+        td {
+          color: #fff;
+        }
+      }
+      &.error {
+        color: red;
+        :nth-child(1) {
+          color: red;
+        }
+      }
+      &.highlight {
+        color: #8E44AD;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .status {
+    width: 50px;
+  }
+  .matched {
+    width: 60px;
+  }
+  .method {
+    width: 90px;
+  }
+  .protocol {
+    width: 60px;
+  }
+  .speed {
+    width: 80px;
+  }
+  .host {
+    min-width: 100px;
+    max-width: 300px;
+  }
+
 }
-.table .status {
-  width: 50px;
-}
-.table .matched {
-  width: 60px;
-}
-.table .method {
-  width: 90px;
-}
-.table .protocol {
-  width: 60px;
-}
-.table .speed {
-  width: 80px;
-}
-.table .host {
-  min-width: 100px;
-  max-width: 300px;
-}
+
 .empty-tip {
   text-align: center;
   font-size: 15px;

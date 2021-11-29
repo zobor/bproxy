@@ -20,8 +20,8 @@ import chalk from 'chalk';
 
 export default class LocalServer {
   static async start(port: number, configPath: string): Promise<void>{
-    const { config = {} as any, configPath: confPath = '' } = await this.loadUserConfig(configPath, settings);
-    dataset.configPath = configPath;
+    const { config = {} as any, configPath: confPath = "" } =
+      await this.loadUserConfig(configPath, settings);
     if (_.isEmpty(config) || _.isEmpty(confPath)) {
       return;
     }
@@ -105,6 +105,7 @@ export default class LocalServer {
 
     if (userConfigPath || _.isString(configPath)) {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
+      dataset.configPath = confPath;
       if (!fs.existsSync(confPath)) {
         const userInput = await userConfirm(`当前目录没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
 
