@@ -1,5 +1,8 @@
 # bproxy changelog
 
+## 5.0.20
+- json格式化&高亮
+
 ## 5.0.19
 - 新功能：快速mock文件
 

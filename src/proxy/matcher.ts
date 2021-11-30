@@ -34,7 +34,11 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
       // function method return matcher result
       options.matched = rule.regx(url);
       if (options.matched && RegExp.$1) {
-        options.filepath = rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1;
+        if (rule.redirect) {
+          rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
+        } else if (rule.path) {
+          rule.filepath = `${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
+        }
       }
     }
     // matched and get this rule
