@@ -1,9 +1,9 @@
 import { useState } from 'react';
+
 import { bridgeInvoke } from '../../modules/socket';
 import JSONFormat from '../../libs/jsonFormat';
-import 'antd/es/input/style/css';
-import './index.scss';
 import { Input } from '../UI';
+import './index.scss';
 
 const invoke = async(url: string) => {
   const rs = await bridgeInvoke({

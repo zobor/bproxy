@@ -1,5 +1,7 @@
-import * as pako from 'pako';
+// import * as pako from 'pako';
 import { BrotliDecode } from '../modules/brDecode';
+
+const { pako } = window as any;
 
 export function isBuffer<T>(v: T): boolean {
   return Object.prototype.toString.call(v) === '[object Uint8Array]' || Object.prototype.toString.call(v) === '[object ArrayBuffer]';

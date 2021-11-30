@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
+
 import { bridgeInvoke } from '../../modules/socket';
 import './index.scss';
 

@@ -1,13 +1,6 @@
 import { useCallback, useContext } from "react";
 import classNames from "classnames";
-import {
-  PlayCircleOutlined,
-  WifiOutlined,
-  BugOutlined,
-  MacCommandOutlined,
-  ClearOutlined,
-  FilterOutlined,
-} from "@ant-design/icons";
+
 import RuleTest from "../../components/ruleTest";
 import useBool from "../../hooks/useBool";
 import { Ctx } from "../../ctx";
@@ -16,7 +9,7 @@ import Install from "../../components/Install";
 import SystemProxy from '../../components/SystemProxy';
 
 import "./controller.scss";
-import { Modal } from "../../components/UI";
+import { BugOutlined, ClearOutlined, FilterOutlined, MacCommandOutlined, Modal, PlayCircleOutlined, WifiOutlined } from "../../components/UI";
 
 const ControllerDialog = ({ title, children, ...others }) => {
   return (

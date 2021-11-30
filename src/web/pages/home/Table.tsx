@@ -1,11 +1,12 @@
 import { useContext, useRef } from "react";
 import classNames from "classnames";
-import { take, takeRight } from "lodash";
+
 import { Ctx } from "../../ctx";
 import { HttpRequestRequest } from '../../../types/web';
 import { formatSeconds } from '../../../proxy/utils/format';
 
 import './table.scss';
+import { take, takeRight } from "../../modules/_";
 
 const shorthand = (str, len = 25, max = 60) => {
   if (str.length > max) {

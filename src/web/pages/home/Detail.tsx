@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import classNames from 'classnames';
-import message from "antd/es/message";
-import { get, isObject } from 'lodash';
 
 import { Ctx } from "../../ctx";
 import { buffer2string } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
-import { Button, Tooltip } from "../../components/UI";
+import { Button, message, Tooltip } from "../../components/UI";
 
 import '../../libs/code-prettify.css';
 import "./detail.scss";
+import { get, isObject } from "../../modules/_";
 
 const CookiesView = (props: {
   cookies: string[];

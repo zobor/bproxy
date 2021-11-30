@@ -7,6 +7,12 @@ import Modal from "antd/es/modal";
 import Tooltip from 'antd/es/tooltip';
 import Button from "antd/es/button";
 
+import PlayCircleOutlined from '@ant-design/icons/PlayCircleOutlined';
+import WifiOutlined from '@ant-design/icons/WifiOutlined';
+import BugOutlined from '@ant-design/icons/BugOutlined';
+import MacCommandOutlined from '@ant-design/icons/MacCommandOutlined';
+import ClearOutlined from '@ant-design/icons/ClearOutlined';
+import FilterOutlined from '@ant-design/icons/FilterOutlined';
 
 import 'antd/es/button/style/css';
 import 'antd/es/switch/style/css';
@@ -26,4 +32,10 @@ export {
   Input,
   Radio,
   Modal,
+  PlayCircleOutlined,
+  WifiOutlined,
+  BugOutlined,
+  MacCommandOutlined,
+  ClearOutlined,
+  FilterOutlined,
 }
