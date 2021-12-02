@@ -1,11 +1,11 @@
 /* desert scheme ported from vim to google prettify */
 pre.prettyprint { display: block; background-color: #333 }
 pre .nocode { background-color: none; color: #000 }
-pre .str { color: #ffa0a0 } /* string  - pink */
+pre .str { color: #E59866 } /* string  - pink */
 pre .kwd { color: #f0e68c; font-weight: bold }
 pre .com { color: #87ceeb } /* comment - skyblue */
 pre .typ { color: #98fb98 } /* type    - lightgreen */
-pre .lit { color: #cd5c5c } /* literal - darkred */
+pre .lit { color: #7DCEA0; } /* literal - darkred */
 pre .pun { color: #fff }    /* punctuation */
 pre .pln { color: #fff }    /* plaintext */
 pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
@@ -35,4 +35,7 @@ li.L1,li.L3,li.L5,li.L7,li.L9 { }
 
 pre.prettyprint {
   background-color: transparent;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
 }

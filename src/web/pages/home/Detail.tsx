@@ -145,12 +145,12 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   };
 
   useEffect(() => {
-    if (isJson && showBody) {
+    if (isJson && showBody && detailActiveTab === 'responseBody') {
       setTimeout(() => {
         (window as any)?.PR?.prettyPrint();
       }, 500);
     }
-  }, [isJson, showBody]);
+  }, [isJson, showBody, detailActiveTab]);
 
   if (!showDetail) {
     return null;

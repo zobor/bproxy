@@ -1,3 +1,4 @@
+import { ProxyRule } from './../types/proxy.d';
 import request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
@@ -10,6 +11,15 @@ import { isInspectContentType } from './utils/is';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
+
+const getDalay = (rule: ProxyRule, config: ProxyConfig) => {
+  return rule?.delay || config?.delay || 0;
+}
+const delay = (time: number) => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve(true);
+  }, time);
+})
 
 export const httpMiddleware = {
   responseByText(text: string, res, responseHeaders): void {
@@ -26,8 +36,9 @@ export const httpMiddleware = {
     const resOptions = {
       headers: {},
     };
+    const delayTime = getDalay(matcherResult?.rule as ProxyRule, config);
     if (matcherResult.matched) {
-      return new Promise(() => {
+      return new Promise(async() => {
         if (!matcherResult.rule) return;
         if (matcherResult?.responseHeaders) {
           resOptions.headers = {...matcherResult.responseHeaders}
@@ -45,6 +56,9 @@ export const httpMiddleware = {
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
+          if (delayTime) {
+            await delay(delayTime);
+          }
           this.proxyLocalFile(
             matcherResult.rule.file,
             res,
@@ -61,6 +75,9 @@ export const httpMiddleware = {
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
+          if (delayTime) {
+            await delay(delayTime);
+          }
           this.proxyLocalFile(
             path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''),
             res,
@@ -70,23 +87,28 @@ export const httpMiddleware = {
         }
         // 3.1. rule.response.function
         else if (_.isFunction(matcherResult.rule.response)) {
+          ioRequest({
+            requestId: req.$requestId,
+            url: req.requestOriginUrl || req.url,
+            method: req.method,
+            statusCode: matcherResult.rule.statusCode,
+            requestHeaders: req.headers,
+          });
+          if (delayTime) {
+            await delay(delayTime);
+          }
           matcherResult.rule.response({
             response: res,
             request,
             req,
             rules: matcherResult?.rule,
           });
-          ioRequest({
-            requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
-            method: req.method,
-            statusCode: matcherResult.rule.statusCode,
-            requestHeaders: req.headers,
-          });
         }
         // 3.2.  rule.response.string
         else if (_.isString(matcherResult.rule.response)) {
-          this.responseByText(matcherResult.rule.response, res, resOptions.headers);
+          if (delayTime) {
+            await delay(delayTime);
+          }
           ioRequest({
             requestId: req.$requestId,
             url: req.requestOriginUrl || req.url,
@@ -94,11 +116,10 @@ export const httpMiddleware = {
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
+          this.responseByText(matcherResult.rule.response, res, resOptions.headers);
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
-          res.writeHead(matcherResult.rule.statusCode, {});
-          res.end(matcherResult.rule.statusCode.toString());
           ioRequest({
             requestId: req.$requestId,
             url: req.requestOriginUrl || req.url,
@@ -106,6 +127,11 @@ export const httpMiddleware = {
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
+          if (delayTime) {
+            await delay(delayTime);
+          }
+          res.writeHead(matcherResult.rule.statusCode, {});
+          res.end(matcherResult.rule.statusCode.toString());
         }
         // network response
         // 4. rule.redirect
@@ -120,16 +146,25 @@ export const httpMiddleware = {
           const requestOption = {
             headers: matcherResult.rule.requestHeaders || {}
           };
+          if (delayTime) {
+            await delay(delayTime);
+          }
           return this.proxyByRequest(req, res, requestOption, resOptions, matcherResult);
         }
         // rule.proxy
         else if (_.isString(matcherResult.rule.proxy)) {
+          if (delayTime) {
+            await delay(delayTime);
+          }
           return this.proxyByRequest(req, res, {
             proxy: matcherResult.rule.proxy,
           }, resOptions, matcherResult);
         }
         // rule.host
         else if (_.isString(matcherResult.rule.host)) {
+          if (delayTime) {
+            await delay(delayTime);
+          }
           return this.proxyByRequest(req, res, {
             hostname: matcherResult.rule.host,
           }, resOptions, matcherResult);
@@ -139,6 +174,9 @@ export const httpMiddleware = {
         }
       });
     } else {
+      if (delayTime) {
+        await delay(delayTime);
+      }
       return this.proxyByRequest(req, res, {}, resOptions);
     }
   },
