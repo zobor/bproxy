@@ -50,8 +50,9 @@ export const httpMiddleware = {
         // 1. rule.file
         if (matcherResult.rule.file) {
           ioRequest({
+            matched: true,
             requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
+            url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
@@ -69,8 +70,9 @@ export const httpMiddleware = {
         // 2. rule.path
         else if (matcherResult.rule.path) {
           ioRequest({
+            matched: true,
             requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
+            url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
@@ -88,8 +90,9 @@ export const httpMiddleware = {
         // 3.1. rule.response.function
         else if (_.isFunction(matcherResult.rule.response)) {
           ioRequest({
+            matched: true,
             requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
+            url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
@@ -110,8 +113,9 @@ export const httpMiddleware = {
             await delay(delayTime);
           }
           ioRequest({
+            matched: true,
             requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
+            url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
@@ -121,8 +125,9 @@ export const httpMiddleware = {
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
           ioRequest({
+            matched: true,
             requestId: req.$requestId,
-            url: req.requestOriginUrl || req.url,
+            url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,

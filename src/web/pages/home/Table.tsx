@@ -74,7 +74,7 @@ const Table = (props: any) => {
                 <td className={classNames({
                   status: true,
                 })}>{req?.custom?.statusCode}</td>
-                <td className="matched">{req.matched ? '✔' : '✘'}</td>
+                <td className="matched" onClick={() => {console.log(req)}}>{req.matched ? '✔' : '✘'}</td>
                 <td className="method">{req?.custom?.method}</td>
                 <td className="protocol">{req?.custom?.protocol}</td>
                 <td className="host" title={req?.custom?.host}>{shorthand(req?.custom?.host, 10, 20)}</td>

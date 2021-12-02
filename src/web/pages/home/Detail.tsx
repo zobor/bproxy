@@ -214,7 +214,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   .filter((key) => key !== "$$type")
                   .map((key) => (
                     <div className="form-item" key={key}>
-                      <label>{key}:</label>
+                      <label className={classNames({
+                        hl: key?.includes('x-bproxy')
+                      })}>{key}:</label>
                       <div className="form-item-value">
                         {isObject(detail[detailActiveTab][key])
                           ? JSON.stringify(detail[detailActiveTab][key])
