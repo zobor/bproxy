@@ -22,6 +22,7 @@ module.exports = config;
 | sslAll     | boolean     | true                                | 是否抓取全部https请求，优先级高于https配置 |
 | host       | string[]    | []                                  | host配置                                   |
 | rules      | ProxyRule[] | []                                  | 代理规则列表                               |
+| delay      | number      | 0                                   | 全局网络延迟                               |
 
 ## rules
 
@@ -38,4 +39,5 @@ module.exports = config;
 | statusCode      | number                   | 200                                                          | 请求相应http status code |
 | responseHeaders | {}                       | {'Access-Control-Allow-Credentials': true}                   | 自定义http响应头         |
 | requestHeaders  | {}                       | {"cache-control": "no-store"}                                | 自定义http请求头         |
+| delay           | number                   | 1000                                                         | 1s                       |
 
