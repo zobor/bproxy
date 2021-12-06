@@ -224,4 +224,13 @@ $labelValueColor: #139dcb;
     align-items: center;
     justify-content: center;
   }
+  pre {
+    a {
+      color: #3498DB;
+      text-decoration: underline;
+      .str {
+        color: #3498DB;
+      }
+    }
+  }
 }

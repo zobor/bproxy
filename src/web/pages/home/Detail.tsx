@@ -43,6 +43,11 @@ const CookiesView = (props: {
   );
 };
 
+
+const findLink = (str) => {
+  return str.replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
+};
+
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
   const [showBody, setShowBody] = useState<
@@ -94,8 +99,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           setShowBody(body);
         }
       }
-    }, 300);
-  }, [detailActiveTab, detail]);
+    }, 0);
+  }, [detailActiveTab, detail, showDetail]);
 
   useEffect(() => {
     if (!showDetail) {
@@ -148,7 +153,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     if (isJson && showBody && detailActiveTab === 'responseBody') {
       setTimeout(() => {
         (window as any)?.PR?.prettyPrint();
-      }, 500);
+      }, 0);
     }
   }, [isJson, showBody, detailActiveTab]);
 
@@ -245,7 +250,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               </div>
             ) : null}
             <div className="response-viewer">
-              {isJson ? <pre className="prettyprint lang-json">{showBody}</pre> : showBody}
+              {isJson ? <pre dangerouslySetInnerHTML={{
+                __html: findLink(showBody),
+              }} className="prettyprint lang-json" /> : showBody}
             </div>
           </div>
         )}

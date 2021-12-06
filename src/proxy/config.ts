@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { ProxyConfig } from '../types/proxy';
+import { getComputerName } from './system';
 
 const config: ProxyConfig = {
   port: 8888,
@@ -16,7 +17,7 @@ const config: ProxyConfig = {
   certificate: {
     filename: 'bproxy.ca.crt',
     keyFileName: 'bproxy.ca.key.pem',
-    name: 'B Proxy CA',
+    name: `B Proxy CA(${getComputerName()})`,
     organizationName: 'zoborzhang',
     OU: 'https://github.com/zobor/bproxy',
     countryName: 'CN',

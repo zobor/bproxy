@@ -119,7 +119,7 @@ class Certificate {
         create: false,
       };
     } catch (e) {
-      const caObj = this.createCAForInstall(settings.certificate.name);
+      const caObj = this.createCAForInstall(config.name);
       const certPem = pki.certificateToPem(caObj.cert as any);
       const keyPem = pki.privateKeyToPem(caObj.key as any);
 
