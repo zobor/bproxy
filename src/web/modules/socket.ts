@@ -1,5 +1,7 @@
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import { getRandStr } from './util';
+
+const { io } = window as any;
 
 const { port } = location;
 

@@ -31,6 +31,7 @@ export interface ProxyRule {
   statusCode?: number;
   filepath?: string;
   OPTIONS2POST?: boolean;
+  delay?: number;
 }
 
 export interface ProxyDataSet {
@@ -93,6 +94,7 @@ export interface ProxyConfig {
   host?: string[];
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
+  delay?: number;
 }
 
 export default interface MatcherResult {

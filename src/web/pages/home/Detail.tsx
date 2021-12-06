@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import classNames from 'classnames';
-import message from "antd/es/message";
-import { get, isObject } from 'lodash';
 
 import { Ctx } from "../../ctx";
 import { buffer2string } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
+import { Button, message, Tooltip } from "../../components/UI";
 
+import '../../libs/code-prettify.css';
 import "./detail.scss";
-import { Button, Tooltip } from "../../components/UI";
+import { get, isObject } from "../../modules/_";
 
 const CookiesView = (props: {
   cookies: string[];
@@ -41,6 +41,11 @@ const CookiesView = (props: {
       </tbody>
     </table>
   );
+};
+
+
+const findLink = (str) => {
+  return str.replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
 
 const Detail = (props: any): React.ReactElement<any, any> | null => {
@@ -88,14 +93,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           if (isJson) {
             try {
               body = JSON.parse(body);
-              body = JSONFormat(body, null, 2, 100);
+              body = JSONFormat(body);
             } catch (err) {}
           }
           setShowBody(body);
         }
       }
-    }, 300);
-  }, [detailActiveTab, detail]);
+    }, 0);
+  }, [detailActiveTab, detail, showDetail]);
 
   useEffect(() => {
     if (!showDetail) {
@@ -143,6 +148,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       }
     }
   };
+
+  useEffect(() => {
+    if (isJson && showBody && detailActiveTab === 'responseBody') {
+      setTimeout(() => {
+        (window as any)?.PR?.prettyPrint();
+      }, 0);
+    }
+  }, [isJson, showBody, detailActiveTab]);
 
   if (!showDetail) {
     return null;
@@ -206,7 +219,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   .filter((key) => key !== "$$type")
                   .map((key) => (
                     <div className="form-item" key={key}>
-                      <label>{key}:</label>
+                      <label className={classNames({
+                        hl: key?.includes('x-bproxy')
+                      })}>{key}:</label>
                       <div className="form-item-value">
                         {isObject(detail[detailActiveTab][key])
                           ? JSON.stringify(detail[detailActiveTab][key])
@@ -235,7 +250,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               </div>
             ) : null}
             <div className="response-viewer">
-              {showBody || "不支持预览"}
+              {isJson ? <pre dangerouslySetInnerHTML={{
+                __html: findLink(showBody),
+              }} className="prettyprint lang-json" /> : showBody}
             </div>
           </div>
         )}

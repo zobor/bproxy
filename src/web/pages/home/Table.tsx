@@ -1,11 +1,12 @@
 import { useContext, useRef } from "react";
 import classNames from "classnames";
-import { take, takeRight } from "lodash";
+
 import { Ctx } from "../../ctx";
 import { HttpRequestRequest } from '../../../types/web';
 import { formatSeconds } from '../../../proxy/utils/format';
 
 import './table.scss';
+import { take, takeRight } from "../../modules/_";
 
 const shorthand = (str, len = 25, max = 60) => {
   if (str.length > max) {
@@ -73,7 +74,7 @@ const Table = (props: any) => {
                 <td className={classNames({
                   status: true,
                 })}>{req?.custom?.statusCode}</td>
-                <td className="matched">{req.matched ? '✔' : '✘'}</td>
+                <td className="matched" onClick={() => {console.log(req)}}>{req.matched ? '✔' : '✘'}</td>
                 <td className="method">{req?.custom?.method}</td>
                 <td className="protocol">{req?.custom?.protocol}</td>
                 <td className="host" title={req?.custom?.host}>{shorthand(req?.custom?.host, 10, 20)}</td>

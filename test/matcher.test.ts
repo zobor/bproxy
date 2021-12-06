@@ -70,7 +70,18 @@ describe('matcher', () => {
       }
     ], 'https://google.com/abc.js');
     expect(rs.matched).toBeTruthy();
-    expect(rs?.filepath).toEqual('a.js');
+    expect(rs?.rule?.redirectTarget).toEqual('http://localhost/a.js');
+  });
+  it('regx is function', () => {
+    const rs = matcher([
+      {
+        regx: (url: string) => /(\w+\.js)$/.test(url),
+        path: './mock/',
+        rewrite: (path: string) => path.replace('bc', ''),
+      }
+    ], 'https://google.com/abc.js');
+    expect(rs.matched).toBeTruthy();
+    expect(rs?.rule?.filepath).toEqual('a.js');
   });
   it('regx is function', () => {
     const rs = matcher([
@@ -79,5 +90,33 @@ describe('matcher', () => {
       } as ProxyRule
     ], 'https://google.com/abc.js');
     expect(rs.matched).toBeFalsy();
+  });
+  it('regx with path', () => {
+    const rs = matcher([
+      {
+        regx: 'https://google.com/*',
+        path: './mock/'
+      }
+    ], 'https://google.com/a.js');
+    expect(rs.filepath === './mock/a.js');
+  });
+  it('regx with path', () => {
+    const rs = matcher([
+      {
+        regx: 'https://google.com/*',
+        rewrite: path => path.replace(/_\w{8}/, ''),
+        path: './mock/'
+      }
+    ], 'https://google.com/a_bbbbbbbb.js');
+    expect(rs.filepath === './mock/a.js');
+  });
+  it('regx with host', () => {
+    const rs = matcher([
+      {
+        regx: 'https://google.com',
+        host: '127.0.0.1',
+      }
+    ], 'https://google.com/a.js');
+    expect(rs.responseHeaders['x-bproxy-hostip'] === '127.0.0.1');
   });
 })

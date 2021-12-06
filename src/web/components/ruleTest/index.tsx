@@ -1,9 +1,9 @@
 import { useState } from 'react';
+
 import { bridgeInvoke } from '../../modules/socket';
 import JSONFormat from '../../libs/jsonFormat';
-import 'antd/es/input/style/css';
-import './index.scss';
 import { Input } from '../UI';
+import './index.scss';
 
 const invoke = async(url: string) => {
   const rs = await bridgeInvoke({
@@ -18,8 +18,9 @@ export default () => {
   const onEnterPress = async(e: any) => {
     if(e.keyCode === 13 && e.target.value) {
       const rs = await invoke(e.target.value.trim());
+      console.log(rs);
       try {
-        setResult(JSONFormat(rs, null, 2, 100));
+        setResult(JSONFormat(rs));
       } catch(err) {}
     }
   };

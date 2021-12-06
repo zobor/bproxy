@@ -92,3 +92,6 @@ export const getOsName = () => {
   return os.platform();
 }
 
+export const getComputerName = () => {
+  return os.hostname().replace(/\.\w+/g, '');
+};

@@ -44,7 +44,6 @@ export default (props: FilterComponentProps) => {
       <Form.Item label="过滤值">
         <Input placeholder="过滤功能会更新当前的列表" allowClear value={filterString} onChange={onTextChange} />
       </Form.Item>
-      <hr />
       <Form.Item label="高亮">
         <Input placeholder="高亮不会修改列表，但是可以标记出来匹配上的列表元素" allowClear value={highlight} onChange={onHighlighChange} />
       </Form.Item>

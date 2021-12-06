@@ -27,7 +27,7 @@ const inspectResponse = (req, res) => {
 
   try {
     if (!fs.existsSync(filepath)) {
-      throw 404;
+      throw new Error(`file not found: ${filepath}`);
     }
     const readStream = fs.createReadStream(filepath);
     const headers = {};

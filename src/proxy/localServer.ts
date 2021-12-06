@@ -15,7 +15,7 @@ import { ProxyConfig } from '../types/proxy';
 import dataset from './utils/dataset';
 import { userConfirm } from './utils/confirm';
 import bproxyConfig from './config';
-import beautify from '../web/libs/jsonFormat';
+import JSONFormat from '../web/libs/jsonFormat';
 import chalk from 'chalk';
 
 export default class LocalServer {
@@ -66,13 +66,13 @@ export default class LocalServer {
       });
     });
     const ips = getLocalIpAddress();
-    log.info(`本地代理服务器启动成功: `);
+    log.info(`代理服务器启动成功: `);
     ips.forEach((ip: string) => {
       console.log(`\t${chalk.green(`http://${ip}:${appConfig.port}`)}`)
     });
-    log.info('网络日志查看: ');
+    log.info('HTTP请求日志查看: ');
     console.log(`\t${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
-    log.info('查看更多配置用法：')
+    log.info('更多配置用法：')
     console.log(`\t${chalk.green('https://github.com/zobor/bproxy/blob/master/bproxy.config.md')}`);
 
     await this.checkUpdate();
@@ -112,7 +112,7 @@ export default class LocalServer {
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
           const template: string[] = [
-            `const config = ${beautify(defaultConfig, null, 2, 100)};`,
+            `const config = ${JSONFormat(defaultConfig)};`,
             'module.exports = config;',
           ];
 

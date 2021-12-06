@@ -2,7 +2,7 @@ import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef }
 import { Route, HashRouter, Switch } from 'react-router-dom';
 import { Ctx, defaultState, reducer } from './ctx';
 import './App.scss';
-import { omit } from 'lodash';
+import { omit } from './modules/_';
 
 const keepAliveCache: Record<string, React.MemoExoticComponent<React.ComponentType<any>>> = {};
 

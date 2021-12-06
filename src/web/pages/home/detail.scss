@@ -3,7 +3,7 @@ $panelBackground: #1d1f21;
 $panelFontColor: #fff;
 $panelBorderRadius: 5px;
 $maskBackground: rgba(0,0,0,0.8);
-$labelKeyColor: #f94962;
+$labelKeyColor: #F1948A;
 $labelValueColor: #139dcb;
 
 /* 数据详情 */
@@ -56,7 +56,9 @@ $labelValueColor: #139dcb;
       background-color: $panelBackground;
       color: #aaa;
       padding: 50px;
-      border-radius: $panelBorderRadius;
+      // border-radius: $panelBorderRadius;
+      border-bottom-left-radius: $panelBorderRadius;
+      border-bottom-right-radius: $panelBorderRadius;
       overflow-y: auto;
       overflow-x: hidden;
       line-height: 1.5;
@@ -69,19 +71,27 @@ $labelValueColor: #139dcb;
       }
     }
 
+    .tabs {
+      border-bottom: solid 3px $panelBackground;
+      display: flex;
+      align-items: center;
+    }
+
     .tabs > ul{
       display: flex;
-      align-items: flex-end;
+      flex: 1;
+      align-items: center;
       justify-content: space-evenly;
-      height: 40px;
+      margin-bottom: 0;
 
       li {
         text-align: center;
         cursor: pointer;
-        padding-bottom: 5px;
         font-weight: bold;
         font-size: 17px;
-        padding: 10 20px;
+        padding:10px 20px;
+        display: inline-flex;
+        align-items: center;
 
         &.active {
           color: #D35400;
@@ -112,10 +122,14 @@ $labelValueColor: #139dcb;
         font-size: 16px;
 
         label {
-          width: 20%;
+          min-width: 20%;
           text-align: right;
           font-weight: bold;
           color: $labelKeyColor;
+          &.hl {
+            color: red;
+            font-weight: bold;
+          }
         }
 
         .form-item-value {
@@ -209,5 +223,14 @@ $labelValueColor: #139dcb;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  pre {
+    a {
+      color: #3498DB;
+      text-decoration: underline;
+      .str {
+        color: #3498DB;
+      }
+    }
   }
 }
