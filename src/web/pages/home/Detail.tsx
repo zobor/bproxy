@@ -45,6 +45,9 @@ const CookiesView = (props: {
 
 
 const findLink = (str) => {
+  if (!(str && str.replace)) {
+    return str;
+  }
   return str.replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
 
@@ -168,8 +171,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         {/* URL */}
         <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
           {custom ? (
-            <Tooltip title={custom.url}>
-              <div style={{ display: "flex" }}>
+            <Tooltip title={custom.url} placement="bottomLeft">
+              <div>
                 {custom.statusCode || "Pendding"} {custom.method}{" "}
                 {custom.origin}
                 {custom.path}
