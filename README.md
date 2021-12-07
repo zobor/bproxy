@@ -128,13 +128,13 @@ bproxy -i
 ```js
 // map folder
 config.rules.push({
-  regx: 'https://douyu.com/static/**',
+  regx: 'https://google.com/static/**',
   path: '/path/to/your/folder'
 });
 
 // map file
 config.rules.push({
-  regx: 'https://douyu.com/static/a.js',
+  regx: 'https://google.com/static/a.js',
   file: '/path/to/your/folder/a.js'
 });
 ```
@@ -151,9 +151,9 @@ config.rules.push({
 通过修改请求的响应头来解决前端请求的跨域问题。
 ```js
 config.rules.push({
-  regx: 'https://v.douyu.com/user',
+  regx: 'https://google.com/user',
   responseHeaders: {
-    "Access-Control-Allow-Origin": "https://douyu.com",
+    "Access-Control-Allow-Origin": "https://qq.com",
     "Access-Control-Allow-Credentials": "true",
   },
   requestHeaders: {
@@ -165,7 +165,7 @@ config.rules.push({
 ### 对部分请求设置host
 ```js
 config.rules.push({
-  regx: 'https://v.douyu.com/user',
+  regx: 'https://google.com/user',
   host: '127.0.0.1',
 });
 ```
@@ -173,7 +173,7 @@ config.rules.push({
 ### 模拟http请求异常
 ```js
 config.rules.push({
-  regx: 'https://v.douyu.com/user',
+  regx: 'https://google.com/user',
   statusCode: 502,
 });
 ```
@@ -181,7 +181,7 @@ config.rules.push({
 ### 模拟http请求弱网
 ```js
 config.rules.push({
-  regx: 'https://v.douyu.com/user',
+  regx: 'https://google.com/user',
   delay: 2000, // 2000ms
 });
 ```
