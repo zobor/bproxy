@@ -5,6 +5,9 @@
 B Proxy 是一个代理工具，为提高效率而生。
 --------
 
+![](https://zobor.github.io/666/assets/bproxy-terminal.png)
+![](https://zobor.github.io/666/assets/bproxy-browser.png)
+![](https://zobor.github.io/666/assets/bproxy-detail.png)
 
 
 ## 安装
@@ -64,8 +67,8 @@ module.exports = setConfig({
   port: 8888,
   host: [],
   rules: [{
-    regx: 'http://baidu.com/**',
-    response: 'test',
+    regx: 'http://google.com/**',
+    response: 'hello bproxy\n',
   }],
 });
 ```
@@ -83,7 +86,7 @@ bproxy -s
 测试一下
 
 ```bash
-curl -x http://127.0.0.1:8888 http://baidu.com/bproxy
+curl -x http://127.0.0.1:8888 http://google.com/bproxy
 // output
 test
 ```
@@ -193,10 +196,6 @@ config.rules.push({
   proxy: 'http://127.0.0.1:1080',
 });
 ```
-
-### 抓包视图
-
-<img src="https://sta-op.douyucdn.cn/butterfly-java/2021/11/08/0e0883720037694d531619024db18857.png" style="zoom:50%;" />
 
 ### 配置概览
 ```ts
