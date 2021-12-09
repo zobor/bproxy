@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import classNames from 'classnames';
+import moment from 'moment';
 
 import { Ctx } from "../../ctx";
-import { buffer2string } from "../../modules/buffer";
+import { buffer2string, textDecode } from "../../modules/buffer";
 import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
@@ -48,7 +49,9 @@ const findLink = (str) => {
   if (!(str && str.replace)) {
     return str;
   }
-  return str.replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
+  return str
+    // .replace(/time[\w_\-\$]\":\s(\d{10,13})/i, '$1')
+    .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
 
 const Detail = (props: any): React.ReactElement<any, any> | null => {
@@ -59,18 +62,19 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { detail = {} } = props;
   const { showDetail, detailActiveTab } = state;
   const { custom = {} } = detail || {};
-  const contentType = get(detail, 'responseHeaders["content-type"]');
+  const contentType = (get(detail, 'responseHeaders["content-type"]') || '').toLowerCase();
   const isJson = contentType?.includes('/json');
+  const isImage = contentType?.includes("image/");
+  const isUtf8 = contentType?.includes('/utf-8');
+  const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
+  const isChunked = get(detail, 'responseHeaders[transfer-encoding]') === 'chunked';
   const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ").filter(item => !!item);
+  const postDataType = get(detail, `[${detailActiveTab}].$$type`);
 
   // view text
   useEffect(() => {
     setShowBody("处理中...");
     setTimeout(() => {
-      const contentType = get(detail, 'responseHeaders["content-type"]');
-      const isImage = contentType?.includes("image/");
-      const isJson = contentType?.includes('/json');
-      const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
       // image
       if (isImage) {
         const body = (
@@ -84,13 +88,22 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         if (detail?.custom?.method === "ws") {
           const body = detail.responseBody.map((item, idx: number) => (
             <div key={`${detail.custom.requestId}-ws-body-${idx}`}>
-              {buffer2string(item, "")}
+              {buffer2string(item, "", false)}
             </div>
           ));
           setShowBody(body);
+        } else if (isChunked) {
+          let body = textDecode(detail?.responseBody);
+          if (isJson) {
+            try {
+              body = JSON.parse(body);
+              body = JSONFormat(body);
+            } catch (err) {}
+          }
+          setShowBody(body);
         } else {
           // text\json
-          let body = buffer2string(detail?.responseBody, isEncoding);
+          let body = buffer2string(detail?.responseBody, isEncoding, isUtf8);
 
           // format json
           if (isJson) {
@@ -211,27 +224,36 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           <div
             className={classNames({
               "form scrollbar-style": true,
-              [get(detail, `[${detailActiveTab}].$$type`)]: get(
-                detail,
-                `[${detailActiveTab}].$$type`
-              ),
+              [postDataType]: postDataType,
             })}
           >
             {detail[detailActiveTab]
               ? Object.keys(detail[detailActiveTab])
                   .filter((key) => key !== "$$type")
-                  .map((key) => (
-                    <div className="form-item" key={key}>
-                      <label className={classNames({
-                        hl: key?.includes('x-bproxy')
-                      })}>{key}:</label>
-                      <div className="form-item-value">
-                        {isObject(detail[detailActiveTab][key])
-                          ? JSON.stringify(detail[detailActiveTab][key])
-                          : detail[detailActiveTab][key].toString()}
+                  .map((key) => {
+                    let dataValue = detail[detailActiveTab][key];
+                    if (['if-modified-since', 'expires', 'last-modified', 'date', 'x-swift-savetime'].includes(key.toLocaleLowerCase())) {
+                      try {
+                        dataValue = `${dataValue} -> (${moment(dataValue).format('YYYY-MM-DD HH:mm:ss')})`;
+                      } catch(err){}
+                    }
+                    return (
+                      <div className="form-item" key={key}>
+                        <label
+                          className={classNames({
+                            hl: key?.includes("x-bproxy"),
+                          })}
+                        >
+                          {key}:
+                        </label>
+                        <div className="form-item-value">
+                          {isObject(dataValue)
+                            ? JSON.stringify(dataValue)
+                            : dataValue.toString()}
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
               : null}
             {detailActiveTab === "requestHeaders" ? (
               <CookiesView cookies={cookies} />

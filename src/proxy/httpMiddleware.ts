@@ -233,25 +233,25 @@ export const httpMiddleware = {
       request(rOpts)
         .on("response", function (response) {
           const responseHeaders = {...response.headers, ...responseOptions.headers};
-          if (
-            isInspectContentType({
-              ...rOpts.headers,
-              ...responseHeaders,
-            })
-          ) {
-            const body: Buffer[] = [];
-            response
-              .on("data", (data: Buffer) => {
-                body.push(data);
-              })
-              .on("end", () => {
-                const buf = Buffer.concat(body);
-                ioRequest({
-                  requestId: req.$requestId,
-                  responseBody: buf,
-                });
-              });
-          }
+          // if (
+          //   isInspectContentType({
+          //     ...rOpts.headers,
+          //     ...responseHeaders,
+          //   })
+          // ) {
+          //   const body: Buffer[] = [];
+          //   response
+          //     .on("data", (data: Buffer) => {
+          //       body.push(data);
+          //     })
+          //     .on("end", () => {
+          //       const buf = Buffer.concat(body);
+          //       ioRequest({
+          //         requestId: req.$requestId,
+          //         responseBody: buf,
+          //       });
+          //     });
+          // }
 
           ioRequest({
             requestId: req.$requestId,
@@ -266,6 +266,12 @@ export const httpMiddleware = {
           log.warn(`[http request error]: ${err.message}\n  url--->${rOpts.url}`);
           res.writeHead(500, {});
           res.end(err.message);
+        })
+        .on('data', (data) => {
+          ioRequest({
+            requestId: req.$requestId,
+            responseBody: data,
+          });
         })
         // put response to proxy response
         .pipe(res);

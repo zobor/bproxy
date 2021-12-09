@@ -11,5 +11,9 @@
     white-space: pre;
     padding: 30px;
     font-size: 18px;
+
+    &.matched {
+      background-color: #117A65;
+    }
   }
 }

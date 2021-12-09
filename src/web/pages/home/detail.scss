@@ -181,7 +181,7 @@ $labelValueColor: #139dcb;
 
   .response-viewer {
     tab-size: 4;
-    word-spacing: 10px;
+    word-spacing: 0;
   }
 }
 
@@ -192,12 +192,14 @@ $labelValueColor: #139dcb;
   border-collapse: collapse;
   font-size: 13px;
   caption {
-    border: solid 1px transparent;
+    border: solid 1px #EB984E;
     padding: 5px 0;
     text-align: center;
     background: #EB984E;
     color: #fff;
     caption-side: top;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
   }
   thead {
     margin-top: 40px;
@@ -223,10 +225,13 @@ $labelValueColor: #139dcb;
   }
   pre {
     a {
-      color: #3498DB;
-      text-decoration: underline;
+      color: #839192;
+      // text-decoration: underline;
       .str {
-        color: #3498DB;
+        color: #839192;
+      }
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

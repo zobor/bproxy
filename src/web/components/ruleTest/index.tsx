@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import classNames from 'classnames';
 
 import { bridgeInvoke } from '../../modules/socket';
 import JSONFormat from '../../libs/jsonFormat';
 import { Input } from '../UI';
 import './index.scss';
+
 
 const invoke = async(url: string) => {
   const rs = await bridgeInvoke({
@@ -27,6 +29,8 @@ export default () => {
 
   return <div className="test-page">
     <Input placeholder="请输入要检测的URL地址，按回车确认" onKeyDown={onEnterPress} />
-    {result ? <pre><code>{result}</code></pre> : null}
+    {result ? <pre className={classNames({
+      matched: /"matched":\strue/.test(result),
+    })}><code>{result}</code></pre> : null}
   </div>
 }
