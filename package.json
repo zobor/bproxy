@@ -15,7 +15,8 @@
     "dev": "vite",
     "web": "vite build",
     "dts": "node dts",
-    "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node replace"
+    "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node replace",
+    "pm2": "pm2 -i 1 start --interpreter node node_modules/ts-node src/proxy/shell.ts -- -s"
   },
   "dependencies": {
     "chalk": "2.4.2",

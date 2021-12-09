@@ -92,7 +92,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
             </div>
           ));
           setShowBody(body);
-        } else if (isChunked) {
+        } else if (isChunked && !isEncoding) {
           let body = textDecode(detail?.responseBody);
           if (isJson) {
             try {
