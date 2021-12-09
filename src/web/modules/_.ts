@@ -4,6 +4,7 @@ import get from 'lodash/get';
 import isObject from 'lodash/isObject';
 import take from 'lodash/take';
 import takeRight from 'lodash/takeRight';
+import isString from 'lodash/isString';
 
 export {
   omit,
@@ -11,4 +12,5 @@ export {
   isObject,
   take,
   takeRight,
+  isString,
 }

@@ -11,7 +11,7 @@ import { Button, message, Tooltip } from "../../components/UI";
 
 import '../../libs/code-prettify.css';
 import "./detail.scss";
-import { get, isObject } from "../../modules/_";
+import { get, isObject, isString } from "../../modules/_";
 
 const CookiesView = (props: {
   cookies: string[];
@@ -84,8 +84,19 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         );
         setShowBody(body);
       } else {
+        if (isString(detail?.responseBody)) {
+          let body = detail?.responseBody;
+
+          if (isJson) {
+            try {
+              body = JSON.parse(body);
+              body = JSONFormat(body);
+            } catch (err) {}
+          }
+          setShowBody(body);
+        }
         // websocket
-        if (detail?.custom?.method === "ws") {
+        else if (detail?.custom?.method === "ws") {
           const body = detail.responseBody.map((item, idx: number) => (
             <div key={`${detail.custom.requestId}-ws-body-${idx}`}>
               {buffer2string(item, "", false)}

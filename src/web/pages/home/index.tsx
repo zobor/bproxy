@@ -29,7 +29,7 @@ export default () => {
 
     setInterval(() => {
       setConnected((window as any)?.$socket?.connected);
-    }, 2000);
+    }, 300);
   }, []);
 
   return <div className="app-main">

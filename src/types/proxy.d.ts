@@ -115,7 +115,7 @@ export interface InvokeRequestParams {
   requestId: string;
   requestBody?: string;
   responseHeaders?: object;
-  responseBody?: Buffer | Int8Array | Uint8Array;
+  responseBody?: Buffer | Int8Array | Uint8Array | string;
   statusCode?: number;
 }
 

@@ -22,8 +22,9 @@ const delay = (time: number) => new Promise((resolve) => {
 })
 
 export const httpMiddleware = {
-  responseByText(text: string, res, responseHeaders): void {
+  responseByText(text: string, res, responseHeaders) {
     const s = new Readable();
+    console.log(responseHeaders);
     res.writeHead(200, responseHeaders || {});
     s.push(text);
     s.push(null);
@@ -37,16 +38,17 @@ export const httpMiddleware = {
       headers: {},
     };
     const delayTime = getDalay(matcherResult?.rule as ProxyRule, config);
+
     if (matcherResult.matched) {
       return new Promise(async() => {
         if (!matcherResult.rule) return;
         if (matcherResult?.responseHeaders) {
-          resOptions.headers = {...matcherResult.responseHeaders}
+          resOptions.headers = {...matcherResult.responseHeaders};
         }
         if (matcherResult?.rule?.responseHeaders) {
-          resOptions.headers = {...matcherResult.rule.responseHeaders}
+          resOptions.headers = {...matcherResult.rule.responseHeaders};
         }
-        // localfile
+        // local file
         // 1. rule.file
         if (matcherResult.rule.file) {
           ioRequest({
@@ -109,18 +111,27 @@ export const httpMiddleware = {
         }
         // 3.2.  rule.response.string
         else if (_.isString(matcherResult.rule.response)) {
-          if (delayTime) {
-            await delay(delayTime);
-          }
           ioRequest({
             matched: true,
             requestId: req.$requestId,
             url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
-            statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
-          this.responseByText(matcherResult.rule.response, res, resOptions.headers);
+          if (delayTime) {
+            await delay(delayTime);
+          }
+          const responseHeaders = {
+            ...resOptions.headers,
+          };
+          ioRequest({
+            matched: true,
+            requestId: req.$requestId,
+            statusCode: matcherResult.rule.statusCode,
+            responseHeaders,
+            responseBody: matcherResult.rule.response,
+          });
+          this.responseByText(matcherResult.rule.response, res, responseHeaders);
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
@@ -129,12 +140,16 @@ export const httpMiddleware = {
             requestId: req.$requestId,
             url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
-            statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
           if (delayTime) {
             await delay(delayTime);
           }
+          ioRequest({
+            requestId: req.$requestId,
+            statusCode: matcherResult.rule.statusCode,
+            responseBody: matcherResult.rule.statusCode.toString(),
+          });
           res.writeHead(matcherResult.rule.statusCode, {});
           res.end(matcherResult.rule.statusCode.toString());
         }

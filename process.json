@@ -1,7 +1,0 @@
-{
-  "watch": ["src/proxy/"],
-  "ignore_watch" : ["node_modules", "src/web"],
-  "watch_options": {
-    "followSymlinks": false
-  }
-}

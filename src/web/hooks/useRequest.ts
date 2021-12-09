@@ -40,7 +40,7 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
             history.responseHeaders = req.responseHeaders;
           }
           // responseBody
-          if (req.responseBody && req.responseBody.byteLength) {
+          if (req.responseBody) {
             if (
               history?.custom?.method === "ws" ||
               history?.custom?.method === "wss"
