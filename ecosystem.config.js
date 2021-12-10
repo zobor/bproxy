@@ -11,6 +11,7 @@ module.exports = {
     interpreter_args: "./node_modules/ts-node/dist/bin.js",
     script: "./src/proxy/shell.ts",
     args: "-s",
+    exec_mode: "fork_mode",
     instances: 1,
     cwd: "./",
   }]

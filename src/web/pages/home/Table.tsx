@@ -31,16 +31,6 @@ const Table = (props: any) => {
     }
   };
 
-  // useEffect(() => {
-  //   if ($table.current) {
-  //     setTimeout(() => {
-  //         $table.current?.querySelector('tbody tr:last-child')?.scrollIntoView({
-  //         behavior: 'smooth',
-  //       });
-  //     });
-  //   }
-  // }, [list.length]);
-
   if (list.length === 0) {
     return <div className="empty-tip">我在等待 HTTP 请求的到来...</div>;
   }
@@ -65,22 +55,54 @@ const Table = (props: any) => {
           {list.map((req: HttpRequestRequest) => {
             const statusCode = `${req?.custom?.statusCode}`;
             return (
-              <tr className={classNames({
-                active: requestId === req?.custom?.requestId,
-                error: statusCode.indexOf('4') === 0 || statusCode.indexOf('5') === 0,
-                matched: req.matched,
-                highlight: highlight && req?.custom?.url?.includes(highlight)
-              })} onClick={onClick.bind(null, req)} key={req?.custom?.requestId}>
-                <td className={classNames({
-                  status: true,
-                })}>{req?.custom?.statusCode}</td>
-                <td className="matched" onClick={() => {console.log(req)}}>{req.matched ? '✔' : '-'}</td>
+              <tr
+                key={req?.custom?.requestId}
+                className={classNames({
+                  active: requestId === req?.custom?.requestId,
+                  error:
+                    statusCode.indexOf("4") === 0 ||
+                    statusCode.indexOf("5") === 0,
+                  matched: req.matched,
+                  highlight: highlight && req?.custom?.url?.includes(highlight),
+                })}
+                onClick={onClick.bind(null, req)}
+              >
+                <td
+                  className={classNames({
+                    status: true,
+                  })}
+                >
+                  {req?.custom?.statusCode}
+                </td>
+                <td
+                  className="matched"
+                  onClick={() => {
+                    console.log(req);
+                  }}
+                >
+                  {req.matched ? "✔" : "-"}
+                </td>
                 <td className="method">{req?.custom?.method}</td>
                 <td className="protocol">{req?.custom?.protocol}</td>
-                <td className="host" title={req?.custom?.host}>{shorthand(req?.custom?.host, 10, 20)}</td>
-                <td className="path" title={req?.custom?.path}>{shorthand(req?.custom?.path)}</td>
-                <td className="contentType">{req?.responseHeaders && (req?.responseHeaders['content-type']||'').replace(/;\s?\S+/, '').slice(0,25)}</td>
-                <td className="speed">{req.requestStartTime && req.requestEndTime ? `${formatSeconds(req.requestEndTime - req.requestStartTime)}` : '-'}</td>
+                <td className="host" title={req?.custom?.host}>
+                  {shorthand(req?.custom?.host, 10, 20)}
+                </td>
+                <td className="path" title={req?.custom?.path}>
+                  {shorthand(req?.custom?.path)}
+                </td>
+                <td className="contentType">
+                  {req?.responseHeaders &&
+                    (req?.responseHeaders["content-type"] || "")
+                      .replace(/;\s?\S+/, "")
+                      .slice(0, 25)}
+                </td>
+                <td className="speed">
+                  {req.requestStartTime && req.requestEndTime
+                    ? `${formatSeconds(
+                        req.requestEndTime - req.requestStartTime
+                      )}`
+                    : "-"}
+                </td>
               </tr>
             );
           })}

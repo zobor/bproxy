@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as url from 'url';
 import { matcher } from './matcher';
 import { ioRequest } from './socket';
-import { isInspectContentType } from './utils/is';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
@@ -19,18 +18,29 @@ const delay = (time: number) => new Promise((resolve) => {
   setTimeout(() => {
     resolve(true);
   }, time);
-})
+});
+
+const responseText = (text: string, res, responseHeaders) => {
+  const s = new Readable();
+  res.writeHead(200, responseHeaders || {});
+  s.push(text);
+  s.push(null);
+  s.pipe(res);
+};
+
+const getPostBody = (req: any): Promise<Buffer> => {
+  return new Promise((resolve) => {
+    const body: Array<Buffer> = [];
+    req.on('data', (chunk: Buffer) => {
+      body.push(chunk);
+    });
+    req.on('end', () => {
+      resolve(Buffer.concat(body));
+    });
+  });
+}
 
 export const httpMiddleware = {
-  responseByText(text: string, res, responseHeaders) {
-    const s = new Readable();
-    console.log(responseHeaders);
-    res.writeHead(200, responseHeaders || {});
-    s.push(text);
-    s.push(null);
-    s.pipe(res);
-  },
-
   async proxy(req: any, res: any, config: ProxyConfig): Promise<number> {
     const { rules } = config;
     const matcherResult = matcher(rules, req.httpsURL || req.url);
@@ -56,7 +66,6 @@ export const httpMiddleware = {
             requestId: req.$requestId,
             url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
-            statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
           });
           if (delayTime) {
@@ -131,7 +140,7 @@ export const httpMiddleware = {
             responseHeaders,
             responseBody: matcherResult.rule.response,
           });
-          this.responseByText(matcherResult.rule.response, res, responseHeaders);
+          responseText(matcherResult.rule.response, res, responseHeaders);
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
@@ -222,7 +231,7 @@ export const httpMiddleware = {
         followRedirect: false,
       };
       if (['post', 'put'].includes(req.method.toLowerCase())) {
-        options.body = await this.getPostBody(req);
+        options.body = await getPostBody(req);
       }
       if (req.httpVersion !== '2.0' && !req.headers?.connection) {
         options.headers.connection = 'keep-alive';
@@ -248,25 +257,6 @@ export const httpMiddleware = {
       request(rOpts)
         .on("response", function (response) {
           const responseHeaders = {...response.headers, ...responseOptions.headers};
-          // if (
-          //   isInspectContentType({
-          //     ...rOpts.headers,
-          //     ...responseHeaders,
-          //   })
-          // ) {
-          //   const body: Buffer[] = [];
-          //   response
-          //     .on("data", (data: Buffer) => {
-          //       body.push(data);
-          //     })
-          //     .on("end", () => {
-          //       const buf = Buffer.concat(body);
-          //       ioRequest({
-          //         requestId: req.$requestId,
-          //         responseBody: buf,
-          //       });
-          //     });
-          // }
 
           ioRequest({
             requestId: req.$requestId,
@@ -293,18 +283,6 @@ export const httpMiddleware = {
     });
   },
 
-  getPostBody(req: any): Promise<Buffer> {
-    return new Promise((resolve) => {
-      const body: Array<Buffer> = [];
-      req.on('data', (chunk: Buffer) => {
-        body.push(chunk);
-      });
-      req.on('end', () => {
-        resolve(Buffer.concat(body));
-      });
-    });
-  },
-
   proxyLocalFile(filepath: string, res: any, resHeaders: any = {}, req: any): void {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
@@ -325,8 +303,6 @@ export const httpMiddleware = {
 
       ioRequest({
         requestId: req.$requestId,
-        url: req.url,
-        method: req.method,
         responseHeaders: headers,
         statusCode: 200,
         responseBody: stringToBytes(responseBody),
@@ -339,8 +315,6 @@ export const httpMiddleware = {
       s.pipe(res);
       ioRequest({
         requestId: req.$requestId,
-        url: req.url,
-        method: req.method,
         responseHeaders: {},
         statusCode: 404,
       });
