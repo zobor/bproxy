@@ -35,7 +35,11 @@ const CookiesView = (props: {
           return arr && arr.length === 2 ? (
             <tr key={`${arr[0]}-${arr[1]}`}>
               <td>{arr[0]}</td>
-              <td>{decodeURIComponent(arr[1])}</td>
+              <td>
+                <Tooltip title="点击复制">
+                  {decodeURIComponent(arr[1])}
+                </Tooltip>
+              </td>
             </tr>
           ) : null;
         })}
@@ -190,7 +194,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
 
   return (
     <div className={`detail ${showDetail ? "open" : ""}`}>
-      <div className="mask" onClick={onClose} />
+      <Tooltip title="点击此区域关闭详情">
+        <div className="mask" onClick={onClose} />
+      </Tooltip>
       <div className="content">
         {/* URL */}
         <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
@@ -257,11 +263,13 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                         >
                           {key}:
                         </label>
-                        <div className="form-item-value">
-                          {isObject(dataValue)
-                            ? JSON.stringify(dataValue)
-                            : dataValue.toString()}
-                        </div>
+                        <Tooltip title="点击复制">
+                          <div className="form-item-value">
+                            {isObject(dataValue)
+                              ? JSON.stringify(dataValue)
+                              : dataValue.toString()}
+                          </div>
+                        </Tooltip>
                       </div>
                     );
                   })

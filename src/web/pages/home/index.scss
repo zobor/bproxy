@@ -1,11 +1,11 @@
-$appPadding: 5px;
+@import '../../theme.scss';
+
 .app {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: #F8F9F9;
 }
 .app-main {
   position: absolute;

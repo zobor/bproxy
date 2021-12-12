@@ -1,22 +1,24 @@
+@import '../../theme.scss';
+
 .controller {
-  background-color: red;
   padding: 10px 25px;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 5px;
-  background-color: rgba(35, 155, 86, 0.8);
+  background-color: $cardColor;
+  // background-color: rgba(35, 155, 86, 0.8);
 
   >div{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: $iconColor;
     cursor: pointer;
     &.disabled {
       > span {
-        color: #D0D3D4;
+        color: $iconColor;
       }
     }
     >span {
@@ -26,7 +28,7 @@
       width: 19px;
       height: 19px;
       cursor: pointer;
-      color: #fff;
+      color: $iconColor;
       >svg {
         width: 100%;
         height: 100%;

@@ -1,3 +1,5 @@
+@import './theme.scss';
+
 body {
 	line-height: 1;
 }
@@ -17,8 +19,8 @@ table {
 	border-spacing: 0;
 }
 
-body {
-  background-color: #fff;
+html body {
+  background-color: $bodyBackgroundColor;
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   font-size: 14px;
 }
@@ -28,12 +30,12 @@ body {
 }
 .scrollbar-style::-webkit-scrollbar-track {
   border-radius: 3px;
-  background: #eee;
+  background: $panelBackground;
 }
 .scrollbar-style::-webkit-scrollbar-thumb {
   border-radius: 3px;
-  background: #EC7063;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  background: $scrollBarColor;
+  box-shadow: inset 0 0 10px $scrollBarColor;
 }
 
 :root {

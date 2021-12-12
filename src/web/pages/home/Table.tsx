@@ -7,6 +7,7 @@ import { formatSeconds } from '../../../proxy/utils/format';
 
 import './table.scss';
 import { take, takeRight } from "../../modules/_";
+import { Tooltip } from "../../components/UI";
 
 const shorthand = (str, len = 25, max = 60) => {
   if (str.length > max) {
@@ -41,7 +42,9 @@ const Table = (props: any) => {
         <thead>
           <tr>
             <td>状态</td>
-            <td className="matched">匹配</td>
+            <td className="matched">
+              <Tooltip title="✔表示匹配了bproxy的规则">匹配</Tooltip>
+            </td>
             <td>方式</td>
             <td>协议</td>
             <td>域名</td>

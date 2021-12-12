@@ -1,22 +1,24 @@
+@import '../../theme.scss';
+
 /* 数据表格 */
 .table-box {
-  width: 100%;
+  width: calc(100% - 20px);
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100% - 90px);
+  height: calc(100% - 70px);
   padding-bottom: 20px;
+  margin-left: 10px;
 }
 .table {
   width: 100%;
-  // table-layout: fixed;
   position: relative;
 
   thead {
-    // table-layout: fixed;
     tr {
       position: sticky;
       top: 0;
-      background-color: #AEB6BF;
+      background-color: $cardColor;
+      color: $theadTextColor;
     }
     td {
       font-weight: normal;
@@ -30,7 +32,7 @@
     word-break: break-all;
     white-space: pre-wrap;
     vertical-align: middle;
-    border-bottom: solid 1px #eee;
+    border-bottom: solid 1px $tableBorderColor;
     &.matched {
       text-align: center;
     }
@@ -38,25 +40,20 @@
 
   tbody {
     tr {
-      color: #A6ACAF;
+      color: $trTextColor;
       :nth-child(1) {
-        color: #58D68D
+        color: $httpStatus200;
       }
       &:hover {
-        background-color: #efefef;
+        background-color: $trHoverColor;
         cursor: pointer;
       }
       &.matched {
-        color: #212F3C;
-        color: #2E86C1;
+        color: $matchedTextColor;
         font-weight: bold;
       }
       &.active {
-        background: #58D68D;
-        color: #fff;
-        td {
-          color: #fff;
-        }
+        background: $boxColor;
       }
       &.error {
         color: red;
@@ -65,7 +62,7 @@
         }
       }
       &.highlight {
-        color: #8E44AD;
+        color: $highlightTextColor;
         font-weight: bold;
       }
     }

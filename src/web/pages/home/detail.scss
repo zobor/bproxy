@@ -1,10 +1,4 @@
-$modalBackground: #1B4F72;
-$panelBackground: #1d1f21;
-$panelFontColor: #fff;
-$panelBorderRadius: 5px;
-$maskBackground: rgba(0,0,0,0.8);
-$labelKeyColor: #F1948A;
-$labelValueColor: #139dcb;
+@import '../../theme.scss';
 
 /* 数据详情 */
 .detail {
@@ -24,21 +18,21 @@ $labelValueColor: #139dcb;
     width: 90vw;
     bottom: 0;
     transition: all 0.25s ease-in-out;
-    background-color: $modalBackground;
+    background-color: $boxColor;
     border-left: solid 5px #000;
     border-bottom: solid 5px #000;
     color: #fff;
 
     .url {
-      background-color: #000;
-      color: #1ABC9C;
+      background-color: $boxColor;
+      color: $panelFontColor;
       font-weight: bold;
-      height: 40px;
-      line-height: 40px;
+      height: 30px;
+      line-height: 30px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      padding: 0 20px;
+      padding: 0 10px;
       cursor: pointer;
       &:hover {
         text-decoration: underline;
@@ -52,15 +46,14 @@ $labelValueColor: #139dcb;
       word-wrap: break-word;
       word-break: break-all;
       white-space: pre-wrap;
-      background-color: $panelBackground;
+      background-color: $cardColor;
       color: #aaa;
       padding: 50px;
-      // border-radius: $panelBorderRadius;
-      border-bottom-left-radius: $panelBorderRadius;
-      border-bottom-right-radius: $panelBorderRadius;
+      border-radius: $panelBorderRadius;
       overflow-y: auto;
       overflow-x: hidden;
       line-height: 1.5;
+      margin-top: 10px;
       .image-preview-box {
         text-align: center;
       }
@@ -71,9 +64,9 @@ $labelValueColor: #139dcb;
     }
 
     .tabs {
-      border-bottom: solid 3px $panelBackground;
       display: flex;
       align-items: center;
+      background-color: $cardColor;
     }
 
     .tabs > ul{
@@ -88,9 +81,10 @@ $labelValueColor: #139dcb;
         cursor: pointer;
         font-weight: bold;
         font-size: 17px;
-        padding:10px 20px;
+        padding:4px 20px;
         display: inline-flex;
         align-items: center;
+        color: #999;
 
         &.active {
           color: #D35400;
@@ -115,6 +109,7 @@ $labelValueColor: #139dcb;
       overflow-y: auto;
       overflow-x: hidden;
       position: relative;
+      margin-top: 10px;
 
       .form-item {
         display: flex;
@@ -131,13 +126,14 @@ $labelValueColor: #139dcb;
           }
         }
 
-        .form-item-value {
+        &-value {
           flex: 1;
           padding-left: 5px;
           word-wrap: break-word;
           word-break: break-all;
           white-space: pre-wrap;
           color: $labelValueColor;
+          cursor: pointer;
         }
       }
 
@@ -176,6 +172,7 @@ $labelValueColor: #139dcb;
     }
     .mask {
       display: block;
+      cursor: pointer;
     }
   }
 
@@ -212,6 +209,9 @@ $labelValueColor: #139dcb;
     white-space: pre-wrap;
     &:nth-child(1) {
       font-weight: bold;
+    }
+    &:nth-child(2) {
+      cursor: pointer;
     }
   }
 }
