@@ -2,12 +2,12 @@
 
 /* 数据表格 */
 .table-box {
-  width: calc(100% - 20px);
+  width: calc(100% - 10px);
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100% - 70px);
-  padding-bottom: 20px;
-  margin-left: 10px;
+  height: calc(100% - 60px);
+  padding-bottom: 10px;
+  margin-left: 5px;
 }
 .table {
   width: 100%;
@@ -27,7 +27,7 @@
   }
 
   td {
-    padding: 1px 10px;
+    padding: 4px 10px;
     word-wrap: break-word;
     word-break: break-all;
     white-space: pre-wrap;
@@ -50,7 +50,7 @@
       }
       &.matched {
         color: $matchedTextColor;
-        font-weight: bold;
+        // font-weight: bold;
       }
       &.active {
         background: $boxColor;

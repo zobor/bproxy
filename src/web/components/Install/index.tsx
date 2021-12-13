@@ -8,6 +8,7 @@ import { Card, Col, Row } from '../UI';
 const help = `
 MacOS 安装证书：
 bproxy -i
+
 `;
 
 export default () => {

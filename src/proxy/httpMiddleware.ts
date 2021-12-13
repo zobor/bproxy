@@ -271,6 +271,10 @@ export const httpMiddleware = {
           log.warn(`[http request error]: ${err.message}\n  url--->${rOpts.url}`);
           res.writeHead(500, {});
           res.end(err.message);
+          ioRequest({
+            requestId: req.$requestId,
+            statusCode: 500,
+          });
         })
         .on('data', (data) => {
           ioRequest({

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import classNames from 'classnames';
 import moment from 'moment';
 
@@ -12,7 +12,7 @@ import copy from '../../modules/copy';
 
 import '../../libs/code-prettify.css';
 import "./detail.scss";
-import { get, isObject, isString } from "../../modules/_";
+import { get, isObject, isString, isEmpty } from "../../modules/_";
 
 const copyText = (e, text) => {
   copy(e.target, text);
@@ -43,12 +43,49 @@ const CookiesView = (props: {
             <tr key={`${arr[0]}-${arr[1]}`}>
               <td>{arr[0]}</td>
               <td onClick={e => copyText(e, text)}>
-                {text}
+                <span>{text}</span>
               </td>
             </tr>
           ) : null;
         })}
       </tbody>
+    </table>
+  );
+};
+
+const keyValueTable = (objects) => {
+  return (
+    <table className="kv-table">
+      {Object.keys(objects)
+        .filter((key) => key !== "$$type")
+        .map((key) => {
+          let dataValue = objects[key];
+          if (
+            [
+              "if-modified-since",
+              "expires",
+              "last-modified",
+              "date",
+              "x-swift-savetime",
+            ].includes(key.toLocaleLowerCase())
+          ) {
+            try {
+              dataValue = `${dataValue} -> (${moment(dataValue).format(
+                "YYYY-MM-DD HH:mm:ss"
+              )})`;
+            } catch (err) {}
+          }
+          const text = isObject(dataValue)
+            ? JSON.stringify(dataValue)
+            : dataValue.toString();
+
+          return <tr>
+            <td>{key}</td>
+            <td>
+              <span onClick={e => copyText(e, text)} className="max-text-limit">{text}</span>
+            </td>
+          </tr>
+        })}
     </table>
   );
 };
@@ -63,6 +100,14 @@ const findLink = (str) => {
     .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
 
+const isLikeJson = (str) => {
+  if (str) {
+    return /^\{[\S\s]+\}$/.test(str.trim());
+  }
+
+  return false;
+};
+
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
   const [showBody, setShowBody] = useState<
@@ -72,7 +117,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { showDetail, detailActiveTab } = state;
   const { custom = {} } = detail || {};
   const contentType = (get(detail, 'responseHeaders["content-type"]') || '').toLowerCase();
-  const isJson = contentType?.includes('/json');
+  const $isJson = useRef(contentType?.includes('/json'));
   const isImage = contentType?.includes("image/");
   const isUtf8 = contentType?.includes('/utf-8');
   const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
@@ -80,9 +125,10 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ").filter(item => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
 
-  // view text
+  // body解析
   useEffect(() => {
     setShowBody("处理中...");
+    $isJson.current = false;
     setTimeout(() => {
       // image
       if (isImage) {
@@ -93,51 +139,36 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         );
         setShowBody(body);
       } else {
-        if (isString(detail?.responseBody)) {
-          let body = detail?.responseBody;
+        let body;
 
-          if (isJson) {
-            try {
-              body = JSON.parse(body);
-              body = JSONFormat(body);
-            } catch (err) {}
-          }
-          setShowBody(body);
-        }
-        // websocket
-        else if (detail?.custom?.method === "ws") {
-          const body = detail.responseBody.map((item, idx: number) => (
+        if (isString(detail?.responseBody)) {
+          body = detail?.responseBody;
+        } else if (detail?.custom?.method === "ws") {
+          body = detail.responseBody.map((item, idx: number) => (
             <div key={`${detail.custom.requestId}-ws-body-${idx}`}>
               {buffer2string(item, "", false)}
             </div>
           ));
-          setShowBody(body);
         } else if (isChunked && !isEncoding) {
-          let body = textDecode(detail?.responseBody);
-          if (isJson) {
-            try {
-              body = JSON.parse(body);
-              body = JSONFormat(body);
-            } catch (err) {}
-          }
-          setShowBody(body);
+          body = textDecode(detail?.responseBody);
         } else {
-          // text\json
-          let body = buffer2string(detail?.responseBody, isEncoding, isUtf8);
-
-          // format json
-          if (isJson) {
-            try {
-              body = JSON.parse(body);
-              body = JSONFormat(body);
-            } catch (err) {}
-          }
-          setShowBody(body);
+          body = buffer2string(detail?.responseBody, isEncoding, isUtf8);
         }
+
+        if (isString(body) && ($isJson.current || isLikeJson(body))) {
+          try {
+            body = JSON.parse(body);
+            body = JSONFormat(body);
+            $isJson.current = true;
+          } catch (err) {}
+        }
+
+        setShowBody(body);
       }
     }, 0);
   }, [detailActiveTab, detail, showDetail]);
 
+  // 关闭之后 清空body
   useEffect(() => {
     if (!showDetail) {
       setShowBody("");
@@ -185,13 +216,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     }
   };
 
+  // json 代码高亮
   useEffect(() => {
-    if (isJson && showBody && detailActiveTab === 'responseBody') {
+    if ($isJson.current && showBody && detailActiveTab === 'responseBody') {
       setTimeout(() => {
         (window as any)?.PR?.prettyPrint();
       }, 0);
     }
-  }, [isJson, showBody, detailActiveTab]);
+  }, [showBody, detailActiveTab]);
 
   if (!showDetail) {
     return null;
@@ -247,7 +279,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               [postDataType]: postDataType,
             })}
           >
-            {detail[detailActiveTab]
+            {!isEmpty(detail[detailActiveTab]) ? keyValueTable(detail[detailActiveTab]) : null}
+            {/* {detail[detailActiveTab]
               ? Object.keys(detail[detailActiveTab])
                   .filter((key) => key !== "$$type")
                   .map((key) => {
@@ -269,20 +302,20 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                         >
                           {key}:
                         </label>
-                        <div className="form-item-value" onClick={e => copyText(e, text)}>
-                          {text}
+                        <div className="form-item-value">
+                          <span onClick={e => copyText(e, text)}>{text}</span>
                         </div>
                       </div>
                     );
                   })
-              : null}
+              : null} */}
             {detailActiveTab === "requestHeaders" ? (
               <CookiesView cookies={cookies} />
             ) : null}
           </div>
         ) : (
           <div className="body-panel scrollbar-style">
-            {isJson && showBody ? (
+            {$isJson.current && showBody ? (
               <div className="handlers">
                 <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
                   <Button
@@ -296,9 +329,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               </div>
             ) : null}
             <div className="response-viewer">
-              {isJson ? <pre dangerouslySetInnerHTML={{
+              {$isJson.current ? <pre dangerouslySetInnerHTML={{
                 __html: findLink(showBody),
-              }} className="prettyprint lang-json" /> : showBody}
+              }} className="prettyprint lang-json" /> : (showBody || '没有数据可以预览')}
             </div>
           </div>
         )}
