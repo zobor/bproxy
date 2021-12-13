@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 
 import { bridgeInvoke } from '../../modules/socket';
 import './index.scss';
+import { Card, Col, Row } from '../UI';
 
 const help = `
 MacOS 安装证书：
@@ -35,11 +36,24 @@ export default () => {
     });
   }, []);
   return <div className="install-modal">
-    <h2>手机扫码，可以安装证书</h2>
-    <div className="tip-text">请保持手机跟PC在一个局域网内</div>
-    <div className="url">{href}</div>
-    <div><a href={href}>点击下载证书</a></div>
-    <canvas ref={$canvas} />
-    <pre><code>{help}</code></pre>
+    <Row gutter={16}>
+      <Col span={8}>
+        <Card title="手机扫码安装证书" bordered={false}>
+          <div className="tip-text">请保持手机跟PC在一个局域网内</div>
+          <canvas ref={$canvas} />
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card title="PC下载证书" bordered={false}>
+          <div className="url">{href}</div>
+          <div><a href={href}>点击下载证书</a></div>
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card title="MacOS安装证书" bordered={false}>
+          <pre><code>{help}</code></pre>
+        </Card>
+      </Col>
+    </Row>
   </div>
 }

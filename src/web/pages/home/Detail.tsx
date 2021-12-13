@@ -8,10 +8,16 @@ import JSONFormat from "../../libs/jsonFormat";
 import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
 import { Button, message, Tooltip } from "../../components/UI";
+import copy from '../../modules/copy';
 
 import '../../libs/code-prettify.css';
 import "./detail.scss";
 import { get, isObject, isString } from "../../modules/_";
+
+const copyText = (e, text) => {
+  copy(e.target, text);
+  message.success('已复制');
+};
 
 const CookiesView = (props: {
   cookies: string[];
@@ -32,12 +38,13 @@ const CookiesView = (props: {
       <tbody>
         {cookies.map((str: string) => {
           const arr = str.replace(/^(\w+)=/, "$1 ").split(" ");
+          const text = decodeURIComponent(arr[1]);
           return arr && arr.length === 2 ? (
             <tr key={`${arr[0]}-${arr[1]}`}>
               <td>{arr[0]}</td>
-              <td>
+              <td onClick={e => copyText(e, text)}>
                 <Tooltip title="点击复制">
-                  {decodeURIComponent(arr[1])}
+                  {text}
                 </Tooltip>
               </td>
             </tr>
@@ -254,6 +261,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                         dataValue = `${dataValue} -> (${moment(dataValue).format('YYYY-MM-DD HH:mm:ss')})`;
                       } catch(err){}
                     }
+                    const text = isObject(dataValue)
+                              ? JSON.stringify(dataValue)
+                              : dataValue.toString();
                     return (
                       <div className="form-item" key={key}>
                         <label
@@ -264,10 +274,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                           {key}:
                         </label>
                         <Tooltip title="点击复制">
-                          <div className="form-item-value">
-                            {isObject(dataValue)
-                              ? JSON.stringify(dataValue)
-                              : dataValue.toString()}
+                          <div className="form-item-value" onClick={e => copyText(e, text)}>
+                            {text}
                           </div>
                         </Tooltip>
                       </div>

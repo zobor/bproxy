@@ -7,13 +7,24 @@ import { Ctx } from "../../ctx";
 import Filter from '../../components/Filter';
 import Install from "../../components/Install";
 import SystemProxy from '../../components/SystemProxy';
+import {
+  BugOutlined,
+  ClearOutlined,
+  FilterOutlined,
+  MacCommandOutlined,
+  Modal,
+  PlayCircleOutlined,
+  WifiOutlined,
+} from "../../components/UI";
 
 import "./controller.scss";
-import { BugOutlined, ClearOutlined, FilterOutlined, MacCommandOutlined, Modal, PlayCircleOutlined, WifiOutlined } from "../../components/UI";
 
-const ControllerDialog = ({ title, children, ...others }) => {
+const ControllerDialog = ({ title, children, visible, ...others }) => {
+  if (!visible) {
+    return null;
+  }
   return (
-    <Modal centered title={title} footer={null} width={1000} {...others}>
+    <Modal centered title={title} visible={visible} footer={null} width={1000} {...others}>
       {children}
     </Modal>
   );
@@ -33,7 +44,6 @@ const RuleTestModal = (props) => {
 const FilterModal = (props) => {
   return (
     <ControllerDialog
-    destroyOnClose
       title="过滤HTTP日志"
       {...props}
     >
@@ -53,7 +63,6 @@ const InstallModal = (props) => {
 
 const SystemProxylModal = (props) => {
   return <ControllerDialog
-    destroyOnClose
     title="系统代理开关"
     {...props}
   >
@@ -136,6 +145,9 @@ const Controller = (props: ControllerProps) => {
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
+      <Modal centered title={'111'} footer={null} width={1000}>
+        <h1>haha</h1>
+      </Modal>
     </div>
   );
 };

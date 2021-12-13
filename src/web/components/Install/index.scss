@@ -1,8 +1,11 @@
+@import '../../theme.scss';
+
 .install-modal {
   text-align: center;
+  color: #fff;
 
   pre {
-    background-color: #000;
+    background-color: $cardColor;
     color: #fff;
     border-radius: 5px;
   }
@@ -13,5 +16,8 @@
 
   .url {
     color: #666;
+  }
+  a {
+    color: #F4D03F;
   }
 }
