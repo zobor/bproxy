@@ -56,9 +56,9 @@
         background: $boxColor;
       }
       &.error {
-        color: red;
+        color: $errorTextColor;
         :nth-child(1) {
-          color: red;
+          color: $errorTextColor;
         }
       }
       &.highlight {

@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useMemo, useState } from "react";
+import { memo, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Ctx } from "../../ctx";
 import useRequest from "../../hooks/useRequest";
 import Detail from "./Detail";
@@ -17,6 +17,7 @@ export default () => {
     return detail;
   }, [detail?.custom?.requestId]);
   const [connected, setConnected] = useState(true);
+  const $statusCount = useRef(0);
   useEffect(() => {
     const item = list.find((item: any) => item.custom.requestId === requestId);
     if (item) {
@@ -28,7 +29,15 @@ export default () => {
     dispatch({ type: 'setClean', clean });
 
     setInterval(() => {
-      setConnected((window as any)?.$socket?.connected);
+      if (!(window as any)?.$socket?.connected) {
+        $statusCount.current += 1;
+        if ($statusCount.current >= 4) {
+          setConnected(false);
+        }
+      } else {
+        setConnected(true);
+        $statusCount.current = 0;
+      }
     }, 300);
   }, []);
 

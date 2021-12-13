@@ -1,5 +1,7 @@
 @import '../../theme.scss';
 
+$panelHeight: calc(100% - 85px);
+
 /* 数据详情 */
 .detail {
   .mask {
@@ -14,7 +16,7 @@
   .content {
     position: absolute;
     top: 0;
-    left: 150vw;
+    right: 0;
     width: 90vw;
     bottom: 0;
     transition: all 0.25s ease-in-out;
@@ -38,8 +40,9 @@
     }
 
     .body-panel {
-      width: 800px;
-      height: calc(100% - 110px);
+      max-width: 800px;
+      width: 100%;
+      height: $panelHeight;
       margin: 0 auto;
       word-wrap: break-word;
       word-break: break-all;
@@ -65,6 +68,7 @@
       display: flex;
       align-items: center;
       background-color: $cardColor;
+      height: 35px;
     }
 
     .tabs > ul{
@@ -79,7 +83,6 @@
         cursor: pointer;
         font-weight: bold;
         font-size: 17px;
-        padding:4px 20px;
         display: inline-flex;
         align-items: center;
         color: #999;
@@ -98,7 +101,7 @@
 
     .form {
       width: 800px;
-      height: calc(100% - 110px);
+      height: $panelHeight;
       margin: 0 auto;
       background-color: $panelBackground;
       color: $panelFontColor;
@@ -166,7 +169,7 @@
 
   &.open {
     .content {
-      left: 10vw;
+      max-width: 820px;
     }
     .mask {
       display: block;

@@ -8,7 +8,6 @@ import { Card, Col, Row } from '../UI';
 const help = `
 MacOS 安装证书：
 bproxy -i
-
 `;
 
 export default () => {
@@ -45,8 +44,8 @@ export default () => {
       </Col>
       <Col span={8}>
         <Card title="PC下载证书" bordered={false}>
-          <div className="url">{href}</div>
-          <div><a href={href}>点击下载证书</a></div>
+          {href ? <div className="url">{href}</div> : null}
+          {href ? <div><a href={href}>点击下载证书</a></div> : null}
         </Card>
       </Col>
       <Col span={8}>

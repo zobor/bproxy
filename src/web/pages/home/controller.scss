@@ -1,13 +1,14 @@
 @import '../../theme.scss';
 
 .controller {
+  max-width: 600px;
   padding: 10px 25px;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
   background-color: $cardColor;
-  // background-color: rgba(35, 155, 86, 0.8);
+  margin: 0 auto;
+  margin-bottom: 5px;
 
   >div{
     display: flex;
@@ -18,7 +19,7 @@
     cursor: pointer;
     &.disabled {
       > span {
-        color: $iconColor;
+        color: $disabled;
       }
     }
     >span {

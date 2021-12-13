@@ -43,9 +43,7 @@ const CookiesView = (props: {
             <tr key={`${arr[0]}-${arr[1]}`}>
               <td>{arr[0]}</td>
               <td onClick={e => copyText(e, text)}>
-                <Tooltip title="点击复制">
-                  {text}
-                </Tooltip>
+                {text}
               </td>
             </tr>
           ) : null;
@@ -201,9 +199,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
 
   return (
     <div className={`detail ${showDetail ? "open" : ""}`}>
-      <Tooltip title="点击此区域关闭详情">
-        <div className="mask" onClick={onClose} />
-      </Tooltip>
+      <div className="mask" onClick={onClose} />
       <div className="content">
         {/* URL */}
         <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
@@ -273,11 +269,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                         >
                           {key}:
                         </label>
-                        <Tooltip title="点击复制">
-                          <div className="form-item-value" onClick={e => copyText(e, text)}>
-                            {text}
-                          </div>
-                        </Tooltip>
+                        <div className="form-item-value" onClick={e => copyText(e, text)}>
+                          {text}
+                        </div>
                       </div>
                     );
                   })
