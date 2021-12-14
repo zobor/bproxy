@@ -220,6 +220,7 @@ interface ProxyRule {
   filepath?: string;
   OPTIONS2POST?: boolean;
   delay?: number;
+  disableCache?: boolean;
 }
 
 interface ProxyConfig {

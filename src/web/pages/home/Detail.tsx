@@ -253,8 +253,6 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     };
   }, [detailActiveTab]);
 
-  console.log(detail);
-
   if (!showDetail) {
     return null;
   }
