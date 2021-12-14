@@ -34,7 +34,7 @@ const RuleTestModal = (props) => {
   return (
     <ControllerDialog
       title="检测目标URL是否跟你的rule匹配"
-      width={600}
+      width={800}
       {...props}
     >
       <RuleTest />

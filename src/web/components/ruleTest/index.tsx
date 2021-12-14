@@ -20,7 +20,6 @@ export default () => {
   const onEnterPress = async(e: any) => {
     if(e.keyCode === 13 && e.target.value) {
       const rs = await invoke(e.target.value.trim());
-      console.log(rs);
       try {
         setResult(JSONFormat(rs));
       } catch(err) {}
@@ -30,6 +29,7 @@ export default () => {
   return <div className="test-page">
     <Input placeholder="请输入要检测的URL地址，按回车确认" onKeyDown={onEnterPress} />
     {result ? <pre className={classNames({
+      'scrollbar-style': true,
       matched: /"matched":\strue/.test(result),
     })}><code>{result}</code></pre> : null}
   </div>

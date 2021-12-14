@@ -43,7 +43,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     }
     // matched and get this rule
     if (options.matched) {
-      options.rule = rule;
+      options.rule = _.cloneDeep(rule);
     }
   });
 
