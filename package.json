@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.0.24",
+  "version": "5.0.25",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -25,7 +25,7 @@
     "lodash": "4.17.21",
     "mkdirp": "1.0.4",
     "node-forge": "0.10.0",
-    "pako": "^2.0.4",
+    "pako": "2.0.4",
     "request": "2.88.2",
     "socket.io": "4.3.1"
   },

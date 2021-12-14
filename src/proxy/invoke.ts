@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import { matcher } from './matcher';
 import dataset from './utils/dataset';
@@ -9,7 +10,7 @@ export * from './system';
 export const test = async (url: string) => {
   const { config } = dataset;
   if (config) {
-    const matchResult = matcher(config.rules, url);
+    const matchResult = _.cloneDeep(matcher(config.rules, url));
 
     for (const key in matchResult) {
       if (key === 'rule') {

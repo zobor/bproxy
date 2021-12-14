@@ -1,5 +1,12 @@
 # bproxy changelog
 
+## 5.0.25
+- 配置pm2开发模式
+- 优化http chuncked解码
+- 支持暗黑皮肤
+- gzip解压移到nodejs侧
+- fix: 规则检测修改了原对象数据问题
+
 ## 5.0.22
 - 优化证书名称配置
 
