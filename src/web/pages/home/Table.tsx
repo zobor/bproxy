@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import classNames from "classnames";
 
 import { Ctx } from "../../ctx";
@@ -31,6 +31,19 @@ const Table = (props: any) => {
       dispatch({ type: "setRequestId", requestId: req.custom.requestId });
     }
   };
+
+  useEffect(() => {
+    const onPressESC = (e) => {
+      if (e.keyCode === 27) {
+        dispatch({ type: "setShowDetail", showDetail: false });
+      }
+    };
+    document.body.addEventListener('keydown', onPressESC);
+
+    return () => {
+      document.body.removeEventListener('keydown', onPressESC);
+    }
+  }, []);
 
   if (list.length === 0) {
     return <div className="empty-tip">我在等待 HTTP 请求的到来...</div>;

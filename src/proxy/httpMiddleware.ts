@@ -2,6 +2,7 @@ import { ProxyRule } from './../types/proxy.d';
 import request from 'request';
 import * as fs from 'fs';
 import { Readable } from 'stream';
+import pako from 'pako';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
@@ -10,6 +11,7 @@ import { ioRequest } from './socket';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { log, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
+import { isInspectContentType } from './utils/is';
 
 const getDalay = (rule: ProxyRule, config: ProxyConfig) => {
   return rule?.delay || config?.delay || 0;
@@ -199,7 +201,7 @@ export const httpMiddleware = {
           }, resOptions, matcherResult);
         }
         else {
-          // todo
+          return this.proxyByRequest(req, res, {}, resOptions, matcherResult);
         }
       });
     } else {
@@ -212,18 +214,18 @@ export const httpMiddleware = {
 
   async proxyByRequest(req, res, requestOption, responseOptions, matcherResult?: MatcherResult): Promise<number> {
     return new Promise(async () => {
-      const rHeaders = { ...req.headers, ...requestOption.headers };
-      if (!_.isEmpty(requestOption)) {
+      const requestHeaders = { ...req.headers, ...requestOption.headers };
+      if (matcherResult?.rule?.disableCache) {
         ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => {
-          rHeaders[key] && delete rHeaders[key];
-          rHeaders['pragma'] = 'no-cache';
-          rHeaders['cache-control'] = 'no-cache';
+          requestHeaders[key] && delete requestHeaders[key];
+          requestHeaders['pragma'] = 'no-cache';
+          requestHeaders['cache-control'] = 'no-cache';
         });
       }
       const options: RequestOptions = {
         url: req.httpsURL || req.url,
         method: req.method,
-        headers: rHeaders,
+        headers: requestHeaders,
         body: null,
         encoding: null,
         strictSSL: false,
@@ -254,18 +256,35 @@ export const httpMiddleware = {
         requestBody: rOpts.body,
         matched: matcherResult?.matched,
       });
+
       request(rOpts)
         .on("response", function (response) {
-          const responseHeaders = {...response.headers, ...responseOptions.headers};
+          const headers = {...response.headers, ...responseOptions.headers};
+          const encoding = _.get(headers, '["content-encoding"]');
+          const body: Buffer[] = [];
+          response.on('data', (d: Buffer) => body.push(d));
+          response.on('end', () => {
+            let str: any = '';
+            const buf = Buffer.concat(body);
+            if (encoding === 'gzip') {
+              str = pako.ungzip(new Uint8Array(buf), {to: "string"});
+            } else if (!encoding && isInspectContentType(headers || {})) {
+              str = buf.toString();
+            } else {
+              str = buf;
+            }
+            ioRequest({
+              requestId: req.$requestId,
+              responseBody: str,
+            });
+          });
 
           ioRequest({
             requestId: req.$requestId,
-            url: req.requestOriginUrl || options.url,
-            method: rOpts.method,
-            responseHeaders,
+            responseHeaders: headers,
             statusCode: response.statusCode,
           });
-          res.writeHead(response.statusCode, responseHeaders);
+          res.writeHead(response.statusCode, headers);
         })
         .on("error", (err) => {
           log.warn(`[http request error]: ${err.message}\n  url--->${rOpts.url}`);
@@ -274,12 +293,6 @@ export const httpMiddleware = {
           ioRequest({
             requestId: req.$requestId,
             statusCode: 500,
-          });
-        })
-        .on('data', (data) => {
-          ioRequest({
-            requestId: req.$requestId,
-            responseBody: data,
           });
         })
         // put response to proxy response

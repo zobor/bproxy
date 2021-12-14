@@ -9,10 +9,16 @@ import { bridgeInvoke } from "../../modules/socket";
 import { tabList } from "./settings";
 import { Button, message, Tooltip } from "../../components/UI";
 import copy from '../../modules/copy';
+import { get, isObject, isString, isEmpty } from "../../modules/_";
 
 import '../../libs/code-prettify.css';
 import "./detail.scss";
-import { get, isObject, isString, isEmpty } from "../../modules/_";
+
+
+const remove304 = (code: number, path: string) => {
+  const tips = `\n\n<span class='tips'>如何禁用缓存?\n代理规则添加：<b>{ regx: '${path}', disableCache: true }</b></span>`
+  return `没有数据可以预览${code === 304 ? tips : ''}`;
+}
 
 const copyText = (e, text) => {
   copy(e.target, text);
@@ -77,12 +83,12 @@ const keyValueTable = (objects) => {
           }
           const text = isObject(dataValue)
             ? JSON.stringify(dataValue)
-            : dataValue.toString();
+            : (dataValue || '').toString();
 
           return <tr>
-            <td>{key}</td>
+            <td title={key}><span className="max-text-limit-2">{key}</span></td>
             <td>
-              <span onClick={e => copyText(e, text)} className="max-text-limit">{text}</span>
+              <span title={text} onClick={e => copyText(e, text)} className="max-text-limit">{text}</span>
             </td>
           </tr>
         })}
@@ -225,6 +231,30 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     }
   }, [showBody, detailActiveTab]);
 
+  // 快捷键
+  useEffect(() => {
+    const onKeyPress = (e) => {
+      const index = tabList.findIndex(item => item.value === detailActiveTab);
+      const length = tabList.length;
+      // right
+      if (e.keyCode === 39) {
+        const newIndex = index === length -1 ? 0 : index + 1;
+        onTabChange(tabList[newIndex].value);
+      } else if (e.keyCode === 37) {
+        // left
+        const newIndex = index === 0 ? length - 1 : index - 1;
+        onTabChange(tabList[newIndex].value);
+      }
+    };
+    document.body.addEventListener('keydown', onKeyPress);
+
+    return () => {
+      document.body.removeEventListener('keydown', onKeyPress);
+    };
+  }, [detailActiveTab]);
+
+  console.log(detail);
+
   if (!showDetail) {
     return null;
   }
@@ -234,7 +264,11 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       <div className="mask" onClick={onClose} />
       <div className="content">
         {/* URL */}
-        <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
+        <div
+          title="点击打开此链接"
+          className="url"
+          onClick={openUrl.bind(null, custom.url)}
+        >
           {custom ? (
             <Tooltip title={custom.url} placement="bottomLeft">
               <div>
@@ -253,9 +287,6 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           <ul>
             {custom &&
               tabList.map((tab) => {
-                if (custom?.method === "GET" && tab.value === "postData") {
-                  return null;
-                }
                 return (
                   <li
                     onClick={onTabChange.bind(null, tab.value)}
@@ -275,40 +306,13 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         {detail && detailActiveTab !== "responseBody" ? (
           <div
             className={classNames({
-              "form scrollbar-style": true,
+              "form scrollbar-style body-panel": true,
               [postDataType]: postDataType,
             })}
           >
-            {!isEmpty(detail[detailActiveTab]) ? keyValueTable(detail[detailActiveTab]) : null}
-            {/* {detail[detailActiveTab]
-              ? Object.keys(detail[detailActiveTab])
-                  .filter((key) => key !== "$$type")
-                  .map((key) => {
-                    let dataValue = detail[detailActiveTab][key];
-                    if (['if-modified-since', 'expires', 'last-modified', 'date', 'x-swift-savetime'].includes(key.toLocaleLowerCase())) {
-                      try {
-                        dataValue = `${dataValue} -> (${moment(dataValue).format('YYYY-MM-DD HH:mm:ss')})`;
-                      } catch(err){}
-                    }
-                    const text = isObject(dataValue)
-                              ? JSON.stringify(dataValue)
-                              : dataValue.toString();
-                    return (
-                      <div className="form-item" key={key}>
-                        <label
-                          className={classNames({
-                            hl: key?.includes("x-bproxy"),
-                          })}
-                        >
-                          {key}:
-                        </label>
-                        <div className="form-item-value">
-                          <span onClick={e => copyText(e, text)}>{text}</span>
-                        </div>
-                      </div>
-                    );
-                  })
-              : null} */}
+            {!isEmpty(detail[detailActiveTab])
+              ? keyValueTable(detail[detailActiveTab])
+              : null}
             {detailActiveTab === "requestHeaders" ? (
               <CookiesView cookies={cookies} />
             ) : null}
@@ -329,9 +333,18 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               </div>
             ) : null}
             <div className="response-viewer">
-              {$isJson.current ? <pre dangerouslySetInnerHTML={{
-                __html: findLink(showBody),
-              }} className="prettyprint lang-json" /> : (showBody || '没有数据可以预览')}
+              {$isJson.current ? (
+                <pre
+                  dangerouslySetInnerHTML={{
+                    __html: findLink(showBody),
+                  }}
+                  className="prettyprint lang-json"
+                />
+              ) : (
+                typeof showBody === 'string' ? <div dangerouslySetInnerHTML={{
+                  __html: showBody as string || remove304(custom.statusCode, custom.path),
+                }} /> : showBody
+              )}
             </div>
           </div>
         )}

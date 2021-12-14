@@ -10,8 +10,8 @@ const DetailMemo = memo(Detail);
 
 export default () => {
   const { state, dispatch } = useContext(Ctx);
-  const { requestId, filterString, filterType, updateRequestListFlag } = state;
-  const { list, clean } = useRequest(state.proxySwitch, filterType, filterString, updateRequestListFlag);
+  const { requestId, filterString, filterType, updateRequestListFlag, showDetail, proxySwitch } = state;
+  const { list, clean } = useRequest(proxySwitch, filterType, filterString, updateRequestListFlag);
   const [detail, setDetail] = useState<any>(null);
   const detailMemo = useMemo(() => {
     return detail;
@@ -44,6 +44,6 @@ export default () => {
   return <div className="app-main">
     <Controller connected={connected} />
     <Table list={list} />
-    <DetailMemo detail={detailMemo} />
+    {showDetail ? <DetailMemo detail={detailMemo} /> : null}
   </div>
 };

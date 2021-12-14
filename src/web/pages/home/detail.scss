@@ -27,7 +27,7 @@ $panelHeight: calc(100% - 85px);
     .url {
       background-color: $boxColor;
       color: $panelFontColor;
-      font-weight: bold;
+    //   font-weight: bold;
       height: 30px;
       line-height: 30px;
       white-space: nowrap;
@@ -37,31 +37,6 @@ $panelHeight: calc(100% - 85px);
       cursor: pointer;
       &:hover {
         text-decoration: underline;
-      }
-    }
-
-    .body-panel {
-      max-width: 800px;
-      width: 100%;
-      height: $panelHeight;
-      margin: 0 auto;
-      word-wrap: break-word;
-      word-break: break-all;
-      white-space: pre-wrap;
-      background-color: $cardColor;
-      color: #aaa;
-      padding: 50px;
-      border-radius: $panelBorderRadius;
-      overflow-y: auto;
-      overflow-x: hidden;
-      line-height: 1.5;
-      margin-top: 10px;
-      .image-preview-box {
-        text-align: center;
-      }
-      .image-preview {
-        max-width: 100%;
-        max-height: 100%;
       }
     }
 
@@ -101,25 +76,15 @@ $panelHeight: calc(100% - 85px);
     }
 
     .form {
-      width: calc(100% - 20px);
-      height: $panelHeight;
-      margin: 0 auto;
-      background-color: $panelBackground;
-      color: $panelFontColor;
-      padding: 10px 30px;
-      border-radius: $panelBorderRadius;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: relative;
-      margin: 10px;
-      margin-top: 10px;
-
       table.kv-table {
         width: 100%;
-        font-size: 16px;
+        font-size: 15px;
+        span {
+          line-height: 1.3;
+        }
         tr {
           td {
-            padding: 3px 0;
+            padding: 0;
             &:nth-child(1) {
               text-align: right;
               font-weight: bold;
@@ -145,22 +110,24 @@ $panelHeight: calc(100% - 85px);
       &.json {
         &::before {
           content: '数据格式：json';
-          position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
           height: 20px;
           color: #fff;
-          background: green;
+          background: #566573;
           text-align: center;
           line-height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px 0;
+          border-radius: 3px;
         }
       }
       &.formData {
         &::before {
           content: '数据格式：formData';
-          color: #F7DC6F;
-          background: #1ABC9C;
+          color: #fff;
+          background: #566573;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -182,12 +149,24 @@ $panelHeight: calc(100% - 85px);
   }
 
   .response-viewer {
-    tab-size: 4;
+    tab-size: 2;
     word-spacing: 0;
+    line-height: 1.3;
+
+    .tips {
+      color: #555;
+    }
   }
 
   .max-text-limit {
     max-width: 500px;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .max-text-limit-2 {
+    max-width: 200px;
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -235,12 +214,36 @@ $panelHeight: calc(100% - 85px);
 
 .body-panel {
   position: relative;
+  max-width: 800px;
+  width: 100%;
+  height: $panelHeight;
+  margin: 0 auto;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+  background-color: $cardColor;
+  color: #aaa;
+  padding: 15px;
+  border-radius: $panelBorderRadius;
+  overflow-y: auto;
+  overflow-x: hidden;
+  line-height: 1;
+  margin-top: 10px;
+  .image-preview-box {
+    text-align: center;
+  }
+  .image-preview {
+    max-width: 100%;
+    max-height: 100%;
+  }
   .handlers {
     display: flex;
     align-items: center;
     justify-content: center;
   }
   pre {
+    line-height: 1.3;
+    font-size: 14px;
     a {
       color: #839192;
       .str {

@@ -15,7 +15,7 @@ export default () => {
   const $canvas = useRef<HTMLCanvasElement>(null);
   const [href, setHref] = useState<string>('');
   const render = (txt: string) => {
-    QRCode.toCanvas($canvas.current, txt, { width: 300});
+    QRCode.toCanvas($canvas.current, txt, { width: 200});
   };
 
   useEffect(() => {

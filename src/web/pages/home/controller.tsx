@@ -34,6 +34,7 @@ const RuleTestModal = (props) => {
   return (
     <ControllerDialog
       title="检测目标URL是否跟你的rule匹配"
+      width={600}
       {...props}
     >
       <RuleTest />
@@ -45,6 +46,7 @@ const FilterModal = (props) => {
   return (
     <ControllerDialog
       title="过滤HTTP日志"
+      width={700}
       {...props}
     >
       <Filter visible={props.visible} />
@@ -55,6 +57,7 @@ const FilterModal = (props) => {
 const InstallModal = (props) => {
   return <ControllerDialog
     title="安装HTTPS证书"
+    width={700}
     {...props}
   >
     <Install />
@@ -64,6 +67,7 @@ const InstallModal = (props) => {
 const SystemProxylModal = (props) => {
   return <ControllerDialog
     title="系统代理开关"
+    width={500}
     {...props}
   >
     <SystemProxy />

@@ -11,6 +11,7 @@ const ioWebInvokeApiInstall = () => {
       if (type && nativeApi[type]) {
         try {
           const rs = await nativeApi[type](params);
+          console.log(type, params, rs);
           socket.emit('ioWebInvokeCallback', {
             data: rs,
             id,
