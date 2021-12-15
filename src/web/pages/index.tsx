@@ -1,6 +1,6 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Ctx } from "../../ctx";
-import useRequest from "../../hooks/useRequest";
+import { Ctx } from "../ctx";
+import useRequest from "../hooks/useRequest";
 import Detail from "./Detail";
 import Table from "./Table";
 import Controller from './controller';

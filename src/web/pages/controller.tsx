@@ -1,12 +1,12 @@
 import { useCallback, useContext } from "react";
 import classNames from "classnames";
 
-import RuleTest from "../../components/ruleTest";
-import useBool from "../../hooks/useBool";
-import { Ctx } from "../../ctx";
-import Filter from '../../components/Filter';
-import Install from "../../components/Install";
-import SystemProxy from '../../components/SystemProxy';
+import RuleTest from "../components/ruleTest";
+import useBool from "../hooks/useBool";
+import { Ctx } from "../ctx";
+import Filter from '../components/Filter';
+import Install from "../components/Install";
+import SystemProxy from '../components/SystemProxy';
 import {
   BugOutlined,
   ClearOutlined,
@@ -15,9 +15,10 @@ import {
   Modal,
   PlayCircleOutlined,
   WifiOutlined,
-} from "../../components/UI";
+} from "../components/UI";
 
 import "./controller.scss";
+import SyncLogs from '../components/SyncLogs';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -74,6 +75,16 @@ const SystemProxylModal = (props) => {
   </ControllerDialog>
 };
 
+const LogslModal = (props) => {
+  return <ControllerDialog
+    title="移动端日志同步"
+    width={800}
+    {...props}
+  >
+    <SyncLogs />
+  </ControllerDialog>
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -91,8 +102,9 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } =
     useBool(false);
-
   const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
+    useBool(false);
+  const { state: isShowLogs, toggle: toggleShowLogs } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -144,14 +156,16 @@ const Controller = (props: ControllerProps) => {
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
+      <div onClick={toggleShowLogs}>
+        <FilterOutlined />
+        <span>日志同步</span>
+      </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
-      <Modal centered title={'111'} footer={null} width={1000}>
-        <h1>haha</h1>
-      </Modal>
+      <LogslModal onCancel={toggleShowLogs} visible={isShowLogs} />
     </div>
   );
 };

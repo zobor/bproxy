@@ -34,7 +34,7 @@ const ioWebInvokeApiInstall = () => {
 export const io = (server) => {
   const io = require('socket.io')(server);
   io.on('connection', (socket: Socket) => {
-    socket.emit('test', {msg: 'ws connected!'});
+    socket.emit('init', {msg: 'ws connected!'});
     instances.push(socket);
     ioWebInvokeApiInstall();
     socket.on('disconnect', (() => {

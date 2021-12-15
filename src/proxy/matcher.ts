@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import path from 'path';
 import MatcherResult, { ProxyRule } from '../types/proxy';
 import { url2regx } from './utils/utils';
 
@@ -8,7 +9,12 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     matched: false,
     responseHeaders:  {},
   };
-  rules.forEach((rule: ProxyRule) => {
+  rules.concat([
+    {
+      regx: 'https://bproxy.dev/socket.io.min.js',
+      file: `${path.resolve(__dirname, '../web/libs/socket.io.min.js')}`,
+    },
+  ]).forEach((rule: ProxyRule) => {
     if (options.matched) return;
     if (!rule.regx) {
       return;

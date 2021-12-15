@@ -2,16 +2,16 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import classNames from 'classnames';
 import moment from 'moment';
 
-import { Ctx } from "../../ctx";
-import { buffer2string, textDecode } from "../../modules/buffer";
-import JSONFormat from "../../libs/jsonFormat";
-import { bridgeInvoke } from "../../modules/socket";
+import { Ctx } from "../ctx";
+import { buffer2string, textDecode } from "../modules/buffer";
+import JSONFormat from "../libs/jsonFormat";
+import { bridgeInvoke } from "../modules/socket";
 import { tabList } from "./settings";
-import { Button, message, Tooltip } from "../../components/UI";
-import copy from '../../modules/copy';
-import { get, isObject, isString, isEmpty } from "../../modules/_";
+import { Button, message, Tooltip } from "../components/UI";
+import copy from '../modules/copy';
+import { get, isObject, isString, isEmpty } from "../modules/_";
 
-import '../../libs/code-prettify.css';
+import '../libs/code-prettify.css';
 import "./detail.scss";
 
 
@@ -339,9 +339,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   className="prettyprint lang-json"
                 />
               ) : (
-                typeof showBody === 'string' ? <div dangerouslySetInnerHTML={{
-                  __html: showBody as string || remove304(custom.statusCode, custom.path),
-                }} /> : showBody
+                typeof showBody === 'string' ? <div>{showBody as string || remove304(custom.statusCode, custom.path)}</div> : showBody
               )}
             </div>
           </div>

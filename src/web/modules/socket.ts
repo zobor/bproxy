@@ -1,4 +1,3 @@
-// import { io } from "socket.io-client";
 import { getRandStr } from './util';
 
 const { io } = window as any;
@@ -38,3 +37,8 @@ export const onRequest = (callback: any) => {
   $socket.removeAllListeners('request');
   $socket.on('request', callback);
 };
+
+export const onSyncLogs = (callback: any) => {
+  $socket.removeAllListeners('syncLogs');
+  $socket.on('syncLogs', callback);
+}

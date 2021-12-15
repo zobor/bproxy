@@ -1,13 +1,13 @@
 import { useContext, useEffect, useRef } from "react";
 import classNames from "classnames";
 
-import { Ctx } from "../../ctx";
-import { HttpRequestRequest } from '../../../types/web';
-import { formatSeconds } from '../../../proxy/utils/format';
+import { Ctx } from "../ctx";
+import { HttpRequestRequest } from '../../types/web';
+import { formatSeconds } from '../../proxy/utils/format';
+import { take, takeRight } from "../modules/_";
+import { Tooltip } from "../components/UI";
 
 import './table.scss';
-import { take, takeRight } from "../../modules/_";
-import { Tooltip } from "../../components/UI";
 
 const shorthand = (str, len = 25, max = 60) => {
   if (str.length > max) {

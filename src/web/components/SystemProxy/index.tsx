@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { bridgeInvoke } from "../../modules/socket";
 import { message, Switch } from "../UI";
 
-import './index.scss';
-
 export default () => {
   const [networks, setNetworks] = useState<any>({});
   const [port, setport] = useState<string>('');
