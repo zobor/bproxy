@@ -7,6 +7,7 @@ export interface ResponseCallbackParams {
   request: any;
   req: any;
   rules: any;
+  body: any;
 }
 
 export type MatchRegxFunction = (url: string) => boolean;
@@ -33,6 +34,7 @@ export interface ProxyRule {
   OPTIONS2POST?: boolean;
   delay?: number;
   disableCache?: boolean;
+  syncLogs?: boolean;
 }
 
 export interface ProxyDataSet {

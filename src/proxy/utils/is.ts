@@ -30,3 +30,5 @@ export const isPlainObject = (v) => isObject(v) && Object.keys(v).length === 0;
 export const isImage = (v) => Object.prototype.toString.call(v) === '[object HTMLImageElement]';
 
 export const isRegExp = (v) => Object.prototype.toString.call(v) === '[object RegExp]';
+
+export const isPromise = (v) => Object.prototype.toString.call(v) === '[object Promise]';

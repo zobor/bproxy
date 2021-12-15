@@ -156,10 +156,10 @@ const Controller = (props: ControllerProps) => {
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
-      <div onClick={toggleShowLogs}>
+      {/* <div onClick={toggleShowLogs}>
         <FilterOutlined />
         <span>日志同步</span>
-      </div>
+      </div> */}
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />

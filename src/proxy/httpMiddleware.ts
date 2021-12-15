@@ -9,9 +9,9 @@ import * as url from 'url';
 import { matcher } from './matcher';
 import { ioRequest } from './socket';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
-import { log, stringToBytes } from './utils/utils';
+import { hookConsoleLog, log, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
-import { isInspectContentType } from './utils/is';
+import { isInspectContentType, isPromise } from './utils/is';
 
 const getDalay = (rule: ProxyRule, config: ProxyConfig) => {
   return rule?.delay || config?.delay || 0;
@@ -22,9 +22,8 @@ const delay = (time: number) => new Promise((resolve) => {
   }, time);
 });
 
-const responseText = (text: string, res, responseHeaders) => {
+const responseText = (text: any, res) => {
   const s = new Readable();
-  res.writeHead(200, responseHeaders || {});
   s.push(text);
   s.push(null);
   s.pipe(res);
@@ -102,22 +101,39 @@ export const httpMiddleware = {
         }
         // 3.1. rule.response.function
         else if (_.isFunction(matcherResult.rule.response)) {
+          const body = req.method.toLowerCase() === 'post' ? await (await getPostBody(req)).toString() : undefined;
           ioRequest({
             matched: true,
             requestId: req.$requestId,
             url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
-            statusCode: matcherResult.rule.statusCode,
             requestHeaders: req.headers,
+            requestBody: body,
           });
           if (delayTime) {
             await delay(delayTime);
           }
-          matcherResult.rule.response({
+          const rs = matcherResult.rule.response({
             response: res,
             request,
             req,
             rules: matcherResult?.rule,
+            body,
+          });
+          let resData;
+          if (isPromise(rs)) {
+            resData = await rs;
+          } else {
+            resData = rs;
+          }
+          const {data, headers, statusCode} = resData || {};
+          ioRequest({
+            requestId: req.$requestId,
+            responseBody: data,
+            statusCode: statusCode || 200,
+            responseHeaders: headers || {
+              'content-type': 'bproxy/log',
+            },
           });
         }
         // 3.2.  rule.response.string
@@ -142,7 +158,8 @@ export const httpMiddleware = {
             responseHeaders,
             responseBody: matcherResult.rule.response,
           });
-          responseText(matcherResult.rule.response, res, responseHeaders);
+          res.writeHead(200, responseHeaders || {});
+          responseText(matcherResult.rule.response, res);
         }
         // rule.statusCode
         else if (matcherResult.rule.statusCode) {
@@ -215,6 +232,7 @@ export const httpMiddleware = {
   async proxyByRequest(req, res, requestOption, responseOptions, matcherResult?: MatcherResult): Promise<number> {
     return new Promise(async () => {
       const requestHeaders = { ...req.headers, ...requestOption.headers };
+      const syncLogs = matcherResult?.rule?.syncLogs;
       if (matcherResult?.rule?.disableCache) {
         ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => {
           requestHeaders[key] && delete requestHeaders[key];
@@ -238,9 +256,12 @@ export const httpMiddleware = {
       if (req.httpVersion !== '2.0' && !req.headers?.connection) {
         options.headers.connection = 'keep-alive';
       }
-      if (req.httpVersion === '1.0' && options.headers['transfer-encoding']) {
-        delete options.headers['transfer-encoding'];
-      }
+      // if (req.httpVersion === '1.0' && options.headers['transfer-encoding']) {
+      //   delete options.headers['transfer-encoding'];
+      // }
+      // if (syncLogs) {
+      //   delete options.headers['accept-encoding'];
+      // }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {
@@ -257,26 +278,33 @@ export const httpMiddleware = {
         matched: matcherResult?.matched,
       });
 
-      request(rOpts)
+      const rst = request(rOpts)
         .on("response", function (response) {
           const headers = {...response.headers, ...responseOptions.headers};
           const encoding = _.get(headers, '["content-encoding"]');
+          const isgzip = encoding === 'gzip';
           const body: Buffer[] = [];
           response.on('data', (d: Buffer) => body.push(d));
           response.on('end', () => {
-            let str: any = '';
             const buf = Buffer.concat(body);
-            if (encoding === 'gzip') {
+            let str: any = buf;
+            if (isgzip) {
               str = pako.ungzip(new Uint8Array(buf), {to: "string"});
             } else if (!encoding && isInspectContentType(headers || {})) {
               str = buf.toString();
-            } else {
-              str = buf;
             }
             ioRequest({
               requestId: req.$requestId,
               responseBody: str,
             });
+            if (syncLogs) {
+              const txt = hookConsoleLog(str, syncLogs);
+              let resData = txt;
+              if (isgzip) {
+                resData = pako.gzip(txt);
+              }
+              responseText(resData, res);
+            }
           });
 
           ioRequest({
@@ -294,9 +322,11 @@ export const httpMiddleware = {
             requestId: req.$requestId,
             statusCode: 500,
           });
-        })
-        // put response to proxy response
-        .pipe(res);
+        });
+        if (!syncLogs) {
+          // put response to proxy response
+          rst.pipe(res);
+        }
     });
   },
 
