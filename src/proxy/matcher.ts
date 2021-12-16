@@ -54,7 +54,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   });
 
   // matched rule and add extend headers
-  if (options.matched) {
+  if (options.matched && options.responseHeaders) {
     options.responseHeaders['x-bproxy-matched'] = true;
     if (options?.rule?.host) {
       options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
@@ -63,5 +63,5 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
       options.responseHeaders['x-bproxy-redirect'] = options.rule.redirectTarget;
     }
   }
-  return options;
+  return options.matched ? options : { matched: false };
 }

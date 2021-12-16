@@ -105,7 +105,7 @@ export default interface MatcherResult {
   matched?: boolean;
   filepath?: string;
   rule?: ProxyRule;
-  responseHeaders: {
+  responseHeaders?: {
     [key: string]: any;
   };
 }

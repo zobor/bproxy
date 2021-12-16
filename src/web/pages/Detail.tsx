@@ -8,6 +8,7 @@ import JSONFormat from "../libs/jsonFormat";
 import { bridgeInvoke } from "../modules/socket";
 import { tabList } from "./settings";
 import { Button, message, Tooltip } from "../components/UI";
+import SImage from '../components/SImage';
 import copy from '../modules/copy';
 import { get, isObject, isString, isEmpty } from "../modules/_";
 
@@ -15,9 +16,9 @@ import '../libs/code-prettify.css';
 import "./detail.scss";
 
 
-const remove304 = (code: number, path: string) => {
+const remove304 = (path: string) => {
   const tips = `\n\n<span class='tips'>如何禁用缓存?\n代理规则添加：<b>{ regx: '${path}', disableCache: true }</b></span>`
-  return `没有数据可以预览${code === 304 ? tips : ''}`;
+  return `没有数据可以预览${tips}`;
 }
 
 const copyText = (e, text) => {
@@ -140,7 +141,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       if (isImage) {
         const body = (
           <div className="image-preview-box">
-            <img className="image-preview" src={detail?.custom?.url} />
+            {/* <img className="image-preview" src={detail?.custom?.url} /> */}
+            <SImage classNames="image-preview" src={detail?.custom?.url} />
           </div>
         );
         setShowBody(body);
@@ -339,7 +341,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   className="prettyprint lang-json"
                 />
               ) : (
-                typeof showBody === 'string' ? <div>{showBody as string || remove304(custom.statusCode, custom.path)}</div> : showBody
+                typeof showBody === 'string' ? custom.statusCode === 304 ? <div dangerouslySetInnerHTML={{__html: remove304(custom.path) }} /> : <div>{showBody}</div> : showBody
               )}
             </div>
           </div>

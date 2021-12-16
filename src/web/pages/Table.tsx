@@ -86,6 +86,7 @@ const Table = (props: any) => {
                 <td
                   className={classNames({
                     status: true,
+                    [`s${req?.custom?.statusCode}`]: !!req?.custom?.statusCode
                   })}
                 >
                   {req?.custom?.statusCode}
@@ -112,7 +113,10 @@ const Table = (props: any) => {
                       .replace(/;\s?\S+/, "")
                       .slice(0, 25)}
                 </td>
-                <td className="speed">
+                <td className={classNames({
+                  speed: true,
+                  slow: req.requestStartTime && req.requestEndTime && (req.requestEndTime - req.requestStartTime) > 2000,
+                })}>
                   {req.requestStartTime && req.requestEndTime
                     ? `${formatSeconds(
                         req.requestEndTime - req.requestStartTime
