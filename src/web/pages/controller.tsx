@@ -15,10 +15,11 @@ import {
   Modal,
   PlayCircleOutlined,
   WifiOutlined,
+  UsbOutlined,
 } from "../components/UI";
 
 import "./controller.scss";
-import SyncLogs from '../components/SyncLogs';
+import ConfigEditor from '../components/ConfigEditor';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -75,13 +76,13 @@ const SystemProxylModal = (props) => {
   </ControllerDialog>
 };
 
-const LogslModal = (props) => {
+const ConfigModal = (props) => {
   return <ControllerDialog
-    title="移动端日志同步"
-    width={800}
+    title="编辑配置文件"
+    width={900}
     {...props}
   >
-    <SyncLogs />
+    <ConfigEditor onCancel={props.onCancel} />
   </ControllerDialog>
 };
 
@@ -104,7 +105,7 @@ const Controller = (props: ControllerProps) => {
     useBool(false);
   const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
     useBool(false);
-  const { state: isShowLogs, toggle: toggleShowLogs } =
+  const { state: isShowConfig, toggle: toggleShowConfig } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -156,16 +157,16 @@ const Controller = (props: ControllerProps) => {
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
-      {/* <div onClick={toggleShowLogs}>
-        <FilterOutlined />
-        <span>日志同步</span>
-      </div> */}
+      <div onClick={toggleShowConfig}>
+        <UsbOutlined />
+        <span>配置文件</span>
+      </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
-      <LogslModal onCancel={toggleShowLogs} visible={isShowLogs} />
+      <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
     </div>
   );
 };

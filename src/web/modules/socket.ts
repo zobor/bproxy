@@ -38,7 +38,8 @@ export const onRequest = (callback: any) => {
   $socket.on('request', callback);
 };
 
-export const onSyncLogs = (callback: any) => {
-  $socket.removeAllListeners('syncLogs');
-  $socket.on('syncLogs', callback);
-}
+
+export const onConfigFileChange = (callback: any) => {
+  $socket.removeAllListeners('onConfigFileChange');
+  $socket.on('onConfigFileChange', callback);
+};

@@ -44,6 +44,31 @@ export const getConfigFile = () => {
   return configPath;
 };
 
+export const getConfigFileContent = () => {
+  const configFilePath = getConfigFile();
+
+  if (configFilePath) {
+    const txt = fs.readFileSync(configFilePath, 'utf-8');
+
+    return txt;
+  }
+
+  return '';
+};
+
+export const setConfigFileContent = (params: {data: string}) => {
+  const configFilePath = getConfigFile();
+  const { data } = params || {};
+
+  if (configFilePath && data) {
+    fs.writeFileSync(configFilePath, data);
+
+    return true;
+  }
+
+  return false;
+};
+
 export const mapFile = (params: {
   regx: string;
   file: string;

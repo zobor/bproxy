@@ -8,7 +8,7 @@ import * as pkg from '../../package.json';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { isLocal, requestJac } from './routers';
-import { io } from './socket';
+import { io, onConfigFileChange } from './socket';
 import { getLocalIpAddress } from './utils/ip';
 import { compareVersion, log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
@@ -35,6 +35,7 @@ export default class LocalServer {
         delete require.cache[require.resolve(confPath)];
         appConfig = require(confPath);
         dataset.config = appConfig;
+        onConfigFileChange();
       } catch(err){}
     });
     const server = new http.Server();

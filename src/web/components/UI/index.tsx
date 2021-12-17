@@ -17,6 +17,7 @@ import BugOutlined from "@ant-design/icons/BugOutlined";
 import MacCommandOutlined from "@ant-design/icons/MacCommandOutlined";
 import ClearOutlined from "@ant-design/icons/ClearOutlined";
 import FilterOutlined from "@ant-design/icons/FilterOutlined";
+import UsbOutlined from '@ant-design/icons/UsbOutlined';
 
 import "antd/es/button/style/index.less";
 import "antd/es/switch/style/index.less";
@@ -50,4 +51,5 @@ export {
   MacCommandOutlined,
   ClearOutlined,
   FilterOutlined,
+  UsbOutlined,
 };

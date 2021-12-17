@@ -52,3 +52,7 @@ export const emit = (type: string, msg: any) => {
 export const ioRequest = (params: InvokeRequestParams) => {
   emit('request', params);
 };
+
+export const onConfigFileChange = () => {
+  emit('onConfigFileChange', {});
+};

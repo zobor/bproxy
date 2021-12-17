@@ -1,0 +1,27 @@
+.dialog-logs {
+  height: 80vh;
+
+  .cm-theme-dark {
+    height: calc(100% - 30px);
+
+    .ͼ1.cm-editor {
+      height: 100%;
+      font-size: 16px;
+
+      .ͼf, .ͼk {
+        color: #F39C12 ;
+      }
+      .ͼb {
+        color: #1ABC9C;
+      }
+      .ͼl {
+        color: #555;
+      }
+    }
+  }
+
+  .ant-btn {
+    margin-top: 10px;
+    float: right;
+  }
+}

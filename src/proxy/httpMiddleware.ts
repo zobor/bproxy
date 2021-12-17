@@ -256,12 +256,6 @@ export const httpMiddleware = {
       if (req.httpVersion !== '2.0' && !req.headers?.connection) {
         options.headers.connection = 'keep-alive';
       }
-      // if (req.httpVersion === '1.0' && options.headers['transfer-encoding']) {
-      //   delete options.headers['transfer-encoding'];
-      // }
-      // if (syncLogs) {
-      //   delete options.headers['accept-encoding'];
-      // }
       // todo deep assign object
       requestOption.headers = {...options.headers, ...requestOption.headers};
       const rOpts = {

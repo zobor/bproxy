@@ -9,7 +9,7 @@ import { Tooltip } from "../components/UI";
 
 import './table.scss';
 
-const shorthand = (str, len = 25, max = 60) => {
+const shorthand = (str, len = 20, max = 40) => {
   if (str.length > max) {
     const arr = str.split('');
     const arr1 = take(arr, len);
@@ -106,7 +106,7 @@ const Table = (props: any) => {
                 </td>
                 <td className="contentType">
                   {req?.responseHeaders &&
-                    (req?.responseHeaders["content-type"] || "")
+                    (req?.responseHeaders["content-type"] || "-")
                       .replace(/;\s?\S+/, "")
                       .slice(0, 25)}
                 </td>
