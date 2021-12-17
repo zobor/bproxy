@@ -12,6 +12,7 @@
 .table {
   width: 100%;
   position: relative;
+  font-size: 17px;
 
   thead {
     tr {
@@ -66,7 +67,7 @@
   }
 
   .status {
-    width: 50px;
+    width: 60px;
     &.s200,
     &.s101 {
       color: $httpStatus200;
@@ -79,22 +80,23 @@
     width: 60px;
   }
   .method {
-    width: 90px;
+    width: 100px;
   }
   .protocol {
-    width: 60px;
+    width: 90px;
+  }
+  .host {
+      width: 300px;
+  }
+  .contentType {
+      width: 220px;
   }
   .speed {
-    width: 80px;
+    width: 90px;
     &.slow {
       color: red;
     }
   }
-  .host {
-    min-width: 100px;
-    max-width: 300px;
-  }
-
 }
 
 .empty-tip {

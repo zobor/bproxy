@@ -93,9 +93,6 @@ const Table = (props: any) => {
                 </td>
                 <td
                   className="matched"
-                  onClick={() => {
-                    console.log(req);
-                  }}
                 >
                   {req.matched ? "✔" : "-"}
                 </td>

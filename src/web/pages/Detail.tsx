@@ -255,7 +255,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     };
   }, [detailActiveTab]);
 
-  if (!showDetail) {
+  if (!showDetail || isEmpty(detail)) {
     return null;
   }
 
