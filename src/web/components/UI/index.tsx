@@ -18,6 +18,7 @@ import MacCommandOutlined from "@ant-design/icons/MacCommandOutlined";
 import ClearOutlined from "@ant-design/icons/ClearOutlined";
 import FilterOutlined from "@ant-design/icons/FilterOutlined";
 import UsbOutlined from '@ant-design/icons/UsbOutlined';
+import CodeOutlined from '@ant-design/icons/CodeOutlined';
 
 import "antd/es/button/style/index.less";
 import "antd/es/switch/style/index.less";
@@ -52,4 +53,5 @@ export {
   ClearOutlined,
   FilterOutlined,
   UsbOutlined,
+  CodeOutlined,
 };

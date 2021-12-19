@@ -98,6 +98,7 @@ export interface ProxyConfig {
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
   delay?: number;
+  disableCache?: boolean;
 }
 
 export default interface MatcherResult {

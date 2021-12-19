@@ -2,6 +2,7 @@ import * as http from 'http';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as net from "net";
 import request from 'request';
 import settings from './config';
 import * as pkg from '../../package.json';
@@ -65,6 +66,15 @@ export default class LocalServer {
         }
         httpsMiddleware.proxy($req, socket, head, appConfig);
       });
+      // ws
+      server.on('upgrade', (req, socket, head) => {
+        const socketAgent = net.connect(8888, '127.0.0.1', () => {
+          try {
+            socketAgent.write(head);
+            socketAgent.pipe(socket)
+          } catch(err) {}
+        });
+      })
     });
     const ips = getLocalIpAddress();
     log.info(`代理服务器启动成功: `);

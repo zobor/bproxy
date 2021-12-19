@@ -51,13 +51,13 @@ export const httpMiddleware = {
     const delayTime = getDalay(matcherResult?.rule as ProxyRule, config);
 
     if (matcherResult.matched) {
-      return new Promise(async() => {
+      return new Promise(async () => {
         if (!matcherResult.rule) return;
         if (matcherResult?.responseHeaders) {
-          resOptions.headers = {...matcherResult.responseHeaders};
+          resOptions.headers = { ...matcherResult.responseHeaders };
         }
         if (matcherResult?.rule?.responseHeaders) {
-          resOptions.headers = {...matcherResult.rule.responseHeaders};
+          resOptions.headers = { ...matcherResult.rule.responseHeaders };
         }
         // local file
         // 1. rule.file
@@ -76,7 +76,7 @@ export const httpMiddleware = {
             matcherResult.rule.file,
             res,
             resOptions.headers,
-            req,
+            req
           );
         }
         // 2. rule.path
@@ -93,15 +93,21 @@ export const httpMiddleware = {
             await delay(delayTime);
           }
           this.proxyLocalFile(
-            path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || ''),
+            path.resolve(
+              matcherResult.rule.path,
+              matcherResult.rule.filepath || ""
+            ),
             res,
             resOptions.headers,
-            req,
+            req
           );
         }
         // 3.1. rule.response.function
         else if (_.isFunction(matcherResult.rule.response)) {
-          const body = req.method.toLowerCase() === 'post' ? await (await getPostBody(req)).toString() : undefined;
+          const body =
+            req.method.toLowerCase() === "post"
+              ? await (await getPostBody(req)).toString()
+              : undefined;
           ioRequest({
             matched: true,
             requestId: req.$requestId,
@@ -126,13 +132,13 @@ export const httpMiddleware = {
           } else {
             resData = rs;
           }
-          const {data, headers, statusCode} = resData || {};
+          const { data, headers, statusCode } = resData || {};
           ioRequest({
             requestId: req.$requestId,
             responseBody: data,
             statusCode: statusCode || 200,
             responseHeaders: headers || {
-              'content-type': 'bproxy/log',
+              "content-type": "bproxy/log",
             },
           });
         }
@@ -185,60 +191,97 @@ export const httpMiddleware = {
         // 4. rule.redirect
         else if (_.isString(matcherResult.rule.redirect)) {
           req.requestOriginUrl = req.url;
-          req.url = matcherResult.rule.redirectTarget || matcherResult.rule.redirect;
+          req.url =
+            matcherResult.rule.redirectTarget || matcherResult.rule.redirect;
           req.httpsURL = req.url;
           const redirectUrlParam = url.parse(req.url);
           if (redirectUrlParam.host && req.headers) {
             req.headers.host = redirectUrlParam.host;
           }
           const requestOption = {
-            headers: matcherResult.rule.requestHeaders || {}
+            headers: matcherResult.rule.requestHeaders || {},
           };
           if (delayTime) {
             await delay(delayTime);
           }
-          return this.proxyByRequest(req, res, requestOption, resOptions, matcherResult);
+          return this.proxyByRequest(
+            req,
+            res,
+            requestOption,
+            resOptions,
+            matcherResult,
+            config
+          );
         }
         // rule.proxy
         else if (_.isString(matcherResult.rule.proxy)) {
           if (delayTime) {
             await delay(delayTime);
           }
-          return this.proxyByRequest(req, res, {
-            proxy: matcherResult.rule.proxy,
-          }, resOptions, matcherResult);
+          return this.proxyByRequest(
+            req,
+            res,
+            {
+              proxy: matcherResult.rule.proxy,
+            },
+            resOptions,
+            matcherResult,
+            config
+          );
         }
         // rule.host
         else if (_.isString(matcherResult.rule.host)) {
           if (delayTime) {
             await delay(delayTime);
           }
-          return this.proxyByRequest(req, res, {
-            hostname: matcherResult.rule.host,
-          }, resOptions, matcherResult);
-        }
-        else {
-          return this.proxyByRequest(req, res, {}, resOptions, matcherResult);
+          return this.proxyByRequest(
+            req,
+            res,
+            {
+              hostname: matcherResult.rule.host,
+            },
+            resOptions,
+            matcherResult,
+            config
+          );
+        } else {
+          return this.proxyByRequest(
+            req,
+            res,
+            {},
+            resOptions,
+            matcherResult,
+            config
+          );
         }
       });
     } else {
       if (delayTime) {
         await delay(delayTime);
       }
-      return this.proxyByRequest(req, res, {}, resOptions);
+      return this.proxyByRequest(req, res, {}, resOptions, {}, config);
     }
   },
 
-  async proxyByRequest(req, res, requestOption, responseOptions, matcherResult?: MatcherResult): Promise<number> {
+  async proxyByRequest(
+    req,
+    res,
+    requestOption,
+    responseOptions,
+    matcherResult?: MatcherResult,
+    config?: ProxyConfig,
+  ): Promise<number> {
     return new Promise(async () => {
       const requestHeaders = { ...req.headers, ...requestOption.headers };
       const syncLogs = matcherResult?.rule?.syncLogs;
-      if (matcherResult?.rule?.disableCache) {
-        ['cache-control', 'if-none-match', 'if-modified-since'].forEach((key: string) => {
-          requestHeaders[key] && delete requestHeaders[key];
-          requestHeaders['pragma'] = 'no-cache';
-          requestHeaders['cache-control'] = 'no-cache';
-        });
+      if (config?.disableCache || matcherResult?.rule?.disableCache) {
+        ["cache-control", "if-none-match", "if-modified-since"].forEach(
+          (key: string) => {
+            requestHeaders[key] && delete requestHeaders[key];
+            requestHeaders["pragma"] = "no-cache";
+            requestHeaders["cache-control"] = "no-cache";
+          }
+        );
       }
       const options: RequestOptions = {
         url: req.httpsURL || req.url,
@@ -250,14 +293,14 @@ export const httpMiddleware = {
         rejectUnauthorized: false,
         followRedirect: false,
       };
-      if (['post', 'put'].includes(req.method.toLowerCase())) {
+      if (["post", "put"].includes(req.method.toLowerCase())) {
         options.body = await getPostBody(req);
       }
-      if (req.httpVersion !== '2.0' && !req.headers?.connection) {
-        options.headers.connection = 'keep-alive';
+      if (req.httpVersion !== "2.0" && !req.headers?.connection) {
+        options.headers.connection = "keep-alive";
       }
       // todo deep assign object
-      requestOption.headers = {...options.headers, ...requestOption.headers};
+      requestOption.headers = { ...options.headers, ...requestOption.headers };
       const rOpts = {
         ...options,
         ...requestOption,
@@ -274,16 +317,16 @@ export const httpMiddleware = {
 
       const rst = request(rOpts)
         .on("response", function (response) {
-          const headers = {...response.headers, ...responseOptions.headers};
+          const headers = { ...response.headers, ...responseOptions.headers };
           const encoding = _.get(headers, '["content-encoding"]');
-          const isgzip = encoding === 'gzip';
+          const isgzip = encoding === "gzip";
           const body: Buffer[] = [];
-          response.on('data', (d: Buffer) => body.push(d));
-          response.on('end', () => {
+          response.on("data", (d: Buffer) => body.push(d));
+          response.on("end", () => {
             const buf = Buffer.concat(body);
             let str: any = buf;
             if (isgzip) {
-              str = pako.ungzip(new Uint8Array(buf), {to: "string"});
+              str = pako.ungzip(new Uint8Array(buf), { to: "string" });
             } else if (!encoding && isInspectContentType(headers || {})) {
               str = buf.toString();
             }
@@ -309,7 +352,9 @@ export const httpMiddleware = {
           res.writeHead(response.statusCode, headers);
         })
         .on("error", (err) => {
-          log.warn(`[http request error]: ${err.message}\n  url--->${rOpts.url}`);
+          log.warn(
+            `[http request error]: ${err.message}\n  url--->${rOpts.url}`
+          );
           res.writeHead(500, {});
           res.end(err.message);
           ioRequest({
@@ -317,29 +362,34 @@ export const httpMiddleware = {
             statusCode: 500,
           });
         });
-        if (!syncLogs) {
-          // put response to proxy response
-          rst.pipe(res);
-        }
+      if (!syncLogs) {
+        // put response to proxy response
+        rst.pipe(res);
+      }
     });
   },
 
-  proxyLocalFile(filepath: string, res: any, resHeaders: any = {}, req: any): void {
+  proxyLocalFile(
+    filepath: string,
+    res: any,
+    resHeaders: any = {},
+    req: any
+  ): void {
     try {
       fs.accessSync(filepath, fs.constants.R_OK);
       const readStream = fs.createReadStream(filepath);
       const suffix = getFileTypeFromSuffix(filepath);
       const fileContentType = getResponseContentType(suffix);
       const headers = resHeaders;
-      if (fileContentType && !headers['content-type']) {
-        headers['content-type'] = fileContentType;
+      if (fileContentType && !headers["content-type"]) {
+        headers["content-type"] = fileContentType;
       }
       res.writeHead(200, headers);
       readStream.pipe(res);
 
-      let responseBody = '不支持预览';
-      if (['json', 'js', 'css', 'html'].includes(suffix)) {
-        responseBody  =fs.readFileSync(filepath, 'utf-8');
+      let responseBody = "不支持预览";
+      if (["json", "js", "css", "html"].includes(suffix)) {
+        responseBody = fs.readFileSync(filepath, "utf-8");
       }
 
       ioRequest({
@@ -351,7 +401,7 @@ export const httpMiddleware = {
     } catch (err) {
       const s = new Readable();
       res.writeHead(404, {});
-      s.push('404: Not Found or Not Access');
+      s.push("404: Not Found or Not Access");
       s.push(null);
       s.pipe(res);
       ioRequest({
@@ -361,4 +411,4 @@ export const httpMiddleware = {
       });
     }
   },
-}
+};

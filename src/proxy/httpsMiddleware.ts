@@ -1,6 +1,7 @@
 import { ioRequest } from "./socket";
 import * as net from "net";
 import * as https from "https";
+import * as http from "http";
 import * as tls from "tls";
 import * as url from "url";
 import * as forge from "node-forge";
@@ -51,7 +52,6 @@ export default {
   proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
     const { https: httpsList, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
-    const host = (urlParsed.host || "").replace(/:\d+/, "");
 
     this.startLocalHttpsServer(
       urlParsed.hostname,
@@ -64,7 +64,7 @@ export default {
       port: localHttpsPort,
       fakeServer
     }) => {
-      const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, host);
+      const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, urlParsed.host);
       if (isHttpsMatch) {
         this.web(socket, head, "127.0.0.1", localHttpsPort, req, {
           originHost: urlParsed.hostname || '',
@@ -87,15 +87,12 @@ export default {
       const agent = "bproxy Agent";
       socket
         .on("error", (err) => {
-          // todo
-          // log.warn(`[socket error]: ${$hostname}:${$port}-->${err.code}`);
           socketAgent.end();
           socketAgent.destroy();
         })
         .write(
           createHttpHeader(
             `HTTP/${req.httpVersion} 200 Connection Established`,
-            // `HTTP/2.0 200 Connection Established`,
             {
               "Proxy-agent": `${agent}`,
             }
@@ -115,11 +112,6 @@ export default {
         timer = null;
       }
     })
-    // socketAgent.on('end', () => {
-    //   console.log('end', $hostname, $port);
-    //   socketAgent.end();
-    //   socketAgent.destroy();
-    // });
 
     timer = setTimeout(() => {
       if (socketAgent.destroyed || others?.fakeServer.$url || others?.fakeServer?.$upgrade) {
@@ -145,6 +137,7 @@ export default {
     fakeServer: any;
   }> {
     return new Promise((resolve) => {
+      const isProxyWebSocket = hostname === 'bproxy.io';
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
         localCertificateKey,
@@ -152,7 +145,7 @@ export default {
       );
       const certPem = pki.certificateToPem(certificate.cert);
       const keyPem = pki.privateKeyToPem(certificate.key);
-      const localServer = new https.Server({
+      const httpsServerConfig = {
         key: keyPem,
         cert: certPem,
         SNICallback: (host, done): void => {
@@ -164,7 +157,8 @@ export default {
             })
           );
         },
-      });
+      };
+      const localServer = isProxyWebSocket? new http.Server() : new https.Server(httpsServerConfig);
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
@@ -210,32 +204,45 @@ export default {
           agent: false,
           path: proxyReq.url,
         };
+        if (isProxyWebSocket) {
+          options.host = '127.0.0.1';
+          options.hostname = '127.0.0.1';
+          options.headers.host = '127.0.0.1';
+          options.port = config.port;
+        }
         if (!proxyReq.$requestId) {
           proxyReq.$requestId = utils.guid();
         }
-        ioRequest({
-          url: `${proxyReq.headers?.origin}${proxyReq.url}`,
-          method: proxyReq.headers.origin.includes("https:") ? "WSS" : "WS",
-          requestHeaders: proxyReq.headers,
-          requestId: proxyReq.$requestId,
-        });
-        const wsRequest = https.request(options);
+        if (!isProxyWebSocket) {
+          ioRequest({
+            url: `${proxyReq.headers?.origin}${proxyReq.url}`,
+            method: proxyReq.headers.origin.includes("https:") ? "WSS" : "WS",
+            requestHeaders: proxyReq.headers,
+            requestId: proxyReq.$requestId,
+          });
+        }
+        const wsRequest = (isProxyWebSocket ? http : https).request(options);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
             r1.headers
           );
-          s1.on("data", (d) => {
-            ioRequest({
-              requestId: proxyReq.$requestId,
-              responseBody: d,
-              statusCode: 101,
+          if (!isProxyWebSocket) {
+            s1.on("data", (d) => {
+              ioRequest({
+                requestId: proxyReq.$requestId,
+                responseBody: d.toString(),
+                statusCode: 101,
+              });
             });
-          });
+          }
           proxySocket.write(writeStream);
           proxySocket.write(h1);
           s1.pipe(proxySocket).pipe(s1);
         });
+        wsRequest.on('error', err => {
+          console.log(err);
+        })
         wsRequest.end();
       });
       localServer.on("error", () => {

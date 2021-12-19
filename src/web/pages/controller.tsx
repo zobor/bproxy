@@ -16,10 +16,12 @@ import {
   PlayCircleOutlined,
   WifiOutlined,
   UsbOutlined,
+  CodeOutlined,
 } from "../components/UI";
 
 import "./controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
+import CodeRunner from '../components/CodeRunner';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -86,6 +88,16 @@ const ConfigModal = (props) => {
   </ControllerDialog>
 };
 
+const CodeRunnerModal = (props) => {
+  return <ControllerDialog
+    title="代码远程调用"
+    width={900}
+    {...props}
+  >
+    <CodeRunner />
+  </ControllerDialog>
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -106,6 +118,8 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
     useBool(false);
   const { state: isShowConfig, toggle: toggleShowConfig } =
+    useBool(false);
+    const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -161,12 +175,17 @@ const Controller = (props: ControllerProps) => {
         <UsbOutlined />
         <span>配置文件</span>
       </div>
+      <div onClick={toggleShowCodeRunner}>
+        <CodeOutlined />
+        <span>远程调用</span>
+      </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
       <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
+      <CodeRunnerModal onCancel={toggleShowCodeRunner} visible={isShowCodeRunner} />
     </div>
   );
 };
