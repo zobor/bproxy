@@ -1,4 +1,5 @@
-const $socket = io('ws://bproxy.io/', {
+const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+const $socket = io(`${protocol}bproxy.io/`, {
   transports: ['websocket'],
 });
 

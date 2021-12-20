@@ -15,6 +15,7 @@ import {
   log,
 } from "./utils/utils";
 import { ProxyConfig } from "../types/proxy";
+import { matcher } from "./matcher";
 
 const { pki } = forge;
 let certInstance;
@@ -137,7 +138,7 @@ export default {
     fakeServer: any;
   }> {
     return new Promise((resolve) => {
-      const isProxyWebSocket = hostname === 'bproxy.io';
+      const isBproxyDev = hostname === 'bproxy.io';
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
         localCertificateKey,
@@ -158,7 +159,8 @@ export default {
           );
         },
       };
-      const localServer = isProxyWebSocket? new http.Server() : new https.Server(httpsServerConfig);
+      const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
+      const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === "string" || !localAddress) {
@@ -194,6 +196,8 @@ export default {
           return true;
         }
         (localServer as any).$upgrade = true;
+        const upgradeURL = `${proxyReq.headers.origin}${proxyReq.url}`;
+        const matchResult = matcher(config.rules, upgradeURL);
         const options = {
           host: hostname,
           hostname,
@@ -204,7 +208,17 @@ export default {
           agent: false,
           path: proxyReq.url,
         };
-        if (isProxyWebSocket) {
+        const target = matchResult?.rule?.redirectTarget || matchResult?.rule?.redirect;
+        if (matchResult?.matched && target) {
+          const urlParsed = url.parse(target);
+          if (urlParsed?.hostname && urlParsed?.port) {
+            options.host = urlParsed.hostname;
+            options.hostname = urlParsed.hostname;
+            options.headers.host = urlParsed.hostname;
+            options.port = urlParsed.port;
+          }
+        }
+        if (isBproxyDev) {
           options.host = '127.0.0.1';
           options.hostname = '127.0.0.1';
           options.headers.host = '127.0.0.1';
@@ -213,7 +227,7 @@ export default {
         if (!proxyReq.$requestId) {
           proxyReq.$requestId = utils.guid();
         }
-        if (!isProxyWebSocket) {
+        if (!isBproxyDev) {
           ioRequest({
             url: `${proxyReq.headers?.origin}${proxyReq.url}`,
             method: proxyReq.headers.origin.includes("https:") ? "WSS" : "WS",
@@ -221,13 +235,14 @@ export default {
             requestId: proxyReq.$requestId,
           });
         }
-        const wsRequest = (isProxyWebSocket ? http : https).request(options);
+        const proxyWsServices = target?.indexOf('https:') === 0 && !isBproxyDev ? https : http;
+        const wsRequest = proxyWsServices.request(options);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
             r1.headers
           );
-          if (!isProxyWebSocket) {
+          if (!isBproxyDev) {
             s1.on("data", (d) => {
               ioRequest({
                 requestId: proxyReq.$requestId,
