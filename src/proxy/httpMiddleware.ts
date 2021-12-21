@@ -293,6 +293,7 @@ export const httpMiddleware = {
         rejectUnauthorized: false,
         followRedirect: false,
       };
+      
       if (["post", "put"].includes(req.method.toLowerCase())) {
         options.body = await getPostBody(req);
       }
@@ -320,29 +321,32 @@ export const httpMiddleware = {
           const headers = { ...response.headers, ...responseOptions.headers };
           const encoding = _.get(headers, '["content-encoding"]');
           const isgzip = encoding === "gzip";
-          const body: Buffer[] = [];
-          response.on("data", (d: Buffer) => body.push(d));
-          response.on("end", () => {
-            const buf = Buffer.concat(body);
-            let str: any = buf;
-            if (isgzip) {
-              str = pako.ungzip(new Uint8Array(buf), { to: "string" });
-            } else if (!encoding && isInspectContentType(headers || {})) {
-              str = buf.toString();
-            }
-            ioRequest({
-              requestId: req.$requestId,
-              responseBody: str,
-            });
-            if (syncLogs) {
-              const txt = hookConsoleLog(str, syncLogs);
-              let resData = txt;
+          const showContent = isInspectContentType(headers || {});
+          if (showContent) {
+            const body: Buffer[] = [];
+            response.on("data", (d: Buffer) => body.push(d));
+            response.on("end", () => {
+              const buf = Buffer.concat(body);
+              let str: any = buf;
               if (isgzip) {
-                resData = pako.gzip(txt);
+                str = pako.ungzip(new Uint8Array(buf), { to: "string" });
+              } else if (!encoding) {
+                str = buf.toString();
               }
-              responseText(resData, res);
-            }
-          });
+              ioRequest({
+                requestId: req.$requestId,
+                responseBody: str,
+              });
+              if (syncLogs) {
+                const txt = hookConsoleLog(str, syncLogs);
+                let resData = txt;
+                if (isgzip) {
+                  resData = pako.gzip(txt);
+                }
+                responseText(resData, res);
+              }
+            });
+          }
 
           ioRequest({
             requestId: req.$requestId,
