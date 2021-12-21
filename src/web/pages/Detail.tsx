@@ -14,6 +14,8 @@ import { get, isObject, isString, isEmpty } from "../modules/_";
 
 import '../libs/code-prettify.css';
 import "./detail.scss";
+import { htmlEscape } from '../modules/util';
+import { isDetailViewAble } from '../../proxy/utils/is';
 
 
 const remove304 = (path: string) => {
@@ -89,7 +91,7 @@ const keyValueTable = (objects) => {
           return <tr>
             <td title={key}><span className="max-text-limit-2">{key}</span></td>
             <td>
-              <span title={text} onClick={e => copyText(e, text)} className="max-text-limit">{text}</span>
+              <span title={text} onClick={e => copyText(e, text)} className="max-text-limit2">{text}</span>
             </td>
           </tr>
         })}
@@ -102,8 +104,8 @@ const findLink = (str) => {
   if (!(str && str.replace)) {
     return str;
   }
-  return str
-    // .replace(/time[\w_\-\$]\":\s(\d{10,13})/i, '$1')
+  console.log(str);
+  return htmlEscape(str)
     .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
 
@@ -131,6 +133,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const isChunked = get(detail, 'responseHeaders[transfer-encoding]') === 'chunked';
   const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ").filter(item => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
+  const canView = isDetailViewAble(get(detail, 'responseHeaders'));
 
   // body解析
   useEffect(() => {
@@ -332,7 +335,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                 </Tooltip>
               </div>
             ) : null}
-            <div className="response-viewer">
+            {canView ? <div className="response-viewer">
               {$isJson.current ? (
                 <pre
                   dangerouslySetInnerHTML={{
@@ -343,7 +346,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
               ) : (
                 typeof showBody === 'string' ? custom.statusCode === 304 ? <div dangerouslySetInnerHTML={{__html: remove304(custom.path) }} /> : <div>{showBody}</div> : showBody
               )}
-            </div>
+            </div> : '不支持预览'}
           </div>
         )}
       </div>

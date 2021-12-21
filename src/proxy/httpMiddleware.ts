@@ -311,7 +311,7 @@ export const httpMiddleware = {
         method: rOpts.method,
         requestHeaders: rOpts.headers,
         requestId: req.$requestId,
-        requestBody: rOpts.body,
+        requestBody: rOpts.body ? rOpts.body.toString() : null,
         matched: matcherResult?.matched,
       });
 
@@ -353,7 +353,7 @@ export const httpMiddleware = {
         })
         .on("error", (err) => {
           log.warn(
-            `[http request error]: ${err.message}\n  url--->${rOpts.url}`
+            `[http request error]: message-->${err.message} url--->${rOpts.url}`
           );
           res.writeHead(500, {});
           res.end(err.message);

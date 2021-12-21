@@ -2,6 +2,39 @@ import * as _ from 'lodash';
 import path from 'path';
 import MatcherResult, { ProxyRule } from '../types/proxy';
 import { url2regx } from './utils/utils';
+import dataset from './utils/dataset';
+
+const defaultRulesList = [
+  {
+    regx: "https://bproxy.dev/socket.io.min.js",
+    file: `${path.resolve(__dirname, "../web/libs/socket.io.min.js")}`,
+  },
+  {
+    regx: "https://bproxy.io",
+    redirect: `https://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+    },
+  },
+  {
+    regx: "http://bproxy.io",
+    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+    },
+  },
+  {
+    regx: 'https://log.bproxy.dev',
+    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Headers": "*",
+    },
+  },
+];
 
 export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   const options: MatcherResult = {
@@ -9,12 +42,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     matched: false,
     responseHeaders:  {},
   };
-  rules.concat([
-    {
-      regx: 'https://bproxy.dev/socket.io.min.js',
-      file: `${path.resolve(__dirname, '../web/libs/socket.io.min.js')}`,
-    },
-  ]).forEach((rule: ProxyRule) => {
+  _.cloneDeep(rules).concat(defaultRulesList).forEach((rule: ProxyRule) => {
     if (options.matched) return;
     if (!rule.regx) {
       return;
@@ -26,7 +54,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     // RegExp
     if (_.isRegExp(rule.regx)) {
       options.matched = rule.regx.test(url);
-      if (RegExp.$1 ) {
+      if (RegExp.$1) {
         if (rule.redirect) {
           rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
         } else if (rule.path) {

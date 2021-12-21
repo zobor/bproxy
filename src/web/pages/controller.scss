@@ -1,4 +1,5 @@
 @import '../theme.scss';
+$textShadowColor: #B7950B;
 
 .controller {
   max-width: 600px;
@@ -9,6 +10,26 @@
   background-color: $cardColor;
   margin: 0 auto;
   margin-bottom: 5px;
+  position: relative;
+
+  .version {
+    position: absolute;
+    top: 50%;
+    right: -90px;
+    transform: translateY(-50%);
+    color: #000;
+    letter-spacing: 4px;
+    font-size: 18px;
+    text-shadow:
+      -1px -1px 0 $textShadowColor,
+      0   -1px 0 $textShadowColor,
+      1px -1px 0 $textShadowColor,
+      1px  0   0 $textShadowColor,
+      1px  1px 0 $textShadowColor,
+      0    1px 0 $textShadowColor,
+      -1px  1px 0 $textShadowColor,
+      -1px  0   0 $textShadowColor;
+  }
 
   >div{
     display: flex;

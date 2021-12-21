@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import classNames from "classnames";
 
 import RuleTest from "../components/ruleTest";
@@ -22,6 +22,7 @@ import {
 import "./controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
 import CodeRunner from '../components/CodeRunner';
+import { bridgeInvoke } from '../modules/socket';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -109,6 +110,7 @@ const Disconnected = () => <div className="disconnected">
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
+  const [version, setVersion] = useState<string>('');
   const { proxySwitch, clean, disableCache, filterString } = state;
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
@@ -131,12 +133,21 @@ const Controller = (props: ControllerProps) => {
     }
   };
 
+  useEffect(() => {
+    bridgeInvoke({
+      api: 'getVersion',
+    }).then(rs => {
+      setVersion(rs);
+    });
+  }, [])
+
   if (!connected) {
     return <Disconnected />
   }
 
   return (
     <div className="controller">
+      <div className="version">{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({

@@ -15,6 +15,19 @@ export const isInspectContentType = (headers): boolean => {
   );
 };
 
+export const isImageContentType = (headers): boolean => {
+  if (!headers || (!headers['content-type'])) {
+    return false;
+  }
+  const contentType = headers['content-type'] || '';
+
+  return contentType.includes("image");
+};
+
+export const isDetailViewAble = (headers): boolean => {
+  return isImageContentType(headers) || isInspectContentType(headers);
+}
+
 export const isError = (v) => Object.prototype.toString.call(v) === '[object Error]';
 
 export const isFunction = (v) => Object.prototype.toString.call(v) === '[object Function]';

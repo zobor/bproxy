@@ -1,5 +1,11 @@
 # bproxy changelog
 
+## 5.0.26
+- 支持websocket代理
+- 支持配置文件编辑
+- 支持日志同步 - 支持远程调试console劫持
+- 支持远程调试 - 远程代码调用
+
 ## 5.0.25
 - 配置pm2开发模式
 - 优化http chuncked解码

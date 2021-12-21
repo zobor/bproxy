@@ -10,21 +10,17 @@ const log = (data, type) => {
   fetch(`https://log.bproxy.dev/${len}/${body.length}`, {
     method: "POST",
     body,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+    }
   });
 };
 
-window.console.log = (...args) => {
-  window.console.$log.apply(window.console, args);
-  log(args, "log");
-}
-window.console.warn = (...args) => {
-  window.console.$warn.apply(window.console, args);
-  log(args, "warn");
-}
-window.console.error = (...args) => {
-  window.console.$error.apply(window.console, args);
-  log(args, "error");
-}
+window.console.log = (...args) => log(args, "log");
+window.console.warn = (...args) => log(args, "warn");
+window.console.error = (...args) => log(args, "error");
+
+window.$bproxyFlag = 'hooklog';
 
 
 })();

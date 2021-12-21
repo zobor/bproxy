@@ -15,6 +15,9 @@ export const parseURL = (url) => {
 }
 
 export const arrayBuf2string = (buf: any) => {
+  if (typeof buf === 'string') {
+    return buf;
+  }
   const enc = new TextDecoder('utf-8');
 
   return enc.decode(buf);
@@ -88,4 +91,11 @@ export const getClipboardData = () => {
 export const setInputValue = (el, value) => {
   (Object as any).getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(el, value);
   el.dispatchEvent(new Event('input', { bubbles: true }));
+};
+
+export const htmlEscape = (str) => {
+  if (str?.replace) {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  return str;
 };

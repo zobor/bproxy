@@ -6,6 +6,7 @@ import { matcher } from './matcher';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
 export * from './system';
+import * as pkg from '../../package.json';
 
 export const test = async (url: string) => {
   const { config } = dataset;
@@ -54,6 +55,10 @@ export const getConfigFileContent = () => {
   }
 
   return '';
+};
+
+export const getVersion = (): string => {
+  return pkg.version;
 };
 
 export const setConfigFileContent = (params: {data: string}) => {

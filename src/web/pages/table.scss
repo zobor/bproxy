@@ -12,9 +12,10 @@
 .table {
   width: 100%;
   position: relative;
-  font-size: 17px;
+  font-size: 16px;
 
   thead {
+    font-size: 15px;
     tr {
       position: sticky;
       top: 0;
@@ -67,7 +68,7 @@
   }
 
   .status {
-    width: 60px;
+    width: 50px;
     &.s200,
     &.s101 {
       color: $httpStatus200;
@@ -76,20 +77,18 @@
       color: $httpStatus304;
     }
   }
-  .matched {
-    width: 60px;
-  }
   .method {
-    width: 100px;
+    width: 75px;
+    text-transform: lowercase;
   }
   .protocol {
-    width: 90px;
+    width: 60px;
   }
   .host {
-    width: 220px;
+    width: 185px;
   }
   .contentType {
-      width: 220px;
+      width: 100px;
   }
   .speed {
     width: 90px;
@@ -104,4 +103,32 @@
   font-size: 15px;
   color: #999;
   padding: 20px 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .table {
+    td {
+      &:nth-last-child(1) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 930px) {
+  .table {
+    td {
+      &:nth-last-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 865px) {
+  .table {
+    td {
+      &:nth-last-child(3) {
+        display: none;
+      }
+    }
+  }
 }
