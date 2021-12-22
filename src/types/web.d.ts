@@ -28,6 +28,7 @@ export interface HttpRequestRequest {
     [key: string]: any;
     $$type?: string;
   };
+  ip?: string;
 }
 
 export interface FilterParams {

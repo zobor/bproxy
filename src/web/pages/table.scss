@@ -87,6 +87,9 @@
   .host {
     width: 185px;
   }
+  .size {
+    width: 80px;
+  }
   .contentType {
       width: 100px;
   }
@@ -95,6 +98,9 @@
     &.slow {
       color: red;
     }
+  }
+  .ip {
+    width: 140px;
   }
 }
 

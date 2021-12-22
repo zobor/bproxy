@@ -123,7 +123,7 @@ export default {
       socketAgent?.end();
       socketAgent?.destroy();
       socket?.end();
-    }, (5 * 1000));
+    }, (10 * 1000));
   },
 
   startLocalHttpsServer(
@@ -235,7 +235,8 @@ export default {
             requestId: proxyReq.$requestId,
           });
         }
-        const proxyWsServices = target?.indexOf('https:') === 0 && !isBproxyDev ? https : http;
+        const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.indexOf('https:') === 0 && !isBproxyDev;
+        const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
@@ -255,9 +256,7 @@ export default {
           proxySocket.write(h1);
           s1.pipe(proxySocket).pipe(s1);
         });
-        wsRequest.on('error', err => {
-          console.log(err);
-        })
+        wsRequest.on('error', () => {});
         wsRequest.end();
       });
       localServer.on("error", () => {

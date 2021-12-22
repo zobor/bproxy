@@ -15,11 +15,11 @@ $textShadowColor: #B7950B;
   .version {
     position: absolute;
     top: 50%;
-    right: -90px;
+    right: -50px;
     transform: translateY(-50%);
     color: #000;
-    letter-spacing: 4px;
-    font-size: 18px;
+    letter-spacing: 2px;
+    font-size: 12px;
     text-shadow:
       -1px -1px 0 $textShadowColor,
       0   -1px 0 $textShadowColor,

@@ -121,6 +121,7 @@ export interface InvokeRequestParams {
   responseHeaders?: object;
   responseBody?: Buffer | Int8Array | Uint8Array | string;
   statusCode?: number;
+  ip?: string;
 }
 
 export interface WebInvokeParams {

@@ -39,6 +39,10 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
           if (req.responseHeaders) {
             history.responseHeaders = req.responseHeaders;
           }
+          // ip
+          if (req.ip) {
+            history.ip = req.ip;
+          }
           // responseBody
           if (req.responseBody) {
             if (

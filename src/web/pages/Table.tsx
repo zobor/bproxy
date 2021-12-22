@@ -85,6 +85,7 @@ const Table = (props: any) => {
             <td>类型</td>
             <td>大小</td>
             <td>耗时</td>
+            <td>host</td>
           </tr>
         </thead>
 
@@ -126,7 +127,9 @@ const Table = (props: any) => {
                   )}
                 </td>
                 <td className="size">
-                  {formatFileSize(get(req, 'responseHeaders["content-length"]'))}
+                  {formatFileSize(
+                    get(req, 'responseHeaders["content-length"]')
+                  )}
                 </td>
                 <td
                   className={classNames({
@@ -142,6 +145,20 @@ const Table = (props: any) => {
                         req.requestEndTime - req.requestStartTime
                       )}`
                     : "-"}
+                </td>
+                <td
+                  className="ip"
+                  onClick={() => {
+                    window.open(
+                      `https://www.ip138.com/iplookup.asp?ip=${req.ip}&action=2`
+                    );
+                    setTimeout(() => {
+                      dispatch({ type: "setShowDetail", showDetail: false });
+                    }, 10);
+                    return false;
+                  }}
+                >
+                  {req.ip}
                 </td>
               </tr>
             );

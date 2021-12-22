@@ -322,6 +322,8 @@ export const httpMiddleware = {
           const encoding = _.get(headers, '["content-encoding"]');
           const isgzip = encoding === "gzip";
           const showContent = isInspectContentType(headers || {});
+          const ip = response?.socket?.remoteAddress;
+          const statusCode = response?.statusCode || 500;
           if (showContent) {
             const body: Buffer[] = [];
             response.on("data", (d: Buffer) => body.push(d));
@@ -351,14 +353,15 @@ export const httpMiddleware = {
           ioRequest({
             requestId: req.$requestId,
             responseHeaders: headers,
-            statusCode: response.statusCode,
+            statusCode,
+            ip,
           });
-          res.writeHead(response.statusCode, headers);
+          res.writeHead(statusCode, headers);
         })
         .on("error", (err) => {
-          log.warn(
-            `[http request error]: message-->${err.message} url--->${rOpts.url}`
-          );
+          // log.warn(
+          //   `[http request error]: message-->${err.message} url--->${rOpts.url}`
+          // );
           res.writeHead(500, {});
           res.end(err.message);
           ioRequest({
