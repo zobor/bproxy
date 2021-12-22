@@ -77,14 +77,9 @@ export default class LocalServer {
       })
     });
     const ips = getLocalIpAddress();
-    log.info(`代理服务器启动成功: `);
-    ips.forEach((ip: string) => {
-      console.log(`\t${chalk.green(`http://${ip}:${appConfig.port}`)}`)
-    });
-    log.info('HTTP请求日志查看: ');
-    console.log(`\t${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
-    log.info('更多配置用法：')
-    console.log(`\t${chalk.green('https://github.com/zobor/bproxy/blob/master/bproxy.config.md')}`);
+    log.info(`代理服务器启动成功: ${ips.map((ip: string) => `${chalk.green(`http://${ip}:${appConfig.port}`)}\t`)}`);
+    log.info(`请求日志查看:  ${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
+    log.info(`更多配置用法： ${chalk.green('https://t.hk.uy/aAMp')}`);
 
     await this.checkUpdate();
   }

@@ -118,7 +118,7 @@ export default {
       if (socketAgent.destroyed || others?.fakeServer.$url || others?.fakeServer?.$upgrade) {
         return;
       }
-      log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
+      // log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
       others?.fakeServer?.close();
       socketAgent?.end();
       socketAgent?.destroy();
@@ -186,16 +186,13 @@ export default {
       });
       // websocket
       localServer.on("upgrade", (proxyReq, proxySocket) => {
-        if (proxyReq.method !== "GET" || !proxyReq.headers.upgrade) {
+        if (proxyReq.method !== "GET" || !proxyReq.headers.upgrade || proxyReq.headers.upgrade.toLowerCase() !== "websocket") {
           proxySocket.destroy();
           return true;
         }
 
-        if (proxyReq.headers.upgrade.toLowerCase() !== "websocket") {
-          proxySocket.destroy();
-          return true;
-        }
         (localServer as any).$upgrade = true;
+
         const upgradeURL = `${proxyReq.headers.origin}${proxyReq.url}`;
         const matchResult = matcher(config.rules, upgradeURL);
         const options = {
@@ -230,7 +227,7 @@ export default {
         if (!isBproxyDev) {
           ioRequest({
             url: `${proxyReq.headers?.origin}${proxyReq.url}`,
-            method: proxyReq.headers.origin.includes("https:") ? "WSS" : "WS",
+            method: proxyReq.headers.origin.includes("https:") ? "wss" : "ws",
             requestHeaders: proxyReq.headers,
             requestId: proxyReq.$requestId,
           });
@@ -238,6 +235,8 @@ export default {
         const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.indexOf('https:') === 0 && !isBproxyDev;
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
+
+        // console.log('proxyWsHTTPS', proxyWsHTTPS, 'isBproxyDev', isBproxyDev, 'hostname', hostname);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
@@ -249,6 +248,9 @@ export default {
                 requestId: proxyReq.$requestId,
                 responseBody: d.toString(),
                 statusCode: 101,
+                responseHeaders: {
+                  'content-type': 'text/plain-bproxy',
+                }
               });
             });
           }
@@ -263,8 +265,9 @@ export default {
         log.warn(`[local server error]: ${hostname}`);
         localServer.close();
       });
-      localServer.on("clientError", () => {
-        log.warn(`[local server ClientError]: ${hostname}`);
+      localServer.on("clientError", (err) => {
+        log.warn(`[local server ClientError]: ${hostname} : ${useHttps} : ${req?.url}`);
+        console.log(err.code, err.reason);
         localServer.close();
       });
     });

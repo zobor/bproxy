@@ -57,17 +57,22 @@ $textShadowColor: #B7950B;
       }
     }
   }
+
+  .disconnected {
+    background-color:goldenrod;
+    color: red;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    padding: 5px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 }
 
-.disconnected {
-  background-color:goldenrod;
-  color: red;
-  font-size: 16px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 7px;
-  margin-bottom: 10px;
-  padding: 5px 0;
-}

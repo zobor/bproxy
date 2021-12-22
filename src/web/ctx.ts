@@ -21,6 +21,7 @@ export const defaultState = {
   disableCache: false,
   updateRequestListFlag: 0,
   clean: () => {},
+  lastUpdate: Date.now(),
 };
 
 export const reducer = (state = defaultState, action: actionData) => {

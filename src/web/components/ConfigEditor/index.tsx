@@ -25,7 +25,7 @@ export default (props) => {
     }).then(rs => {
       if (rs && props.onCancel) {
         message.success('配置文件修改成功');
-        setTimeout(() => props.onCancel(), 1000);
+        setTimeout(() => props.onCancel(), 300);
       }
     });
   }, [code]);

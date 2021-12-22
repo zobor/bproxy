@@ -101,3 +101,22 @@ config.rules.push({
 
   return success;
 };
+
+export const mapPage = (params: {
+  regx: string;
+  configFilePath: string;
+}) => {
+  const { regx, configFilePath } = params;
+  const configText = fs.readFileSync(path.resolve(configFilePath), 'utf-8');
+  console.log(regx)
+  const rule = `
+config.rules.push({
+  regx: /${regx.replace(/\//g, '\\/')}$/,
+  syncLogs: 'websocket',
+});
+  `;
+  try {
+    const newConfig = configText.replace('module.exports', `\n${rule}\nmodule.exports`);
+    fs.writeFileSync(path.resolve(configFilePath), newConfig);
+  } catch(er) {}
+}

@@ -45,8 +45,10 @@ export default () => {
     />
     <Button onClick={onSave} type="primary" shape="round">执行</Button>
     <Button onClick={onClear} type="primary" shape="round">Clear</Button>
-    <ul className="logs">
-      {logs.map(log => <li key={log}>{log}</li>)}
-    </ul>
+    <div className="logs scrollbar-style">
+      <ul>
+        {logs.map(log => <li key={log}>{log}</li>)}
+      </ul>
+    </div>
   </div>
 };

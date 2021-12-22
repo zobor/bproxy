@@ -16,6 +16,7 @@ import '../libs/code-prettify.css';
 import "./detail.scss";
 import { htmlEscape } from '../modules/util';
 import { isDetailViewAble } from '../../proxy/utils/is';
+import { isArray } from 'lodash';
 
 
 const remove304 = (path: string) => {
@@ -99,12 +100,10 @@ const keyValueTable = (objects) => {
   );
 };
 
-
 const findLink = (str) => {
   if (!(str && str.replace)) {
     return str;
   }
-  console.log(str);
   return htmlEscape(str)
     .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
 };
@@ -117,23 +116,65 @@ const isLikeJson = (str) => {
   return false;
 };
 
+const formatWsSymbol = (str) => {
+  const down = ' ↓ ';
+  const up = ' ↑ ';
+  return str.replace(/�~�/g, down).replace(/�~�/g, down).replace(/�~/g, down).replace(/�~\u000\d�/g, down).replace(/�n/g, up);
+}
+
+const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
+  if (isImage) {
+    return <div className="image-preview-box">
+            <SImage classNames="image-preview" src={content} />
+          </div>;
+  }
+  if (isJson) {
+    return (
+      <pre
+        dangerouslySetInnerHTML={{
+          __html: findLink(content),
+        }}
+        className="prettyprint lang-json"
+      />
+    );
+  }
+  if (statusCode === 304) {
+    return <div dangerouslySetInnerHTML={{ __html: remove304(urlPath) }} />;
+  }
+  if (isString(content)) {
+    return content;
+  }
+  if (isArray(content)) {
+    return (
+      <ol className='ws-list'>
+        {content.map((item, idx) => (
+          <li key={`ws-list-li-${idx}`} onClick={e => copyText(e, item)}>{formatWsSymbol(item)}</li>
+        ))}
+      </ol>
+    );
+  }
+
+  return null;
+};
+
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
   const [showBody, setShowBody] = useState<
     string | React.ReactElement<any, any>
   >("");
   const { detail = {} } = props;
-  const { showDetail, detailActiveTab } = state;
+  const { showDetail, detailActiveTab, lastUpdate } = state;
   const { custom = {} } = detail || {};
   const contentType = (get(detail, 'responseHeaders["content-type"]') || '').toLowerCase();
   const $isJson = useRef(contentType?.includes('/json'));
   const isImage = contentType?.includes("image/");
+  const isHTML = contentType?.includes("/html");
   const isUtf8 = contentType?.includes('/utf-8');
   const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
   const isChunked = get(detail, 'responseHeaders[transfer-encoding]') === 'chunked';
   const cookies = (get(detail, 'requestHeaders.cookie') || '').split("; ").filter(item => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
-  const canView = isDetailViewAble(get(detail, 'responseHeaders'));
+  const canView = isDetailViewAble(get(detail, 'responseHeaders')) || isImage;
 
   // body解析
   useEffect(() => {
@@ -142,24 +183,15 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     setTimeout(() => {
       // image
       if (isImage) {
-        const body = (
-          <div className="image-preview-box">
-            {/* <img className="image-preview" src={detail?.custom?.url} /> */}
-            <SImage classNames="image-preview" src={detail?.custom?.url} />
-          </div>
-        );
-        setShowBody(body);
+        setShowBody(detail?.custom?.url);
+        $isJson.current = false;
       } else {
         let body;
 
         if (isString(detail?.responseBody)) {
           body = detail?.responseBody;
-        } else if (detail?.custom?.method === "ws") {
-          body = detail.responseBody.map((item, idx: number) => (
-            <div key={`${detail.custom.requestId}-ws-body-${idx}`}>
-              {buffer2string(item, "", false)}
-            </div>
-          ));
+        } else if (['wss', 'ws'].includes(detail?.custom?.method)) {
+          body = detail.responseBody;
         } else if (isChunked && !isEncoding) {
           body = textDecode(detail?.responseBody);
         } else {
@@ -226,6 +258,19 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       }
     }
   };
+  const onMockPage = async(data: any) => {
+    const isConfirm = confirm(`是否远程调试当前页面：${data?.custom?.path}\nbproxy会自动帮你添加一行代理规则来匹配该页面`);
+    console.log(isConfirm);
+    if (isConfirm) {
+      const configFilePath = await bridgeInvoke({
+        api: "getConfigFile",
+      });
+      await bridgeInvoke({api: 'mapPage', params: {
+        regx: data?.custom?.path,
+        configFilePath,
+      }});
+    }
+  }
 
   // json 代码高亮
   useEffect(() => {
@@ -322,9 +367,9 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
           </div>
         ) : (
           <div className="body-panel scrollbar-style">
-            {$isJson.current && showBody ? (
+            {canView && !isImage && ($isJson.current || isHTML) ? (
               <div className="handlers">
-                <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
+                {$isJson.current ? <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
                   <Button
                     shape="round"
                     type="primary"
@@ -332,20 +377,28 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   >
                     mock当前请求
                   </Button>
-                </Tooltip>
+                </Tooltip> : null}
+                {isHTML ? <Tooltip title="mock当前页面，会往页面注入bproxy定制的webSocket">
+                  <Button
+                    shape="round"
+                    type="primary"
+                    onClick={onMockPage.bind(null, detail)}
+                  >
+                    调试当前页面
+                  </Button>
+                </Tooltip> : null}
               </div>
             ) : null}
             {canView ? <div className="response-viewer">
-              {$isJson.current ? (
-                <pre
-                  dangerouslySetInnerHTML={{
-                    __html: findLink(showBody),
-                  }}
-                  className="prettyprint lang-json"
-                />
-              ) : (
-                typeof showBody === 'string' ? custom.statusCode === 304 ? <div dangerouslySetInnerHTML={{__html: remove304(custom.path) }} /> : <div>{showBody}</div> : showBody
-              )}
+              {
+                viewContent({
+                  isJson: $isJson.current,
+                  content: showBody,
+                  statusCode: custom.statusCode,
+                  urlPath: custom.path,
+                  isImage,
+                })
+              }
             </div> : '不支持预览'}
           </div>
         )}

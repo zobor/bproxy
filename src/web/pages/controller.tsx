@@ -136,17 +136,15 @@ const Controller = (props: ControllerProps) => {
   useEffect(() => {
     bridgeInvoke({
       api: 'getVersion',
-    }).then(rs => {
-      setVersion(rs);
+    }).then((rs) => {
+      setVersion(rs as string);
     });
   }, [])
 
-  if (!connected) {
-    return <Disconnected />
-  }
 
   return (
     <div className="controller">
+      {!connected ? <Disconnected /> : null}
       <div className="version">{version}</div>
       <div
         onClick={toggleSwitch}

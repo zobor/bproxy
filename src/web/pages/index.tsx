@@ -11,7 +11,7 @@ const DetailMemo = memo(Detail);
 export default () => {
   const { state, dispatch } = useContext(Ctx);
   const { requestId, filterString, filterType, updateRequestListFlag, showDetail, proxySwitch } = state;
-  const { list, clean } = useRequest(proxySwitch, filterType, filterString, updateRequestListFlag);
+  const { list, clean, lastUpdate } = useRequest(proxySwitch, filterType, filterString, updateRequestListFlag);
   const [detail, setDetail] = useState<any>(null);
   const detailMemo = useMemo(() => {
     return detail;
@@ -40,6 +40,10 @@ export default () => {
       }
     }, 300);
   }, []);
+
+  useEffect(() => {
+    dispatch({ type: 'setLastUpdate', lastUpdate});
+  }, [lastUpdate]);
 
   return <div className="app-main">
     <Controller connected={connected} />

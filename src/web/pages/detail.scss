@@ -255,4 +255,10 @@ $panelHeight: calc(100% - 85px);
       }
     }
   }
+  .ws-list {
+    list-style: circle;
+    li {
+      padding: 5px 0;
+    }
+  }
 }
