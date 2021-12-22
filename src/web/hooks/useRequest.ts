@@ -12,8 +12,9 @@ import {
 
 const limit = 300;
 
-export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void } => {
+export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void; lastUpdate: number } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
   const lastUpdateFlag = useRef<number>(updateRequestListFlag);
   const clean = () => {
     setList([]);
@@ -23,6 +24,7 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
       if (!proxySwitch) {
         return;
       }
+      setLastUpdate(Date.now());
       setList((pre: any) => {
         // merge history request and response
         const list = filterRequestList(pre, { filterType, filterString });
@@ -39,8 +41,12 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
           if (req.responseHeaders) {
             history.responseHeaders = req.responseHeaders;
           }
+          // ip
+          if (req.ip) {
+            history.ip = req.ip;
+          }
           // responseBody
-          if (req.responseBody && req.responseBody.byteLength) {
+          if (req.responseBody) {
             if (
               history?.custom?.method === "ws" ||
               history?.custom?.method === "wss"
@@ -48,7 +54,7 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
               if (Array.isArray(history.responseBody)) {
                 history.responseBody.push(req.responseBody);
               } else {
-                history.responseBody && (history.responseBody = [req.responseBody]);
+                history.responseBody = [req.responseBody];
               }
             } else {
               history.responseBody = req.responseBody;
@@ -140,5 +146,6 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
   return {
     list,
     clean,
+    lastUpdate,
   };
 };

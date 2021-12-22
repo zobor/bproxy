@@ -20,4 +20,7 @@ commands.run(program as any);
 
 process.on('uncaughtException', (err) => {
   log.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
+  if (err?.message?.includes('address already in use')) {
+    process.exit();
+  }
 });

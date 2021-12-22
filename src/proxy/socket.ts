@@ -31,24 +31,35 @@ const ioWebInvokeApiInstall = () => {
   });
 };
 
-export const io = (server) => {
-  const io = require('socket.io')(server);
-  io.on('connection', (socket: Socket) => {
-    socket.emit('test', {msg: 'ws connected!'});
-    instances.push(socket);
-    ioWebInvokeApiInstall();
-    socket.on('disconnect', (() => {
-      instances = instances.filter(ins => ins !== socket);
-    }));
-  });
-}
-
 export const emit = (type: string, msg: any) => {
   instances.forEach((io) => {
     io.emit(type, msg);
   });
 }
 
+export const io = (server) => {
+  const io = require('socket.io')(server);
+  io.on('connection', (socket: Socket) => {
+    socket.emit('init', {msg: 'ws connected!'});
+    instances.push(socket);
+    ioWebInvokeApiInstall();
+    socket.on('disconnect', (() => {
+      instances = instances.filter(ins => ins !== socket);
+    }));
+    socket.on('transferCode', (rs) => {
+      emit('transferCode', rs);
+    });
+    socket.on('transferCodeCallback', (rs) => {
+      emit('transferCodeCallback', rs);
+    });
+  });
+}
+
+
 export const ioRequest = (params: InvokeRequestParams) => {
   emit('request', params);
+};
+
+export const onConfigFileChange = () => {
+  emit('onConfigFileChange', {});
 };

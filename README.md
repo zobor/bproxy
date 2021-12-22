@@ -5,6 +5,8 @@
 B Proxy 是一个代理工具，为提高效率而生。
 --------
 
+bproxy是为程序员开发的一款代理调试工具，核心功能是http/https/ws/wss请求代理或转发，抓包，远程调试等。
+
 ![](https://zobor.github.io/666/assets/bproxy-terminal.png)
 ![](https://zobor.github.io/666/assets/bproxy-browser.png)
 ![](https://zobor.github.io/666/assets/bproxy-detail.png)
@@ -220,6 +222,8 @@ interface ProxyRule {
   filepath?: string;
   OPTIONS2POST?: boolean;
   delay?: number;
+  disableCache?: boolean;
+  syncLogs?: boolean | 'websocket' | 'vconsole';
 }
 
 interface ProxyConfig {

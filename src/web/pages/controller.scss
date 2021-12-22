@@ -1,0 +1,78 @@
+@import '../theme.scss';
+$textShadowColor: #B7950B;
+
+.controller {
+  max-width: 600px;
+  padding: 10px 25px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  background-color: $cardColor;
+  margin: 0 auto;
+  margin-bottom: 5px;
+  position: relative;
+
+  .version {
+    position: absolute;
+    top: 50%;
+    right: -50px;
+    transform: translateY(-50%);
+    color: #000;
+    letter-spacing: 2px;
+    font-size: 12px;
+    text-shadow:
+      -1px -1px 0 $textShadowColor,
+      0   -1px 0 $textShadowColor,
+      1px -1px 0 $textShadowColor,
+      1px  0   0 $textShadowColor,
+      1px  1px 0 $textShadowColor,
+      0    1px 0 $textShadowColor,
+      -1px  1px 0 $textShadowColor,
+      -1px  0   0 $textShadowColor;
+  }
+
+  >div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: $iconColor;
+    cursor: pointer;
+    &.disabled {
+      > span {
+        color: $disabled;
+      }
+    }
+    >span {
+      font-size: 13px;
+    }
+    >.anticon {
+      width: 19px;
+      height: 19px;
+      cursor: pointer;
+      color: $iconColor;
+      >svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .disconnected {
+    background-color:goldenrod;
+    color: red;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    padding: 5px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+

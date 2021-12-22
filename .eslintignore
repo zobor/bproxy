@@ -1,2 +1,4 @@
 dist/
 src/web/libs/jsonFormat.js
+ecosystem.config.js
+src/proxy/utils/hookLog.js

@@ -15,6 +15,9 @@ export const parseURL = (url) => {
 }
 
 export const arrayBuf2string = (buf: any) => {
+  if (typeof buf === 'string') {
+    return buf;
+  }
   const enc = new TextDecoder('utf-8');
 
   return enc.decode(buf);
@@ -70,4 +73,29 @@ export const getRandStr = (len = 12) => {
     const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     const max = base.length - 1;
     return Array(len).fill(0).map((_, idx) => base[rand(idx === 0 ? 10 : 0, max)]).join('');
+};
+
+export const getClipboardData = () => {
+  return new Promise((resolve, reject) => {
+    navigator.clipboard
+      .readText()
+      .then((text) => {
+        resolve(text);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+export const setInputValue = (el, value) => {
+  (Object as any).getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(el, value);
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+};
+
+export const htmlEscape = (str) => {
+  if (str?.replace) {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  return str;
 };

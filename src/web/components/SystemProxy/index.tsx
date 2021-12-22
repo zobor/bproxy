@@ -65,7 +65,7 @@ export default () => {
     return <div>切换代理功能不支持当前系统</div>;
   }
 
-  return <div>
+  return <div className="dialog-system-proxy">
     <h4>开启系统代理之后，系统上的http(s)请求会通过bproxy代理，显示在列表里了</h4>
     {Object.keys(networks).map(key => (
       <div style={{padding: '10px 0'}}>

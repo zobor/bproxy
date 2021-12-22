@@ -1,5 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { Ctx } from '../../ctx';
+import { remoteInvoke } from '../../modules/socket';
 import { Form, Input, Radio } from '../UI';
 
 const typesList: string[] = ["host", "path", "url"];
@@ -31,6 +32,12 @@ export default (props: FilterComponentProps) => {
       dispatch({ type: 'setUpdateRequestListFlag', updateRequestListFlag: Date.now()})
     }
   }, []);
+
+  useEffect(() => {
+    remoteInvoke('document.URL').then(rs => {
+      console.log(rs);
+    });
+  }, [])
 
   return <div>
     <Form labelCol={{span: 3}} wrapperCol={{span: 15}}>

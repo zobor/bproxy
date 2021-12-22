@@ -1,4 +1,3 @@
-// import { io } from "socket.io-client";
 import { getRandStr } from './util';
 
 const { io } = window as any;
@@ -34,7 +33,31 @@ export const bridgeInvoke = ({ api, params = {} }: BridgeInvokeParams) => new Pr
   }, 5000);
 });
 
+export const remoteInvoke = (code: string) => new Promise((resolve, reject) => {
+  const guid = getRandStr(32);
+  $socket.on("transferCodeCallback", ({data, err, id}) => {
+    if (id === guid) {
+      resolve(data);
+    }
+  });
+  $socket.emit("transferCode", {
+    code,
+    id: guid,
+  });
+
+  setTimeout(() => {
+    reject(new Error('remote invoke timeout'));
+  }, 5000);
+});
+
 export const onRequest = (callback: any) => {
   $socket.removeAllListeners('request');
   $socket.on('request', callback);
 };
+
+
+export const onConfigFileChange = (callback: any) => {
+  $socket.removeAllListeners('onConfigFileChange');
+  $socket.on('onConfigFileChange', callback);
+};
+

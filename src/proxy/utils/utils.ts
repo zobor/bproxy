@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from "chalk";
+import fs from 'fs';
+import path from 'path';
 
 const { log: terminalLog } = console;
 
@@ -117,4 +119,30 @@ export function stringToBytes(str: string): Int8Array {
   for (let i = 0; i < str.length; ++i) out[i] = str.charCodeAt(i);
 
   return out;
+}
+
+export function hookConsoleLog(html, type: string | boolean) {
+  let replacement = '';
+  if (type === 'websocket') {
+    replacement = `
+      <script type="text/javascript" src="https://bproxy.dev/socket.io.min.js"></script>
+      <script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookWebsocket.js'), 'utf-8')}</script>
+    `;
+  }
+  else if (type === 'vconsole') {
+    replacement = `
+      <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.1/vconsole.min.js"></script>
+      <script type="text/javascript">
+      try{
+        window.addEventListener('load', () => new window.VConsole());
+      }catch(err){}
+      </script>
+    `;
+  } else {
+    replacement = `<script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookLog.js'), 'utf-8')}</script>`
+  }
+
+  return html
+    .replace(/<meta[^"]*http-equiv="Content-Security-Policy"[^\>]*>/i, "")
+    .replace("</head>", `${replacement}</head>`);
 }

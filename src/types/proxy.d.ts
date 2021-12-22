@@ -7,6 +7,7 @@ export interface ResponseCallbackParams {
   request: any;
   req: any;
   rules: any;
+  body: any;
 }
 
 export type MatchRegxFunction = (url: string) => boolean;
@@ -32,6 +33,8 @@ export interface ProxyRule {
   filepath?: string;
   OPTIONS2POST?: boolean;
   delay?: number;
+  disableCache?: boolean;
+  syncLogs?: boolean;
 }
 
 export interface ProxyDataSet {
@@ -95,6 +98,7 @@ export interface ProxyConfig {
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
   delay?: number;
+  disableCache?: boolean;
 }
 
 export default interface MatcherResult {
@@ -102,7 +106,7 @@ export default interface MatcherResult {
   matched?: boolean;
   filepath?: string;
   rule?: ProxyRule;
-  responseHeaders: {
+  responseHeaders?: {
     [key: string]: any;
   };
 }
@@ -115,8 +119,9 @@ export interface InvokeRequestParams {
   requestId: string;
   requestBody?: string;
   responseHeaders?: object;
-  responseBody?: Buffer | Int8Array | Uint8Array;
+  responseBody?: Buffer | Int8Array | Uint8Array | string;
   statusCode?: number;
+  ip?: string;
 }
 
 export interface WebInvokeParams {

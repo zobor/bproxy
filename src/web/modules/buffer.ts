@@ -1,7 +1,4 @@
-// import * as pako from 'pako';
 import { BrotliDecode } from '../modules/brDecode';
-
-const { pako } = window as any;
 
 export function isBuffer<T>(v: T): boolean {
   return Object.prototype.toString.call(v) === '[object Uint8Array]' || Object.prototype.toString.call(v) === '[object ArrayBuffer]';
@@ -17,19 +14,21 @@ export function textDecode(buf: Int8Array|Buffer): string{
   return decode.decode(buf);
 }
 
-export function buffer2string(buffer: Buffer, encoding: string): string{
+export function buffer2string(buffer: Buffer, encoding: string, isUtf8: boolean): string{
   if (!isBuffer(buffer)) {
     return '';
   }
   let data = '';
   try {
-    if (encoding?.includes('gzip')) {
-      data = pako.ungzip(new Uint8Array(buffer), {to: "string"});
-    } else if (encoding === 'br') {
+    if (encoding === 'br') {
       const u8 = BrotliDecode(new Int8Array(buffer));
       data = textDecode(u8);
     } else {
-      data = String.fromCharCode.apply(null, new Uint8Array(buffer) as any);
+      if (isUtf8) {
+        data = textDecode(buffer);
+      } else {
+        data = String.fromCharCode.apply(null, new Uint8Array(buffer) as any);
+      }
     }
   } catch(err) {
     console.error('[error]buffer2string:', err);

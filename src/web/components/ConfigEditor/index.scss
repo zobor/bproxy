@@ -1,0 +1,9 @@
+@import '../../theme.scss';
+.dialog-logs {
+  height: 80vh;
+
+  .ant-btn {
+    margin-top: 10px;
+    float: right;
+  }
+}

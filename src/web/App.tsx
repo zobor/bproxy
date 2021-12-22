@@ -29,8 +29,8 @@ const routerList = [
   // 监控
   {
     name: 'Home',
-    path: './pages/home',
-    Component: lazy(() => import('./pages/home')),
+    path: './pages',
+    Component: lazy(() => import('./pages')),
     routerPath: '/',
   },
 ];

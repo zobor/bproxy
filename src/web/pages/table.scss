@@ -1,0 +1,140 @@
+@import '../theme.scss';
+
+/* 数据表格 */
+.table-box {
+  width: calc(100% - 10px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: calc(100% - 60px);
+  padding-bottom: 10px;
+  margin-left: 5px;
+}
+.table {
+  width: 100%;
+  position: relative;
+  font-size: 17px;
+
+  thead {
+    font-size: 15px;
+    tr {
+      position: sticky;
+      top: 0;
+      background-color: $cardColor;
+      color: $theadTextColor;
+    }
+    td {
+      font-weight: normal;
+      border-color: transparent;
+    }
+  }
+
+  td {
+    padding: 4px 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    vertical-align: middle;
+    border-bottom: solid 1px $tableBorderColor;
+    &.matched {
+      text-align: center;
+    }
+  }
+
+  tbody {
+    tr {
+      color: $trTextColor;
+      &:hover {
+        background-color: $trHoverColor;
+        cursor: pointer;
+      }
+      &.matched {
+        color: $matchedTextColor;
+        // font-weight: bold;
+      }
+      &.active {
+        background: $boxColor;
+      }
+      &.error {
+        color: $errorTextColor;
+        :nth-child(1) {
+          color: $errorTextColor;
+        }
+      }
+      &.highlight {
+        color: $highlightTextColor;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .status {
+    width: 50px;
+    &.s200,
+    &.s101 {
+      color: $httpStatus200;
+    }
+    &.s304 {
+      color: $httpStatus304;
+    }
+  }
+  .method {
+    width: 75px;
+    text-transform: lowercase;
+  }
+  .protocol {
+    width: 60px;
+  }
+  .host {
+    width: 185px;
+  }
+  .size {
+    width: 80px;
+  }
+  .contentType {
+      width: 100px;
+  }
+  .speed {
+    width: 90px;
+    &.slow {
+      color: red;
+    }
+  }
+  .ip {
+    width: 150px;
+  }
+}
+
+.empty-tip {
+  text-align: center;
+  font-size: 15px;
+  color: #999;
+  padding: 20px 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .table {
+    td {
+      &:nth-last-child(1) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 930px) {
+  .table {
+    td {
+      &:nth-last-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 865px) {
+  .table {
+    td {
+      &:nth-last-child(3) {
+        display: none;
+      }
+    }
+  }
+}

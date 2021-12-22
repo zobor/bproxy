@@ -1,18 +1,17 @@
 import fs from 'fs';
 import path from 'path';
+import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import { matcher } from './matcher';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
-import { isRegExp } from './utils/is';
-import { get } from 'lodash';
 export * from './system';
+import * as pkg from '../../package.json';
 
 export const test = async (url: string) => {
   const { config } = dataset;
   if (config) {
-    const matchResult = matcher(config.rules, url);
-    console.log(matchResult);
+    const matchResult = _.cloneDeep(matcher(config.rules, url));
 
     for (const key in matchResult) {
       if (key === 'rule') {
@@ -46,6 +45,35 @@ export const getConfigFile = () => {
   return configPath;
 };
 
+export const getConfigFileContent = () => {
+  const configFilePath = getConfigFile();
+
+  if (configFilePath) {
+    const txt = fs.readFileSync(configFilePath, 'utf-8');
+
+    return txt;
+  }
+
+  return '';
+};
+
+export const getVersion = (): string => {
+  return pkg.version;
+};
+
+export const setConfigFileContent = (params: {data: string}) => {
+  const configFilePath = getConfigFile();
+  const { data } = params || {};
+
+  if (configFilePath && data) {
+    fs.writeFileSync(configFilePath, data);
+
+    return true;
+  }
+
+  return false;
+};
+
 export const mapFile = (params: {
   regx: string;
   file: string;
@@ -73,3 +101,22 @@ config.rules.push({
 
   return success;
 };
+
+export const mapPage = (params: {
+  regx: string;
+  configFilePath: string;
+}) => {
+  const { regx, configFilePath } = params;
+  const configText = fs.readFileSync(path.resolve(configFilePath), 'utf-8');
+  console.log(regx)
+  const rule = `
+config.rules.push({
+  regx: /${regx.replace(/\//g, '\\/')}$/,
+  syncLogs: 'websocket',
+});
+  `;
+  try {
+    const newConfig = configText.replace('module.exports', `\n${rule}\nmodule.exports`);
+    fs.writeFileSync(path.resolve(configFilePath), newConfig);
+  } catch(er) {}
+}

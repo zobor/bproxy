@@ -2,13 +2,14 @@ import * as http from 'http';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as net from "net";
 import request from 'request';
 import settings from './config';
 import * as pkg from '../../package.json';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { isLocal, requestJac } from './routers';
-import { io } from './socket';
+import { io, onConfigFileChange } from './socket';
 import { getLocalIpAddress } from './utils/ip';
 import { compareVersion, log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
@@ -35,6 +36,7 @@ export default class LocalServer {
         delete require.cache[require.resolve(confPath)];
         appConfig = require(confPath);
         dataset.config = appConfig;
+        onConfigFileChange();
       } catch(err){}
     });
     const server = new http.Server();
@@ -64,16 +66,20 @@ export default class LocalServer {
         }
         httpsMiddleware.proxy($req, socket, head, appConfig);
       });
+      // ws
+      server.on('upgrade', (req, socket, head) => {
+        const socketAgent = net.connect(8888, '127.0.0.1', () => {
+          try {
+            socketAgent.write(head);
+            socketAgent.pipe(socket)
+          } catch(err) {}
+        });
+      })
     });
     const ips = getLocalIpAddress();
-    log.info(`代理服务器启动成功: `);
-    ips.forEach((ip: string) => {
-      console.log(`\t${chalk.green(`http://${ip}:${appConfig.port}`)}`)
-    });
-    log.info('HTTP请求日志查看: ');
-    console.log(`\t${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
-    log.info('更多配置用法：')
-    console.log(`\t${chalk.green('https://github.com/zobor/bproxy/blob/master/bproxy.config.md')}`);
+    log.info(`代理服务器启动成功: ${ips.map((ip: string) => `${chalk.green(`http://${ip}:${appConfig.port}`)}\t`)}`);
+    log.info(`请求日志查看:  ${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
+    log.info(`更多配置用法： ${chalk.green('https://t.hk.uy/aAMp')}`);
 
     await this.checkUpdate();
   }
@@ -107,7 +113,7 @@ export default class LocalServer {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
       dataset.configPath = confPath;
       if (!fs.existsSync(confPath)) {
-        const userInput = await userConfirm(`当前目录没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
+        const userInput = await userConfirm(`当前目录(${confPath})没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
 
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);

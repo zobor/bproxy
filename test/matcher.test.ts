@@ -22,7 +22,7 @@ describe('matcher', () => {
     ], 'https://google.com/abc_efg.js');
     expect(rs.matched).toBeTruthy();
     expect(rs?.rule?.redirectTarget).toEqual('http://localhost/abc.js');
-    expect(rs?.responseHeaders['x-bproxy-redirect']).toEqual('http://localhost/abc.js');
+    expect(rs?.responseHeaders && rs?.responseHeaders['x-bproxy-redirect']).toEqual('http://localhost/abc.js');
   });
   it('regx is string with * / path', () => {
     const rs = matcher([
@@ -117,6 +117,6 @@ describe('matcher', () => {
         host: '127.0.0.1',
       }
     ], 'https://google.com/a.js');
-    expect(rs.responseHeaders['x-bproxy-hostip'] === '127.0.0.1');
+    expect(rs?.responseHeaders && rs?.responseHeaders['x-bproxy-hostip'] === '127.0.0.1');
   });
 })

@@ -1,6 +1,40 @@
 import * as _ from 'lodash';
+import path from 'path';
 import MatcherResult, { ProxyRule } from '../types/proxy';
 import { url2regx } from './utils/utils';
+import dataset from './utils/dataset';
+
+const defaultRulesList = [
+  {
+    regx: "https://bproxy.dev/socket.io.min.js",
+    file: `${path.resolve(__dirname, "../web/libs/socket.io.min.js")}`,
+  },
+  {
+    regx: "https://bproxy.io",
+    redirect: `https://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+    },
+  },
+  {
+    regx: "http://bproxy.io",
+    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+    },
+  },
+  {
+    regx: 'https://log.bproxy.dev',
+    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
+    responseHeaders: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Headers": "*",
+    },
+  },
+];
 
 export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   const options: MatcherResult = {
@@ -8,7 +42,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     matched: false,
     responseHeaders:  {},
   };
-  rules.forEach((rule: ProxyRule) => {
+  _.cloneDeep(rules).concat(defaultRulesList).forEach((rule: ProxyRule) => {
     if (options.matched) return;
     if (!rule.regx) {
       return;
@@ -20,7 +54,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     // RegExp
     if (_.isRegExp(rule.regx)) {
       options.matched = rule.regx.test(url);
-      if (RegExp.$1 ) {
+      if (RegExp.$1) {
         if (rule.redirect) {
           rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1}`;
         } else if (rule.path) {
@@ -43,12 +77,12 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     }
     // matched and get this rule
     if (options.matched) {
-      options.rule = rule;
+      options.rule = _.cloneDeep(rule);
     }
   });
 
   // matched rule and add extend headers
-  if (options.matched) {
+  if (options.matched && options.responseHeaders) {
     options.responseHeaders['x-bproxy-matched'] = true;
     if (options?.rule?.host) {
       options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
@@ -57,5 +91,5 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
       options.responseHeaders['x-bproxy-redirect'] = options.rule.redirectTarget;
     }
   }
-  return options;
+  return options.matched ? options : { matched: false };
 }

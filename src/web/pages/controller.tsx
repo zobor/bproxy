@@ -1,19 +1,35 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import classNames from "classnames";
 
-import RuleTest from "../../components/ruleTest";
-import useBool from "../../hooks/useBool";
-import { Ctx } from "../../ctx";
-import Filter from '../../components/Filter';
-import Install from "../../components/Install";
-import SystemProxy from '../../components/SystemProxy';
+import RuleTest from "../components/ruleTest";
+import useBool from "../hooks/useBool";
+import { Ctx } from "../ctx";
+import Filter from '../components/Filter';
+import Install from "../components/Install";
+import SystemProxy from '../components/SystemProxy';
+import {
+  BugOutlined,
+  ClearOutlined,
+  FilterOutlined,
+  MacCommandOutlined,
+  Modal,
+  PlayCircleOutlined,
+  WifiOutlined,
+  UsbOutlined,
+  CodeOutlined,
+} from "../components/UI";
 
 import "./controller.scss";
-import { BugOutlined, ClearOutlined, FilterOutlined, MacCommandOutlined, Modal, PlayCircleOutlined, WifiOutlined } from "../../components/UI";
+import ConfigEditor from '../components/ConfigEditor';
+import CodeRunner from '../components/CodeRunner';
+import { bridgeInvoke } from '../modules/socket';
 
-const ControllerDialog = ({ title, children, ...others }) => {
+const ControllerDialog = ({ title, children, visible, ...others }) => {
+  if (!visible) {
+    return null;
+  }
   return (
-    <Modal centered title={title} footer={null} width={1000} {...others}>
+    <Modal centered title={title} visible={visible} footer={null} width={1000} {...others}>
       {children}
     </Modal>
   );
@@ -23,6 +39,7 @@ const RuleTestModal = (props) => {
   return (
     <ControllerDialog
       title="检测目标URL是否跟你的rule匹配"
+      width={800}
       {...props}
     >
       <RuleTest />
@@ -33,8 +50,8 @@ const RuleTestModal = (props) => {
 const FilterModal = (props) => {
   return (
     <ControllerDialog
-    destroyOnClose
       title="过滤HTTP日志"
+      width={700}
       {...props}
     >
       <Filter visible={props.visible} />
@@ -45,6 +62,7 @@ const FilterModal = (props) => {
 const InstallModal = (props) => {
   return <ControllerDialog
     title="安装HTTPS证书"
+    width={700}
     {...props}
   >
     <Install />
@@ -53,11 +71,31 @@ const InstallModal = (props) => {
 
 const SystemProxylModal = (props) => {
   return <ControllerDialog
-    destroyOnClose
     title="系统代理开关"
+    width={500}
     {...props}
   >
     <SystemProxy />
+  </ControllerDialog>
+};
+
+const ConfigModal = (props) => {
+  return <ControllerDialog
+    title="编辑配置文件"
+    width={900}
+    {...props}
+  >
+    <ConfigEditor onCancel={props.onCancel} />
+  </ControllerDialog>
+};
+
+const CodeRunnerModal = (props) => {
+  return <ControllerDialog
+    title="代码远程调用"
+    width={900}
+    {...props}
+  >
+    <CodeRunner />
   </ControllerDialog>
 };
 
@@ -72,14 +110,18 @@ const Disconnected = () => <div className="disconnected">
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
+  const [version, setVersion] = useState<string>('');
   const { proxySwitch, clean, disableCache, filterString } = state;
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } =
     useBool(false);
-
   const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
+    useBool(false);
+  const { state: isShowConfig, toggle: toggleShowConfig } =
+    useBool(false);
+    const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -91,12 +133,19 @@ const Controller = (props: ControllerProps) => {
     }
   };
 
-  if (!connected) {
-    return <Disconnected />
-  }
+  useEffect(() => {
+    bridgeInvoke({
+      api: 'getVersion',
+    }).then((rs) => {
+      setVersion(rs as string);
+    });
+  }, [])
+
 
   return (
     <div className="controller">
+      {!connected ? <Disconnected /> : null}
+      <div className="version">{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({
@@ -131,11 +180,21 @@ const Controller = (props: ControllerProps) => {
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
+      <div onClick={toggleShowConfig}>
+        <UsbOutlined />
+        <span>配置文件</span>
+      </div>
+      <div onClick={toggleShowCodeRunner}>
+        <CodeOutlined />
+        <span>远程调用</span>
+      </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
+      <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
+      <CodeRunnerModal onCancel={toggleShowCodeRunner} visible={isShowCodeRunner} />
     </div>
   );
 };

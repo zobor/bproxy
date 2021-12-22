@@ -1,4 +1,4 @@
-export type ResponseBody = Buffer | Int8Array | Uint8Array;
+export type ResponseBody = Buffer | Int8Array | Uint8Array | string;
 export interface HttpRequestRequest {
   matched: boolean;
   requestStartTime?: number;
@@ -28,6 +28,7 @@ export interface HttpRequestRequest {
     [key: string]: any;
     $$type?: string;
   };
+  ip?: string;
 }
 
 export interface FilterParams {

@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.0.24",
+  "version": "5.0.26",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -9,21 +9,25 @@
   "scripts": {
     "prepublish": "npm run build",
     "lint": "eslint src --ext .ts",
-    "start": "ts-node src/proxy/shell.ts -s",
     "test": "jest",
     "tsc": "tsc -p .",
     "dev": "vite",
     "web": "vite build",
     "dts": "node dts",
-    "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node replace"
+    "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node replace",
+    "pm2": "pm2 start ecosystem.config.js",
+    "start": "ts-node src/proxy/shell.ts -s"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "0.19.3",
+    "@uiw/react-codemirror": "4.2.4",
     "chalk": "2.4.2",
     "commander": "2.20.3",
     "inquirer": "8.2.0",
     "lodash": "4.17.21",
     "mkdirp": "1.0.4",
     "node-forge": "0.10.0",
+    "pako": "2.0.4",
     "request": "2.88.2",
     "socket.io": "4.3.1"
   },
@@ -46,6 +50,7 @@
     "classnames": "2.3.1",
     "eslint": "^6.6.0",
     "jest": "26.4.2",
+    "less": "^4.1.2",
     "prettier": "^2.4.1",
     "qrcode": "^1.4.4",
     "qs": "6.10.1",
