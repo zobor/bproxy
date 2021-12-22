@@ -29,16 +29,17 @@ module.exports = config;
 | key             | type                     | example                                                      | description            |
 | --------------- | ------------------------ | ------------------------------------------------------------ | ---------------------- |
 | regx            | string\|RegExp\|function | string: 'google.com'<br />RegExp: /google\.com/<br />function: (url) => url.includes('google.com') | 匹配请求地址           |
-| host            | string                   | '127.0.0.1'                                                  | 域名的host配置         |
+| host            | string                   | 127.0.0.1                                                  | 域名的host配置         |
 | file            | string                   | /root/config/a.js                                            | 请求代理到本地文件地址 |
 | path            | string                   | /root/config/                                                | 请求代理到本地目录     |
 | response        | string\|function         | string:'hello proxy\n'<br />function:(response, request, httpRequestSdk, rules) => response.end('hello bproxy\n') | 请求相应规则           |
-| redirect        | string                   | 'https://google.com/'                                        |                        |
+| redirect        | string                   | https://google.com/                                        |                        |
 | rewrite         | function                 | (path) => path.replace('js', 'assets/js')                    | 路径重写               |
-| proxy           | string                   | 'http://127.0.0.1:1080'                                      | 代理服务器地址         |
+| proxy           | string                   | http://127.0.0.1:1080                                      | 代理服务器地址         |
 | statusCode      | number                   | 200                                                          | 请求响应状态码         |
 | responseHeaders | {}                       | {'Access-Control-Allow-Credentials': true}                   | 自定义http响应头       |
 | requestHeaders  | {}                       | {"cache-control": "no-store"}                                | 自定义http请求头       |
 | delay           | number                   | 1000                                                         | 1s                     |
 | disableCache    | boolean                  | false                                                        | 是否禁用缓存           |
+| syncLogs    | boolean/string                  | false                                                        | 是否开启远程调试：true: 开启，劫持console到bproxy的抓包界面。websocket: 注入websocket。vconsole: 注入vconsole实例           |
 
