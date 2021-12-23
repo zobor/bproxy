@@ -238,7 +238,6 @@ export default {
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
 
-        // console.log('proxyWsHTTPS', proxyWsHTTPS, 'isBproxyDev', isBproxyDev, 'hostname', hostname);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
@@ -269,7 +268,6 @@ export default {
       });
       localServer.on("clientError", (err) => {
         log.warn(`[local server ClientError]: ${hostname} : ${useHttps} : ${req?.url}`);
-        console.log(err.code, err.reason);
         localServer.close();
       });
     });

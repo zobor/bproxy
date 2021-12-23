@@ -4,9 +4,10 @@ $panelHeight: calc(100% - 85px);
 
 /* 数据详情 */
 .detail {
+  display: none;
   .mask {
     position: absolute;
-    top: 0;
+    top: -100vh;
     left: 0;
     right: 0;
     bottom: 0;
@@ -15,7 +16,7 @@ $panelHeight: calc(100% - 85px);
   }
   .content {
     position: absolute;
-    top: 0;
+    top: -100vh;
     width: 90vw;
     bottom: 0;
     transition: all 0.25s ease-in-out;
@@ -26,8 +27,7 @@ $panelHeight: calc(100% - 85px);
 
     .url {
       background-color: $boxColor;
-      color: $panelFontColor;
-    //   font-weight: bold;
+      color: $linkColor;
       height: 30px;
       line-height: 30px;
       white-space: nowrap;
@@ -35,8 +35,10 @@ $panelHeight: calc(100% - 85px);
       overflow: hidden;
       padding: 0 10px;
       cursor: pointer;
+      font-size: 15px;
       &:hover {
         text-decoration: underline;
+        color: $hoverColor;
       }
     }
 
@@ -102,6 +104,9 @@ $panelHeight: calc(100% - 85px);
                 cursor: pointer;
                 line-height: 1.3;
               }
+              &:hover {
+                color: $hoverColor;
+              }
             }
           }
         }
@@ -111,17 +116,18 @@ $panelHeight: calc(100% - 85px);
         &::before {
           content: '数据格式：json';
           width: 100%;
-          height: 20px;
+          height: 30px;
           color: #fff;
-          background: #566573;
+          background: #141414;
           text-align: center;
-          line-height: 20px;
+          line-height: 30px;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 4px 0;
           border-radius: 3px;
           margin-bottom: 10px;
+          font-size: 16px;
         }
       }
       &.formData {
@@ -134,12 +140,14 @@ $panelHeight: calc(100% - 85px);
           justify-content: center;
           padding: 5px 0;
           border-radius: 3px;
+          margin-bottom: 10px;
         }
       }
     }
   }
 
   &.open {
+    display: block;
     .content {
       max-width: 820px;
     }

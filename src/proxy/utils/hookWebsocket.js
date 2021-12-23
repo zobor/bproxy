@@ -8,7 +8,8 @@ const $socket = io(`${protocol}bproxy.io/`, {
 
 $socket.on('transferCode', ({code, id}) => {
   try {
-    const fn = new Function(`return ${code}`);
+    const shell = code && code.includes('return ') ? code : `return ${code}`;
+    const fn = new Function(shell);
     const rs = fn();
     $socket.emit('transferCodeCallback', {
       data: rs,

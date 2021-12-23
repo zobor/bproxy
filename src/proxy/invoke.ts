@@ -108,10 +108,9 @@ export const mapPage = (params: {
 }) => {
   const { regx, configFilePath } = params;
   const configText = fs.readFileSync(path.resolve(configFilePath), 'utf-8');
-  console.log(regx)
   const rule = `
 config.rules.push({
-  regx: /${regx.replace(/\//g, '\\/')}$/,
+  regx: /${regx.replace(/\//g, '\\/')}/,
   syncLogs: 'websocket',
 });
   `;

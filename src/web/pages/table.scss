@@ -15,16 +15,19 @@
   font-size: 17px;
 
   thead {
-    font-size: 15px;
     tr {
       position: sticky;
       top: 0;
       background-color: $cardColor;
       color: $theadTextColor;
+      font-size: 15px;
     }
     td {
       font-weight: normal;
       border-color: transparent;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      color: $iconColor;
     }
   }
 
@@ -49,7 +52,6 @@
       }
       &.matched {
         color: $matchedTextColor;
-        // font-weight: bold;
       }
       &.active {
         background: $boxColor;
@@ -68,7 +70,7 @@
   }
 
   .status {
-    width: 50px;
+    width: 60px;
     &.s200,
     &.s101 {
       color: $httpStatus200;
@@ -78,29 +80,32 @@
     }
   }
   .method {
-    width: 75px;
+    width: 90px;
     text-transform: lowercase;
   }
   .protocol {
-    width: 60px;
+    width: 70px;
   }
   .host {
-    width: 185px;
+    width: 200px;
   }
   .size {
-    width: 80px;
+    width: 90px;
   }
   .contentType {
-      width: 100px;
+      width: 130px;
   }
   .speed {
-    width: 90px;
+    width: 100px;
     &.slow {
       color: red;
     }
   }
   .ip {
     width: 150px;
+    &:hover {
+      color: $hoverColor;
+    }
   }
 }
 
@@ -111,7 +116,7 @@
   padding: 20px 0;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1325px) {
   .table {
     td {
       &:nth-last-child(1) {
@@ -120,7 +125,7 @@
     }
   }
 }
-@media screen and (max-width: 930px) {
+@media screen and (max-width: 1170px) {
   .table {
     td {
       &:nth-last-child(2) {
@@ -129,10 +134,50 @@
     }
   }
 }
-@media screen and (max-width: 865px) {
+@media screen and (max-width: 1066px) {
   .table {
     td {
       &:nth-last-child(3) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .table {
+    td {
+      &:nth-last-child(4) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .table {
+    td {
+      &:nth-child(3) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 775px) {
+  .table {
+    td {
+      &:nth-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  .table {
+    td {
+      &:nth-child(1) {
         display: none;
       }
     }

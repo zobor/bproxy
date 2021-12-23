@@ -1,35 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
-import { bridgeInvoke } from '../../modules/socket';
 import JSONFormat from '../../libs/jsonFormat';
 import { Input, Modal } from '../UI';
 import './index.scss';
-import { getClipboardData, setInputValue } from '../../modules/util';
 import { isString } from '../../modules/_';
+import { getClipboardData, setInputValue } from '../../modules/interactive';
+import { ruleTestInvoke } from '../../modules/bridge';
 
-const invoke = async(url: string) => {
-  const rs = await bridgeInvoke({
-    api: 'test',
-    params: url,
-  });
-  return rs;
-}
+
 
 export default () => {
   const [result, setResult] = useState('');
   const $input = useRef<any>(null);
-  const onEnterPress = async(e: any) => {
-    if(e.keyCode === 13 && e.target.value) {
-      const rs = await invoke(e.target.value.trim());
+  const onEnterPress = async (e: any) => {
+    if (e.keyCode === 13 && e.target.value) {
+      const rs = await ruleTestInvoke(e.target.value.trim());
       try {
         setResult(JSONFormat(rs));
-      } catch(err) {}
+      } catch (err) {}
     }
   };
 
   useEffect(() => {
-    getClipboardData().then(rs => {
+    getClipboardData().then((rs) => {
       if (isString(rs) && rs.indexOf('http') === 0) {
         Modal.confirm({
           title: '我猜，你是不是要粘贴剪切板里的URL？',
@@ -38,20 +32,31 @@ export default () => {
           onOk() {
             if ($input.current) {
               setInputValue($input.current.input, rs);
+              onEnterPress({keyCode: 13, target: { value: rs}});
             }
-          }
+          },
         });
       }
-    });
+    }).catch(() => {});
   }, []);
 
-  return <div className="test-page">
-    <Input ref={$input} placeholder="请输入要检测的URL地址，按回车确认" onKeyDown={onEnterPress} />
-    {result ? <pre className={classNames({
-      'scrollbar-style': true,
-      matched: /"matched":\strue/.test(result),
-    })}><code>{result}</code></pre> : null}
-  </div>
-}
-
-
+  return (
+    <div className="test-page">
+      <Input
+        ref={$input}
+        placeholder="请输入要检测的URL地址，按回车确认"
+        onKeyDown={onEnterPress}
+      />
+      {result ? (
+        <pre
+          className={classNames({
+            'scrollbar-style': true,
+            matched: /"matched":\strue/.test(result),
+          })}
+        >
+          <code>{result}</code>
+        </pre>
+      ) : null}
+    </div>
+  );
+};

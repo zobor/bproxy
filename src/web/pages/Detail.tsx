@@ -9,14 +9,14 @@ import { bridgeInvoke } from "../modules/socket";
 import { tabList } from "./settings";
 import { Button, message, Tooltip } from "../components/UI";
 import SImage from '../components/SImage';
-import copy from '../modules/copy';
-import { get, isObject, isString, isEmpty } from "../modules/_";
+import { get, isObject, isString, isEmpty, isArray } from "../modules/_";
 
 import '../libs/code-prettify.css';
 import "./detail.scss";
-import { htmlEscape } from '../modules/util';
+import { findLinkFromString, formatWsSymbol, isLikeJson } from '../modules/util';
 import { isDetailViewAble } from '../../proxy/utils/is';
-import { isArray } from 'lodash';
+import { copyTextOnClick, openUrl } from '../modules/interactive';
+import useBool from '../hooks/useBool';
 
 
 const remove304 = (path: string) => {
@@ -25,7 +25,7 @@ const remove304 = (path: string) => {
 }
 
 const copyText = (e, text) => {
-  copy(e.target, text);
+  copyTextOnClick(e.target, text);
   message.success('已复制');
 };
 
@@ -100,28 +100,6 @@ const keyValueTable = (objects) => {
   );
 };
 
-const findLink = (str) => {
-  if (!(str && str.replace)) {
-    return str;
-  }
-  return htmlEscape(str)
-    .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
-};
-
-const isLikeJson = (str) => {
-  if (str) {
-    return /^\{[\S\s]+\}$/.test(str.trim());
-  }
-
-  return false;
-};
-
-const formatWsSymbol = (str) => {
-  const down = ' ↓ ';
-  const up = ' ↑ ';
-  return str.replace(/�~�/g, down).replace(/�~�/g, down).replace(/�~/g, down).replace(/�~\u000\d�/g, down).replace(/�n/g, up);
-}
-
 const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
   if (isImage) {
     return <div className="image-preview-box">
@@ -132,7 +110,7 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
     return (
       <pre
         dangerouslySetInnerHTML={{
-          __html: findLink(content),
+          __html: findLinkFromString(content),
         }}
         className="prettyprint lang-json"
       />
@@ -159,11 +137,14 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
 
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
+  const { state: cssAnimate, toggle: toggleCssAnimate, no: disableCssAnimate } = useBool(false);
+  const { state: cssAnimateHide, toggle: toggleCssAnimateHide} = useBool(false);
+  const [ visible, setVisible ] = useState<boolean>(false);
   const [showBody, setShowBody] = useState<
     string | React.ReactElement<any, any>
   >("");
   const { detail = {} } = props;
-  const { showDetail, detailActiveTab, lastUpdate } = state;
+  const { showDetail, detailActiveTab } = state;
   const { custom = {} } = detail || {};
   const contentType = (get(detail, 'responseHeaders["content-type"]') || '').toLowerCase();
   const $isJson = useRef(contentType?.includes('/json'));
@@ -219,13 +200,15 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   }, [showDetail]);
 
   const onClose = (): void => {
-    dispatch({ type: "setShowDetail", showDetail: false });
+    toggleCssAnimate();
+    toggleCssAnimateHide();
+    setTimeout(() => {
+      setVisible(false);
+      dispatch({ type: "setShowDetail", showDetail: false });
+    }, 300);
   };
   const onTabChange = (tabValue: string): void => {
     dispatch({ type: "setDetailActiveTab", detailActiveTab: tabValue });
-  };
-  const openUrl = (url: string): void => {
-    window.open(url);
   };
   const writeFile = async(regx: string, file: string, content: string) => {
     const configFilePath = await bridgeInvoke({
@@ -303,12 +286,29 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     };
   }, [detailActiveTab]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setVisible(true);
+      toggleCssAnimate();
+    }, 100);
+
+    return () => {
+      setVisible(false);
+      disableCssAnimate();
+    };
+  }, []);
+
   if (!showDetail || isEmpty(detail)) {
     return null;
   }
 
   return (
-    <div className={`detail ${showDetail ? "open" : ""}`}>
+    <div className={classNames({
+      'detail': true,
+      open: visible,
+      'animate__animated animate__bounceInRight': cssAnimate,
+      'animate__animated animate__bounceOutLeft': cssAnimateHide,
+    })}>
       <div className="mask" onClick={onClose} />
       <div className="content">
         {/* URL */}

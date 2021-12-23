@@ -145,7 +145,7 @@ const Controller = (props: ControllerProps) => {
   return (
     <div className="controller">
       {!connected ? <Disconnected /> : null}
-      <div className="version">{version}</div>
+      <div className="version" onClick={() => window.open('https://github.com/zobor/bproxy')}>{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({
@@ -170,7 +170,7 @@ const Controller = (props: ControllerProps) => {
       <div
         onClick={toggleShowFilter}
         className={classNames({
-          disabled: !filterString,
+          // disabled: !filterString,
         })}
       >
         <FilterOutlined />

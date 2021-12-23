@@ -19,10 +19,11 @@ module.exports = config;
 | port         | number      | 8888                                | 代理服务端口                               |
 | configFile   | string      | process.cwd() + '/bproxy.config.js' | 配置文件地址                               |
 | https        | string[]    | []                                  | 抓取https请求白白名单                      |
-| sslAll       | boolean     | true                                | 是否抓取全部https请求，优先级高于https配置 |
+| sslAll       | boolean     | true                                | 是否抓取全部https请求，优先级高于https配置。比较耗电脑性能，如果不需要抓全部的https请求，可以设置为false，然后通过https白名单控制要抓取的域名 |
 | host         | string[]    | []                                  | host配置                                   |
 | rules        | ProxyRule[] | []                                  | 代理规则列表                               |
 | delay        | number      | 0                                   | 全局网络延迟                               |
+| disableCache    | boolean                  | false                                                        | 是否禁用缓存           |
 
 ## rules
 

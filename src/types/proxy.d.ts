@@ -39,7 +39,7 @@ export interface ProxyRule {
 
 export interface ProxyDataSet {
   configPath?: string;
-  config?: ProxyConfig;
+  config: ProxyConfig | any;
 }
 
 export interface ProxyCertificateConfig {

@@ -6,6 +6,7 @@ import take from 'lodash/take';
 import takeRight from 'lodash/takeRight';
 import isString from 'lodash/isString';
 import isEmpty from 'lodash/isEmpty';
+import isArray from 'lodash/isArray';
 
 export {
   omit,
@@ -15,4 +16,5 @@ export {
   takeRight,
   isString,
   isEmpty,
+  isArray,
 }
