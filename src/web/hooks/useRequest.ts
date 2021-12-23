@@ -10,7 +10,7 @@ import {
   parseRequest,
 } from "../modules/util";
 
-const limit = 300;
+const limit = 500;
 
 export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void; lastUpdate: number } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
