@@ -5,20 +5,25 @@ $panelHeight: calc(100% - 85px);
 /* 数据详情 */
 .detail {
   display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   .mask {
     position: absolute;
-    top: -100vh;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: -200px;
+    left: -200px;
+    right: -200px;
+    bottom: -200px;
     background-color: $maskBackground;
     display: none;
   }
   .content {
     position: absolute;
-    top: -100vh;
+    top: 20px;
+    bottom: 20px;
     width: 90vw;
-    bottom: 0;
     transition: all 0.25s ease-in-out;
     background-color: $boxColor;
     color: #fff;
