@@ -90,9 +90,9 @@ export default class LocalServer {
       });
     });
     const ips = getLocalIpAddress();
-    log.info(`代理服务器启动成功: ${ips.map((ip: string) => `${chalk.green(`http://${ip}:${appConfig.port}`)}\t`)}`);
-    log.info(`请求日志查看:  ${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
-    log.info(`更多配置用法： ${chalk.green('https://t.hk.uy/aAMp')}`);
+    log.info(`代理启动成功: ${ips.map((ip: string) => `${chalk.green(`http://${ip}:${appConfig.port}`)}\t`)}`);
+    log.info(`请求日志查看: ${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
+    log.info(`更多配置用法: ${chalk.green('https://t.hk.uy/aAMp')}`);
 
     await this.checkUpdate();
   }
