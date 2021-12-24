@@ -8,7 +8,7 @@ import { get } from "../modules/_";
 import { queryIpLocation } from '../modules/interactive';
 import { formatFileSize, shorthand, showResponseType } from '../modules/util';
 
-import "./table.scss";
+import "./Table.scss";
 
 
 const Table = (props: any) => {

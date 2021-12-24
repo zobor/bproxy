@@ -24,7 +24,7 @@ import {
 } from '../modules/bridge';
 
 import '../libs/code-prettify.css';
-import './detail.scss';
+import './Detail.scss';
 
 // 提示304解决办法
 const remove304 = (path: string) => {

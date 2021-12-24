@@ -20,7 +20,7 @@ import {
   SettingOutlined,
 } from "../components/UI";
 
-import "./controller.scss";
+import "./Controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
 import CodeRunner from '../components/CodeRunner';
 import Settings from '../components/Settings';

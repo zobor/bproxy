@@ -76,7 +76,7 @@ pre {
 
   .ͼ1.cm-editor {
     height: 100%;
-    font-size: 16px;
+    font-size: 18px;
 
     .ͼf,
     .ͼk {
@@ -95,7 +95,7 @@ pre {
       color: #f4d03f;
     }
     .cm-scroller {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: inherit;
 
       &::-webkit-scrollbar {
         width: 6px;

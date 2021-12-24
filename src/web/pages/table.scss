@@ -32,15 +32,12 @@
   }
 
   td {
-    padding: 4px 10px;
+    padding: 6px 10px;
     word-wrap: break-word;
     word-break: break-all;
     white-space: pre-wrap;
     vertical-align: middle;
     border-bottom: solid 1px $tableBorderColor;
-    &.matched {
-      text-align: center;
-    }
   }
 
   tbody {
@@ -64,7 +61,7 @@
       }
       &.highlight {
         color: $highlightTextColor;
-        font-weight: bold;
+        // font-weight: bold;
       }
     }
   }

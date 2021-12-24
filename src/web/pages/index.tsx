@@ -3,7 +3,7 @@ import { Ctx } from "../ctx";
 import useRequest from "../hooks/useRequest";
 import Detail from "./Detail";
 import Table from "./Table";
-import Controller from './controller';
+import Controller from './Controller';
 import './index.scss';
 
 const DetailMemo = memo(Detail);
