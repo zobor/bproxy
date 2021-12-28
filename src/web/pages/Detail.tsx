@@ -58,6 +58,9 @@ const CookiesView = (props: {
       <tbody>
         {cookies.map((str: string) => {
           const arr = str.replace(/^(\w+)=/, '$1 ').split(' ');
+          if (!(arr && arr.length === 2)) {
+            return null;
+          }
           const text = decodeURIComponent(arr[1]);
           return arr && arr.length === 2 ? (
             <tr key={`${arr[0]}-${arr[1]}`}>
@@ -103,7 +106,7 @@ const keyValueTable = (objects) => {
           return (
             <tr>
               <td title={key}>
-                <span className="max-text-limit-2">{key}</span>
+                <span className="max-text-limit-2">{key}: </span>
               </td>
               <td>
                 <span
@@ -122,7 +125,7 @@ const keyValueTable = (objects) => {
 };
 
 // 内容详情多场景预览
-const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
+const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) => {
   // 图片预览
   if (isImage) {
     return (
@@ -130,6 +133,12 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage }) => {
         <SImage classNames="image-preview" src={content} />
       </div>
     );
+  }
+  // video 预览
+  if (isMp4) {
+    return <div className='video-preview-box'>
+      <video controls src={content}></video>
+    </div>
   }
   // json 预览
   if (isJson) {
@@ -309,6 +318,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   ).toLowerCase();
   const $isJson = useRef(contentType?.includes('/json'));
   const isImage = contentType?.includes('image/');
+  const isMp4 = contentType?.includes('/mp4');
   const isHTML = contentType?.includes('/html');
   const isUtf8 = contentType?.includes('/utf-8');
   const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
@@ -318,7 +328,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     .split('; ')
     .filter((item) => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
-  const canView = isDetailViewAble(get(detail, 'responseHeaders')) || isImage;
+  const canView = isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
+  const isMedia = isImage || isMp4;
 
   // body解析
   useEffect(() => {
@@ -326,7 +337,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     $isJson.current = false;
     setTimeout(() => {
       // image
-      if (isImage) {
+      if (isImage || isMp4) {
         setShowBody(detail?.custom?.url);
         $isJson.current = false;
       } else {
@@ -457,7 +468,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         ) : (
           <div className="body-panel scrollbar-style">
             <AutoMock
-              visible={canView && !isImage && ($isJson.current || isHTML)}
+              visible={canView && !isMedia && ($isJson.current || isHTML)}
               isJSON={$isJson.current}
               isHTML={isHTML}
               detail={detail}
@@ -471,6 +482,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                   statusCode: custom.statusCode,
                   urlPath: custom.path,
                   isImage,
+                  isMp4,
                 })}
               </div>
             ) : (

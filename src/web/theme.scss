@@ -2,8 +2,8 @@ $normalColor: #fff;
 // $bodyBackgroundColor: rgb(30, 31, 31);
 $bodyBackgroundColor: #0d1117;
 
-// $boxColor: rgb(20, 20, 20);
-$boxColor: #30363d;
+$boxColor: rgb(20, 20, 20);
+// $boxColor: #30363d;
 
 // $cardColor: rgb(38, 38, 38);
 $cardColor: #30363d;
@@ -16,12 +16,13 @@ $linkColor: #58D68D;
 
 $disabled: rgba(100, 100, 100, 0.5);
 
-$trHoverColor: #333;
+$trHoverColor: #30363d;
 
 $theadColor: #AEB6BF;
 $theadTextColor: #999;
 // $tableBorderColor: rgba(51, 51, 51, 0.9);
-$tableBorderColor: #30363d;
+$tableBorderColor: $trHoverColor;
+$tableActiveColor: $trHoverColor;
 
 
 $trTextColor: #8b949e;
@@ -38,7 +39,7 @@ $panelBackground: #1d1f21;
 $panelFontColor: #fff;
 $panelBorderRadius: 5px;
 $maskBackground: rgba(0,0,0,0.8);
-$labelKeyColor: #F1948A;
+$labelKeyColor: #F4D03F;
 $labelValueColor: #139dcb;
 
 $appPadding: 0px;

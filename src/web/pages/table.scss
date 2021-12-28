@@ -8,6 +8,7 @@
   height: calc(100% - 60px);
   padding-bottom: 10px;
   margin-left: 5px;
+  padding-right: 5px;
 }
 .table {
   width: 100%;
@@ -51,7 +52,7 @@
         color: $matchedTextColor;
       }
       &.active {
-        background: $boxColor;
+        background: $tableActiveColor;
       }
       &.error {
         color: $errorTextColor;

@@ -1,3 +1,5 @@
+import classnames from "classnames";
+import { read } from "fs";
 import { useEffect, useState } from "react";
 import { Spin } from "../UI";
 
@@ -10,10 +12,20 @@ export default (props: ImageProps) => {
   const { src, classNames } = props;
   const [ready, setReady] = useState<boolean>(false);
   const onload = () => {
-    setReady(true);
+    setTimeout(() => {
+      setReady(true);
+    }, 200);
   };
+  useEffect(() => {
+    setReady(false);
+  }, [src]);
+
+
   return <>
     {ready ? null : <Spin style={{ marginTop: 20 }} />}
-    <img onLoad={onload} style={{visibility: ready ? 'visible': 'hidden'}} className={classNames} src={src} />
+    <img onLoad={onload} style={{visibility: ready ? 'visible': 'hidden'}} className={classnames({
+      [classNames]: classNames,
+      ['animate__animated animate__zoomIn']: ready,
+    })} src={src} />
   </>
 }

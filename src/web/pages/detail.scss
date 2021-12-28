@@ -87,14 +87,14 @@ $panelHeight: calc(100% - 85px);
         width: 100%;
         font-size: 17px;
         span {
-          line-height: 1.3;
+          // display: inline-flex;
+          // align-items: center;
         }
         tr {
           td {
-            padding: 0;
+            padding: 3px 0;
             &:nth-child(1) {
               text-align: right;
-              font-weight: bold;
               color: $labelKeyColor;
               width: 30%;
               &.hl {
@@ -107,7 +107,6 @@ $panelHeight: calc(100% - 85px);
               padding-left: 5px;
               > span {
                 cursor: pointer;
-                line-height: 1.3;
               }
               &:hover {
                 color: $hoverColor;
@@ -245,6 +244,14 @@ $panelHeight: calc(100% - 85px);
   margin-top: 10px;
   .image-preview-box {
     text-align: center;
+    .ant-spin {
+      display: block;
+    }
+  }
+  .video-preview-box {
+    video {
+      width: 100%;
+    }
   }
   .image-preview {
     max-width: 100%;
