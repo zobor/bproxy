@@ -87,7 +87,7 @@ $panelHeight: calc(100% - 85px);
         width: 100%;
         font-size: 17px;
         .bproxy-key {
-          color: blue;
+          color: #CB4335;
         }
         tr {
           td {
@@ -242,6 +242,9 @@ $panelHeight: calc(100% - 85px);
   overflow-x: hidden;
   line-height: 1;
   margin-top: 10px;
+  .not-support {
+    text-align: center;
+  }
   .image-preview-box {
     text-align: center;
     .ant-spin {
@@ -262,6 +265,9 @@ $panelHeight: calc(100% - 85px);
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
+    .ant-btn {
+      margin-left: 10px;
+    }
   }
   pre {
     line-height: 1.3;

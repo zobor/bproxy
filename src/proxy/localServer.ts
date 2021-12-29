@@ -60,6 +60,7 @@ export default class LocalServer {
       });
       // https
       server.on('connect', (req, socket, head) => {
+        // 重置URL到本地服务
         if (req.url === 'bproxy.io:80') {
           req.url = `localhost:${dataset.config.port}`;
         }

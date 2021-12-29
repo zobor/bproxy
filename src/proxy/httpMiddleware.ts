@@ -9,7 +9,7 @@ import * as url from 'url';
 import { matcher } from './matcher';
 import { ioRequest } from './socket';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
-import { hookConsoleLog, log, stringToBytes } from './utils/utils';
+import { hookConsoleLog, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
 import { isInspectContentType, isPromise } from './utils/is';
 
@@ -293,7 +293,7 @@ export const httpMiddleware = {
         rejectUnauthorized: false,
         followRedirect: false,
       };
-      
+
       if (["post", "put"].includes(req.method.toLowerCase())) {
         options.body = await getPostBody(req);
       }

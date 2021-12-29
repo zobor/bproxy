@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import copy from 'copy-to-clipboard';
 import classNames from 'classnames';
 import moment from 'moment';
 
@@ -15,7 +16,7 @@ import {
   isLikeJson,
 } from '../modules/util';
 import { isDetailViewAble } from '../../proxy/utils/is';
-import { copyTextOnClick, openUrl } from '../modules/interactive';
+import { openUrl } from '../modules/interactive';
 import useBool from '../hooks/useBool';
 import {
   getConfigFilePath,
@@ -24,8 +25,8 @@ import {
 } from '../modules/bridge';
 
 import '../libs/code-prettify.css';
-import './Detail.scss';
 import classnames from 'classnames';
+import './Detai.scss';
 
 // 提示304解决办法
 const remove304 = (path: string) => {
@@ -35,7 +36,30 @@ const remove304 = (path: string) => {
 
 // 点击复制文本
 const copyText = (e, text) => {
-  copyTextOnClick(e.target, text);
+  copy(text);
+  message.success('已复制');
+};
+
+// 复制curl
+const copyCurl = (e, detail) => {
+  const txt = [`curl -X ${detail?.custom.method} `];
+  const type = get(detail, 'requestHeaders["content-type"]');
+  const isJson = type?.includes('/json');
+  const isForm = type?.includes('form');
+  const {postData} = detail;
+  Object.keys(detail.requestHeaders || {}).filter(key => key.toLowerCase() !== 'accept-encoding').forEach((key: string) => {
+    txt.push(` -H "${key}: ${detail.requestHeaders[key].replace(/"/g, '\'')}" `);
+  });
+  if (!isEmpty(postData)) {
+    if (isForm) {
+      txt.push(' -d "' + Object.keys(postData).filter((key: string) => key !== '$$type').map((key: string) => (`${key}=${postData[key]}`)).join('&') + '"');
+    }
+  }
+
+  txt.push(` ${detail?.custom?.url} `);
+
+  const text = txt.join('');
+  copy(text);
   message.success('已复制');
 };
 
@@ -161,6 +185,10 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) =
   }
   // 字符预览
   if (isString(content)) {
+    const filesize = content.length / ( 1024 * 1024);
+    if (filesize > 1) {
+      return <div className="not-support">文件超过1M不支持预览</div>;
+    }
     return content;
   }
   // web socket预览
@@ -226,6 +254,7 @@ const AutoMock = (props) => {
 
   return (
     <div className="handlers">
+      <Button type="primary" shape='round' onClick={e => copyCurl(e, detail)}>Copy CURL</Button>
       {isJSON ? (
         <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
           <Button
@@ -490,7 +519,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
                 })}
               </div>
             ) : (
-              '不支持预览'
+              <div className="not-support">不支持预览</div>
             )}
           </div>
         )}

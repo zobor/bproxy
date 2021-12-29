@@ -122,6 +122,9 @@ export function stringToBytes(str: string): Int8Array {
 }
 
 export function hookConsoleLog(html, type: string | boolean) {
+  if (!html) {
+    return html;
+  }
   let replacement = '';
   if (type === 'websocket') {
     replacement = `

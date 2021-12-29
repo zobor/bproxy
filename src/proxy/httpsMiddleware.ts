@@ -162,6 +162,9 @@ export default {
         },
       };
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
+      if (!useHttps) {
+        console.log(req.url);
+      }
       const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
       localServer.listen(0, () => {
         const localAddress = localServer.address();

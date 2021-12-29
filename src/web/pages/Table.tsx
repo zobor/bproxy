@@ -60,6 +60,13 @@ const Table = (props: any) => {
         <tbody>
           {list.map((req: HttpRequestRequest) => {
             const statusCode = `${req?.custom?.statusCode}`;
+            let filesize = get(req, 'responseHeaders["content-length"]');
+            const contentType = get(req, 'responseHeaders["content-type"]');
+            const body = get(req, 'responseBody');
+
+            if (typeof body === 'string' && !filesize) {
+              filesize = body.length;
+            }
             
             return (
               <tr
@@ -91,14 +98,10 @@ const Table = (props: any) => {
                   {shorthand(req?.custom?.path)}
                 </td>
                 <td className="contentType">
-                  {showResponseType(
-                    get(req, 'responseHeaders["content-type"]')
-                  )}
+                  {showResponseType(contentType)}
                 </td>
                 <td className="size">
-                  {formatFileSize(
-                    get(req, 'responseHeaders["content-length"]')
-                  )}
+                  {formatFileSize(filesize)}
                 </td>
                 <td
                   className={classNames({
