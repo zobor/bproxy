@@ -324,7 +324,6 @@ export const httpMiddleware = {
           const showContent = isInspectContentType(headers || {});
           const ip = response?.socket?.remoteAddress;
           const statusCode = response?.statusCode || 500;
-          console.log(rOpts.url, showContent);
           if (showContent) {
             const body: Buffer[] = [];
             response.on("data", (d: Buffer) => body.push(d));
@@ -340,7 +339,6 @@ export const httpMiddleware = {
                 requestId: req.$requestId,
                 responseBody: str,
               });
-              console.log(rOpts.url, syncLogs);
               if (syncLogs) {
                 const txt = hookConsoleLog(str, syncLogs);
                 let resData = txt;

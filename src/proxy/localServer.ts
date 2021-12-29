@@ -125,6 +125,7 @@ export default class LocalServer {
     if (userConfigPath || _.isString(configPath)) {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
       updateDataSet('configPath', confPath);
+      // 当前目录没有bproxy的配置文件
       if (!fs.existsSync(confPath)) {
         const userInput = await userConfirm(`当前目录(${confPath})没有找到bproxy.config.js, 是否自动创建？(y/n)`);
 
@@ -136,6 +137,7 @@ export default class LocalServer {
           ];
 
           fs.writeFileSync(confPath, template.join('\n\n'));
+          log.info(`配置文件已创建: ${confPath}`);
         } else {
           log.info('请手动创建 bproxy.config.js 文件');
           process.exit();

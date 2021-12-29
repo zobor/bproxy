@@ -25,6 +25,7 @@ import {
 
 import '../libs/code-prettify.css';
 import './Detail.scss';
+import classnames from 'classnames';
 
 // 提示304解决办法
 const remove304 = (path: string) => {
@@ -104,9 +105,12 @@ const keyValueTable = (objects) => {
             : (dataValue || '').toString();
 
           return (
-            <tr>
+            <tr key={key}>
               <td title={key}>
-                <span className="max-text-limit-2">{key}: </span>
+                <span className={classnames({
+                  'max-text-limit-2': true,
+                  'bproxy-key': key?.includes('x-bproxy'),
+                })}>{key}: </span>
               </td>
               <td>
                 <span
