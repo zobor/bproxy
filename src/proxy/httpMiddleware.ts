@@ -73,7 +73,7 @@ export const httpMiddleware = {
             await delay(delayTime);
           }
           this.proxyLocalFile(
-            matcherResult.rule.file,
+            path.resolve(matcherResult.rule.file),
             res,
             resOptions.headers,
             req
@@ -324,6 +324,7 @@ export const httpMiddleware = {
           const showContent = isInspectContentType(headers || {});
           const ip = response?.socket?.remoteAddress;
           const statusCode = response?.statusCode || 500;
+          console.log(rOpts.url, showContent);
           if (showContent) {
             const body: Buffer[] = [];
             response.on("data", (d: Buffer) => body.push(d));
@@ -339,6 +340,7 @@ export const httpMiddleware = {
                 requestId: req.$requestId,
                 responseBody: str,
               });
+              console.log(rOpts.url, syncLogs);
               if (syncLogs) {
                 const txt = hookConsoleLog(str, syncLogs);
                 let resData = txt;
@@ -408,7 +410,7 @@ export const httpMiddleware = {
     } catch (err) {
       const s = new Readable();
       res.writeHead(404, {});
-      s.push("404: Not Found or Not Access");
+      s.push(`404: Not Found or Not Access: (${filepath})`);
       s.push(null);
       s.pipe(res);
       ioRequest({

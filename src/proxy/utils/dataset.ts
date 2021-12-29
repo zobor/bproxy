@@ -47,7 +47,7 @@ export const updateDataSet = (key, value) => {
       'bproxy.dev:443',
       'bproxy.io:443',
     ]);
-    config.rules = config.rules.concat(getDefaultRulesList(config.port));
+    config.rules = getDefaultRulesList(config.port).concat(config.rules);
 
     dataset.config = config;
   }

@@ -142,7 +142,9 @@ export function hookConsoleLog(html, type: string | boolean) {
     replacement = `<script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookLog.js'), 'utf-8')}</script>`
   }
 
-  return html
+  const res = html
     .replace(/<meta[^"]*http-equiv="Content-Security-Policy"[^\>]*>/i, "")
     .replace("</head>", `${replacement}</head>`);
+
+  return res;
 }

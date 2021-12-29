@@ -140,7 +140,7 @@ export default {
     fakeServer: any;
   }> {
     return new Promise((resolve) => {
-      const isBproxyDev = hostname === 'bproxy.io';
+      const isBproxyDev = ['bproxy.dev', 'bproxy.io'].includes(hostname);
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
         localCertificateKey,
@@ -267,7 +267,6 @@ export default {
         localServer.close();
       });
       localServer.on("clientError", (err) => {
-        log.warn(`[local server ClientError]: ${hostname} : ${useHttps} : ${req?.url}`);
         localServer.close();
       });
     });

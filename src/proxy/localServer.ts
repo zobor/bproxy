@@ -126,7 +126,7 @@ export default class LocalServer {
       const confPath = path.resolve(userConfigPath || configPath, 'bproxy.config.js');
       updateDataSet('configPath', confPath);
       if (!fs.existsSync(confPath)) {
-        const userInput = await userConfirm(`当前目录(${confPath})没有找到bproxy.config.js, 是否自动创建？(Y/n)`);
+        const userInput = await userConfirm(`当前目录(${confPath})没有找到bproxy.config.js, 是否自动创建？(y/n)`);
 
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
           const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
