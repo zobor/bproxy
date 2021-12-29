@@ -64,7 +64,7 @@ const FilterModal = (props) => {
 const InstallModal = (props) => {
   return <ControllerDialog
     title="安装HTTPS证书"
-    width={700}
+    width={800}
     {...props}
   >
     <Install />
@@ -159,7 +159,7 @@ const Controller = (props: ControllerProps) => {
   return (
     <div className="controller">
       {!connected ? <Disconnected /> : null}
-      <div className="version" onClick={() => window.open('https://github.com/zobor/bproxy')}>{version}</div>
+      <div className="version" onClick={() => window.open('https://github.com/zobor/bproxy')}>V{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({

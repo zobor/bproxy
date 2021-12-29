@@ -14,7 +14,7 @@ export default (props: ImageProps) => {
   const onload = () => {
     setTimeout(() => {
       setReady(true);
-    }, 200);
+    }, 500);
   };
   useEffect(() => {
     setReady(false);

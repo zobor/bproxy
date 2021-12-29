@@ -362,44 +362,41 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     .filter((item) => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
   const canView = isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
-  const isMedia = isImage || isMp4;
 
   // body解析
   useEffect(() => {
     setShowBody('处理中...');
     $isJson.current = false;
-    setTimeout(() => {
-      // image
-      if (isImage || isMp4) {
-        setShowBody(detail?.custom?.url);
-        $isJson.current = false;
+    // image
+    if (isImage || isMp4) {
+      setShowBody(detail?.custom?.url);
+      $isJson.current = false;
+    } else {
+      let body;
+
+      if (
+        isString(detail?.responseBody) ||
+        ['wss', 'ws'].includes(detail?.custom?.method)
+      ) {
+        // 字符串
+        body = detail?.responseBody;
+      } else if (isChunked && !isEncoding) {
+        body = textDecode(detail?.responseBody);
       } else {
-        let body;
-
-        if (
-          isString(detail?.responseBody) ||
-          ['wss', 'ws'].includes(detail?.custom?.method)
-        ) {
-          // 字符串
-          body = detail?.responseBody;
-        } else if (isChunked && !isEncoding) {
-          body = textDecode(detail?.responseBody);
-        } else {
-          body = buffer2string(detail?.responseBody, isEncoding, isUtf8);
-        }
-
-        // json 格式化加工
-        if (isString(body) && ($isJson.current || isLikeJson(body))) {
-          try {
-            body = JSON.parse(body);
-            body = JSONFormat(body);
-            $isJson.current = true;
-          } catch (err) {}
-        }
-
-        setShowBody(body);
+        body = buffer2string(detail?.responseBody, isEncoding, isUtf8);
       }
-    }, 150);
+
+      // json 格式化加工
+      if (body && isString(body) && ($isJson.current || isLikeJson(body))) {
+        try {
+          body = JSON.parse(body);
+          body = JSONFormat(body);
+          $isJson.current = true;
+        } catch (err) {}
+      }
+
+      setShowBody(body);
+    }
   }, [detailActiveTab, detail, showDetail]);
 
   // 关闭之后 清空body
@@ -501,7 +498,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         ) : (
           <div className="body-panel scrollbar-style">
             <AutoMock
-              visible={canView && !isMedia && ($isJson.current || isHTML)}
+              visible={true}
               isJSON={$isJson.current}
               isHTML={isHTML}
               detail={detail}

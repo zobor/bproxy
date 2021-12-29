@@ -133,7 +133,7 @@ export const formatWsSymbol = (str) => {
 
 export const isLikeJson = (str) => {
   if (str) {
-    return /^\{[\S\s]+\}$/.test(str.trim());
+    return /^\{[\S\s]+\}$/.test(str.trim()) || /^\[[\S\s]+\]$/.test(str.trim());
   }
 
   return false;

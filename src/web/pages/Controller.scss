@@ -16,20 +16,21 @@ $textShadowColor: #B7950B;
   .version {
     position: absolute;
     top: 50%;
-    right: -50px;
+    left: calc(100% + 10px);
     transform: translateY(-50%);
     color: #000;
     letter-spacing: 2px;
     font-size: 12px;
-    text-shadow:
-      -1px -1px 0 $textShadowColor,
-      0   -1px 0 $textShadowColor,
-      1px -1px 0 $textShadowColor,
-      1px  0   0 $textShadowColor,
-      1px  1px 0 $textShadowColor,
-      0    1px 0 $textShadowColor,
-      -1px  1px 0 $textShadowColor,
-      -1px  0   0 $textShadowColor;
+    color: $textShadowColor;
+    // text-shadow:
+    //   -1px -1px 0 $textShadowColor,
+    //   0   -1px 0 $textShadowColor,
+    //   1px -1px 0 $textShadowColor,
+    //   1px  0   0 $textShadowColor,
+    //   1px  1px 0 $textShadowColor,
+    //   0    1px 0 $textShadowColor,
+    //   -1px  1px 0 $textShadowColor,
+    //   -1px  0   0 $textShadowColor;
   }
 
   >div{

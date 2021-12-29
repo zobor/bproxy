@@ -29,6 +29,25 @@ export default (props) => {
       }
     });
   }, [code]);
+
+  useEffect(() => {
+    const onPressSave = (e) => {
+      const ctrl = e.metaKey || e.ctrlKey;
+      const isCtrlAndS = ctrl && e.keyCode === 83;
+      if (isCtrlAndS) {
+        onSave();
+
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }
+    document.body.addEventListener('keydown', onPressSave);
+
+    return () => {
+      document.body.removeEventListener('keydown', onPressSave);
+    }
+  }, [onSave]);
   return <div className='dialog-logs'>
     <CodeMirror
       value={code}
