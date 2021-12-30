@@ -52,6 +52,7 @@ $panelHeight: calc(100% - 85px);
       align-items: center;
       background-color: $cardColor;
       height: 35px;
+      box-shadow: $cardColor 0px 10px 10px -10px;
     }
 
     .tabs > ul{
@@ -259,6 +260,7 @@ $panelHeight: calc(100% - 85px);
   .image-preview {
     max-width: 100%;
     max-height: 100%;
+    box-shadow: rgb(255 255 255 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px;
   }
   .handlers {
     display: flex;

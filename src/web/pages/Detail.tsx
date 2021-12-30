@@ -26,7 +26,7 @@ import {
 
 import '../libs/code-prettify.css';
 import classnames from 'classnames';
-import './Detai.scss';
+import './Detail.scss';
 
 // 提示304解决办法
 const remove304 = (path: string) => {

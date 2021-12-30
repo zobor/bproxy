@@ -31,14 +31,14 @@ export default () => {
     setInterval(() => {
       if (!(window as any)?.$socket?.connected) {
         $statusCount.current += 1;
-        if ($statusCount.current >= 4) {
+        if ($statusCount.current >= 5) {
           setConnected(false);
         }
       } else {
         setConnected(true);
         $statusCount.current = 0;
       }
-    }, 300);
+    }, 500);
   }, []);
 
   useEffect(() => {

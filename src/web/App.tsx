@@ -71,7 +71,7 @@ export default () => {
   }, [state]);
 
   return (
-    <div className="app" id="app">
+    <div className="app cube" id="app">
       <Ctx.Provider value={{ state, dispatch }}>
           <HashRouter>
             <Switch>
