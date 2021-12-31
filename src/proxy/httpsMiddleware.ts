@@ -180,8 +180,8 @@ export default {
       });
       localServer.on("request", (req, res) => {
         const $req = req as any;
-        $req.httpsURL = `https://${hostname}${req.url}`;
-        $req.url = `http://${hostname}${req.url}`;
+        $req.httpsURL = `https://${req.headers.host}${req.url}`;
+        $req.url = `http://${req.headers.host}${req.url}`;
         $req.protocol = "https";
         if (!$req.$requestId) {
           $req.$requestId = utils.guid();
@@ -197,9 +197,12 @@ export default {
         }
 
         (localServer as any).$upgrade = true;
+        console.log('hostname', hostname);
 
         const upgradeURL = `${proxyReq.headers.origin}${proxyReq.url}`;
+        console.log('upgradeURL', upgradeURL);
         const matchResult = matcher(config.rules, upgradeURL);
+        console.log('matchResult', matchResult);
         const options = {
           host: hostname,
           hostname,
@@ -211,6 +214,7 @@ export default {
           path: proxyReq.url,
         };
         const target = matchResult?.rule?.redirectTarget || matchResult?.rule?.redirect;
+        console.log('target', target);
         if (matchResult?.matched && target) {
           const urlParsed = url.parse(target);
           if (urlParsed?.hostname && urlParsed?.port) {
@@ -220,12 +224,14 @@ export default {
             options.port = urlParsed.port;
           }
         }
+        console.log('isBproxyDev', isBproxyDev);
         if (isBproxyDev) {
           options.host = '127.0.0.1';
           options.hostname = '127.0.0.1';
           options.headers.host = '127.0.0.1';
           options.port = config.port;
         }
+        console.log('options', options);
         if (!proxyReq.$requestId) {
           proxyReq.$requestId = utils.guid();
         }
@@ -238,6 +244,7 @@ export default {
           });
         }
         const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.indexOf('https:') === 0 && !isBproxyDev;
+        console.log('proxyWsHTTPS', proxyWsHTTPS);
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
 

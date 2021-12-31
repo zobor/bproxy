@@ -7,7 +7,7 @@ import { Ctx } from '../ctx';
 import { buffer2string, textDecode } from '../modules/buffer';
 import JSONFormat from '../libs/jsonFormat';
 import { tabList } from './settings';
-import { Button, message, Tooltip } from '../components/UI';
+import { Button, message, Modal, Tooltip } from '../components/UI';
 import SImage from '../components/SImage';
 import { get, isObject, isString, isEmpty, isArray } from '../modules/_';
 import {
@@ -38,6 +38,22 @@ const remove304 = (path: string) => {
 const copyText = (e, text) => {
   copy(text);
   message.success('已复制');
+};
+
+// 显示格式化json
+const showFormatJson = (jsonText) => {
+  Modal.success({
+    title: 'JSON 格式化',
+    width: '50vw',
+    content: (
+      <pre className="prettyprint lang-json" style={{ width: '80vw' }}>
+        <code>{JSONFormat(JSON.parse(jsonText))}</code>
+      </pre>
+    ),
+  });
+  setTimeout(() => {
+    (window as any)?.PR?.prettyPrint();
+  }, 300);
 };
 
 // 复制curl
@@ -139,10 +155,9 @@ const keyValueTable = (objects) => {
               <td>
                 <span
                   title={text}
-                  onClick={(e) => copyText(e, text)}
                   className="max-text-limit2"
                 >
-                  {text}
+                  <span onClick={(e) => copyText(e, text)}>{text}</span> {isLikeJson(text) ? <span onClick={showFormatJson.bind(null, text)} className="format-btn"> 格式化 </span> : null}
                 </span>
               </td>
             </tr>
