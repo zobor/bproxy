@@ -2,50 +2,36 @@
   <img src="https://zobor.github.io/666/assets/favicon.svg" />
 </p>
 
-B Proxy 是一个代理工具，为提高效率而生。
+bproxy 提高你的开发效率
 --------
 
-bproxy是为程序员开发的一款代理调试工具，核心功能是http/https/ws/wss请求代理或转发，抓包，远程调试等。
-
-![](https://zobor.github.io/666/assets/bproxy-terminal.png)
-![](https://zobor.github.io/666/assets/bproxy-browser.png)
-![](https://zobor.github.io/666/assets/bproxy-detail.png)
+bproxy的核心功能有这些：
+1. 抓包：http、https、ws、wss
+1. 自定义需要抓包的https白名单
+1. 代理webSocket
+1. 修改响应内容：指向本地文件、指向本地目录、指向本地http服务。
+1. 自动安装https证书
+1. 自定义响应头：比如跨域问题
+1. 一个域名可以配置多个host
+1. 弱网模拟支持自定义延时配置
+1. 远程调试：查看日志，发送JavaScript指令
+1. 一键mock请求
 
 
 ## 安装
 
-推荐安装到项目下
-```bash
-npm i bproxy -D
-```
-
-修改`package.json`，添加scripts
-```json
-{
-  "scripts": {
-    "proxy": "bproxy"
-  }
-}
-```
-
-启动项目下的代理调试
-```
-npm run proxy -- -s
-```
-
-也可以选择安装全局命令行指令。
-
+推荐全局安装
 ```bash
 npm i bproxy -g
 ```
 
+
 ## 使用
 
+### 命令行指令
 ```sh
->$ bproxy
-```
+bproxy
 
-```bash
 Usage: bproxy [options]
 
 Options:
@@ -59,39 +45,46 @@ Options:
   -h, --help            output usage information
 ```
 
-创建一个配置文件`bproxy.config.js`
+### 启动代理服务
 
-```js
-const { setConfig } = require('bproxy');
-module.exports = setConfig({
-  https: false,
-  sslAll: true,
-  port: 8888,
-  host: [],
-  rules: [{
-    regx: 'http://google.com/**',
-    response: 'hello bproxy\n',
-  }],
-});
-```
-
-完成配置。**启动代理**
-
-```sh
+```bash
 bproxy -s
+
+// output
+[INFO] 代理启动成功: http://192.168.0.100:8888
+[INFO] 请求日志查看: http://127.0.0.1:8888
+[INFO] 更多配置用法: https://t.hk.uy/aAMp
 ```
 
-```te
-[INFO] 本地代理服务器启动成功: http://127.0.0.1:8888
-```
-
-测试一下
+curl测试一下
 
 ```bash
 curl -x http://127.0.0.1:8888 http://google.com/bproxy
 // output
 test
 ```
+
+### 浏览器端如何使用
+
+要让你的浏览器请求走到代理服务，需要简单地配置系统网络代理。
+
+Windows：更改代理设置 --> 使用代理服务器：打开 --> 地址：127.0.0.1 --> 端口：8888
+
+MacOS：设置 --> 网络设置 --> 代理 -> https代理 --> http://127.0.0.1:8888
+
+也可以给chrome浏览器安装一个插件（[SwitchyOmega](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif)）。
+配置如下：
+|网址协议|代理协议|代理服务器|代理端口|
+|---|---|---|---|
+|默认|http|127.0.0.1|8888|
+
+点击插件图标，选择proxy即可。
+
+效果如下：
+![](https://zobor.github.io/666/assets/bproxy-terminal.png)
+![](https://zobor.github.io/666/assets/bproxy-browser.png)
+![](https://zobor.github.io/666/assets/bproxy-detail.png)
+
 
 ### 项目中使用
 安装到bproxy到项目
@@ -199,33 +192,50 @@ config.rules.push({
 });
 ```
 
-### 配置概览
+### 配置参数如下
 ```ts
 
+// 代理规则
 interface ProxyRule {
+  // 请求url的匹配规则
   regx: RegExp | string | MatchRegxFunction;
+  // 请求配置host ip
   host?: string;
-  file?: string;
+  // 代理到本地的一个文件
+  file?: string;、
+  // 代理到本地的一个目录
   path?: string;
+  // 自定义相应内容
   response?: (params: ResponseCallbackParams) => void | string;
+  // 重定向到自定义的地址
   redirect?: string;
+  // 自定义重定向的目标地址
   redirectTarget?: string;
+  // 重定向的路由修改
   rewrite?: (path: string) => string;
+  // 配置二级代理
   proxy?: string;
+  // 自定义相应头
   responseHeaders?: {
     [key: string]: any;
   };
+  // 自定义请求头
   requestHeaders?: {
     [key: string]: any;
   };
+  // 自定义相应状态码
   statusCode?: number;
+  // 自定义本地文件路径
   filepath?: string;
-  OPTIONS2POST?: boolean;
+  // 模拟弱网请求，单位ms
   delay?: number;
+  // 是否禁用缓存
   disableCache?: boolean;
+  // 远程调试
   syncLogs?: boolean | 'websocket' | 'vconsole';
 }
 
+// 代理服务配置
 interface ProxyConfig {
   port: number;
   configFile: string;
@@ -233,6 +243,7 @@ interface ProxyConfig {
   https?: string[];
   sslAll?: boolean;
   host?: string[];
+  // 代理规则
   rules: ProxyRule[];
   delay?: number;
 }
