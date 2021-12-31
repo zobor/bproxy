@@ -1,8 +1,10 @@
 import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef } from 'react';
 import { Route, HashRouter, Switch } from 'react-router-dom';
 import { Ctx, defaultState, reducer } from './ctx';
-import './App.scss';
 import { omit } from './modules/_';
+
+import './App.scss';
+import 'animate.css';
 
 const keepAliveCache: Record<string, React.MemoExoticComponent<React.ComponentType<any>>> = {};
 
@@ -69,7 +71,7 @@ export default () => {
   }, [state]);
 
   return (
-    <div className="app" id="app">
+    <div className="app cube" id="app">
       <Ctx.Provider value={{ state, dispatch }}>
           <HashRouter>
             <Switch>

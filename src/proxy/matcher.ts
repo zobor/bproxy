@@ -4,37 +4,7 @@ import MatcherResult, { ProxyRule } from '../types/proxy';
 import { url2regx } from './utils/utils';
 import dataset from './utils/dataset';
 
-const defaultRulesList = [
-  {
-    regx: "https://bproxy.dev/socket.io.min.js",
-    file: `${path.resolve(__dirname, "../web/libs/socket.io.min.js")}`,
-  },
-  {
-    regx: "https://bproxy.io",
-    redirect: `https://localhost:${dataset?.config?.port || 8888}`,
-    responseHeaders: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": "true",
-    },
-  },
-  {
-    regx: "http://bproxy.io",
-    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
-    responseHeaders: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": "true",
-    },
-  },
-  {
-    regx: 'https://log.bproxy.dev',
-    redirect: `http://localhost:${dataset?.config?.port || 8888}`,
-    responseHeaders: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": "true",
-      "Access-Control-Allow-Headers": "*",
-    },
-  },
-];
+
 
 export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
   const options: MatcherResult = {
@@ -42,7 +12,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     matched: false,
     responseHeaders:  {},
   };
-  _.cloneDeep(rules).concat(defaultRulesList).forEach((rule: ProxyRule) => {
+  _.cloneDeep(rules).forEach((rule: ProxyRule) => {
     if (options.matched) return;
     if (!rule.regx) {
       return;
@@ -87,8 +57,8 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
     if (options?.rule?.host) {
       options.responseHeaders['x-bproxy-hostip'] = options.rule.host;
     }
-    if (options?.rule?.redirectTarget) {
-      options.responseHeaders['x-bproxy-redirect'] = options.rule.redirectTarget;
+    if (options?.rule?.redirectTarget || options?.rule?.redirect) {
+      options.responseHeaders['x-bproxy-redirect'] = options.rule.redirectTarget || options?.rule?.redirect;
     }
   }
   return options.matched ? options : { matched: false };

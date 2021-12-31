@@ -17,11 +17,13 @@ import {
   WifiOutlined,
   UsbOutlined,
   CodeOutlined,
+  SettingOutlined,
 } from "../components/UI";
 
-import "./controller.scss";
+import "./Controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
 import CodeRunner from '../components/CodeRunner';
+import Settings from '../components/Settings';
 import { bridgeInvoke } from '../modules/socket';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
@@ -62,7 +64,7 @@ const FilterModal = (props) => {
 const InstallModal = (props) => {
   return <ControllerDialog
     title="安装HTTPS证书"
-    width={700}
+    width={800}
     {...props}
   >
     <Install />
@@ -99,6 +101,16 @@ const CodeRunnerModal = (props) => {
   </ControllerDialog>
 };
 
+const SettingsModal = (props) => {
+  return <ControllerDialog
+    title="个性化设置"
+    width={1000}
+    {...props}
+  >
+    <Settings />
+  </ControllerDialog>
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -121,7 +133,9 @@ const Controller = (props: ControllerProps) => {
     useBool(false);
   const { state: isShowConfig, toggle: toggleShowConfig } =
     useBool(false);
-    const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
+  const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
+    useBool(false);
+    const { state: isShowSettings, toggle: toggleShowSettings } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -145,7 +159,7 @@ const Controller = (props: ControllerProps) => {
   return (
     <div className="controller">
       {!connected ? <Disconnected /> : null}
-      <div className="version">{version}</div>
+      <div className="version" onClick={() => window.open('https://github.com/zobor/bproxy')}>V{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({
@@ -170,7 +184,7 @@ const Controller = (props: ControllerProps) => {
       <div
         onClick={toggleShowFilter}
         className={classNames({
-          disabled: !filterString,
+          // disabled: !filterString,
         })}
       >
         <FilterOutlined />
@@ -188,6 +202,10 @@ const Controller = (props: ControllerProps) => {
         <CodeOutlined />
         <span>远程调用</span>
       </div>
+      <div onClick={toggleShowSettings}>
+        <SettingOutlined />
+        <span>个性化</span>
+      </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
@@ -195,6 +213,7 @@ const Controller = (props: ControllerProps) => {
       <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
       <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
       <CodeRunnerModal onCancel={toggleShowCodeRunner} visible={isShowCodeRunner} />
+      <SettingsModal onCancel={toggleShowSettings} visible={isShowSettings} />
     </div>
   );
 };

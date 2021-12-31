@@ -9,7 +9,7 @@ import * as url from 'url';
 import { matcher } from './matcher';
 import { ioRequest } from './socket';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
-import { hookConsoleLog, log, stringToBytes } from './utils/utils';
+import { hookConsoleLog, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
 import { isInspectContentType, isPromise } from './utils/is';
 
@@ -73,7 +73,7 @@ export const httpMiddleware = {
             await delay(delayTime);
           }
           this.proxyLocalFile(
-            matcherResult.rule.file,
+            path.resolve(matcherResult.rule.file),
             res,
             resOptions.headers,
             req
@@ -293,7 +293,7 @@ export const httpMiddleware = {
         rejectUnauthorized: false,
         followRedirect: false,
       };
-      
+
       if (["post", "put"].includes(req.method.toLowerCase())) {
         options.body = await getPostBody(req);
       }
@@ -408,7 +408,7 @@ export const httpMiddleware = {
     } catch (err) {
       const s = new Readable();
       res.writeHead(404, {});
-      s.push("404: Not Found or Not Access");
+      s.push(`404: Not Found or Not Access: (${filepath})`);
       s.push(null);
       s.pipe(res);
       ioRequest({

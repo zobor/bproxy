@@ -31,7 +31,6 @@ export interface ProxyRule {
   };
   statusCode?: number;
   filepath?: string;
-  OPTIONS2POST?: boolean;
   delay?: number;
   disableCache?: boolean;
   syncLogs?: boolean;
@@ -39,7 +38,7 @@ export interface ProxyRule {
 
 export interface ProxyDataSet {
   configPath?: string;
-  config?: ProxyConfig;
+  config: ProxyConfig | any;
 }
 
 export interface ProxyCertificateConfig {

@@ -53,6 +53,15 @@ export default {
   proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
     const { https: httpsList, sslAll } = config;
     const urlParsed = url.parse(`https://${req.url}`);
+    const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, urlParsed.host);
+
+    // 没有开启https抓取的队列 直接放过 不需要构建代理服务器
+    if (!isHttpsMatch) {
+      this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
+        fakeServer: null,
+      });
+      return;
+    }
 
     this.startLocalHttpsServer(
       urlParsed.hostname,
@@ -65,18 +74,11 @@ export default {
       port: localHttpsPort,
       fakeServer
     }) => {
-      const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, urlParsed.host);
-      if (isHttpsMatch) {
-        this.web(socket, head, "127.0.0.1", localHttpsPort, req, {
-          originHost: urlParsed.hostname || '',
-          originPort: urlParsed.port ? Number(urlParsed.port) : 0,
-          fakeServer,
-        });
-      } else {
-        this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
-          fakeServer,
-        });
-      }
+      this.web(socket, head, "127.0.0.1", localHttpsPort, req, {
+        originHost: urlParsed.hostname || '',
+        originPort: urlParsed.port ? Number(urlParsed.port) : 0,
+        fakeServer,
+      });
     });
   },
 
@@ -115,7 +117,7 @@ export default {
     })
 
     timer = setTimeout(() => {
-      if (socketAgent.destroyed || others?.fakeServer.$url || others?.fakeServer?.$upgrade) {
+      if (socketAgent.destroyed || others?.fakeServer?.$url || others?.fakeServer?.$upgrade) {
         return;
       }
       // log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
@@ -138,7 +140,7 @@ export default {
     fakeServer: any;
   }> {
     return new Promise((resolve) => {
-      const isBproxyDev = hostname === 'bproxy.io';
+      const isBproxyDev = ['bproxy.dev', 'bproxy.io'].includes(hostname);
       const certificate = certInstance.createFakeCertificateByDomain(
         localCertificate,
         localCertificateKey,
@@ -160,6 +162,9 @@ export default {
         },
       };
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
+      if (!useHttps) {
+        console.log(req.url);
+      }
       const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
       localServer.listen(0, () => {
         const localAddress = localServer.address();
@@ -236,7 +241,6 @@ export default {
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
 
-        // console.log('proxyWsHTTPS', proxyWsHTTPS, 'isBproxyDev', isBproxyDev, 'hostname', hostname);
         wsRequest.on("upgrade", (r1, s1, h1) => {
           const writeStream = createHttpHeader(
             `HTTP/${req.httpVersion} 101 Switching Protocols`,
@@ -266,8 +270,6 @@ export default {
         localServer.close();
       });
       localServer.on("clientError", (err) => {
-        log.warn(`[local server ClientError]: ${hostname} : ${useHttps} : ${req?.url}`);
-        console.log(err.code, err.reason);
         localServer.close();
       });
     });

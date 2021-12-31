@@ -4,20 +4,26 @@ $panelHeight: calc(100% - 85px);
 
 /* 数据详情 */
 .detail {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   .mask {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: -200px;
+    left: -200px;
+    right: -200px;
+    bottom: -200px;
     background-color: $maskBackground;
     display: none;
   }
   .content {
     position: absolute;
-    top: 0;
+    top: 20px;
+    bottom: 20px;
     width: 90vw;
-    bottom: 0;
     transition: all 0.25s ease-in-out;
     background-color: $boxColor;
     color: #fff;
@@ -26,8 +32,7 @@ $panelHeight: calc(100% - 85px);
 
     .url {
       background-color: $boxColor;
-      color: $panelFontColor;
-    //   font-weight: bold;
+      color: $linkColor;
       height: 30px;
       line-height: 30px;
       white-space: nowrap;
@@ -35,8 +40,10 @@ $panelHeight: calc(100% - 85px);
       overflow: hidden;
       padding: 0 10px;
       cursor: pointer;
+      font-size: 15px;
       &:hover {
         text-decoration: underline;
+        color: $hoverColor;
       }
     }
 
@@ -45,6 +52,7 @@ $panelHeight: calc(100% - 85px);
       align-items: center;
       background-color: $cardColor;
       height: 35px;
+      box-shadow: $cardColor 0px 10px 10px -10px;
     }
 
     .tabs > ul{
@@ -58,7 +66,7 @@ $panelHeight: calc(100% - 85px);
         text-align: center;
         cursor: pointer;
         font-weight: bold;
-        font-size: 17px;
+        font-size: 19px;
         display: inline-flex;
         align-items: center;
         color: #999;
@@ -78,16 +86,14 @@ $panelHeight: calc(100% - 85px);
     .form {
       table.kv-table {
         width: 100%;
-        font-size: 15px;
-        span {
-          line-height: 1.3;
+        font-size: 17px;
+        .bproxy-key {
+          color: #CB4335;
         }
         tr {
           td {
-            padding: 0;
             &:nth-child(1) {
               text-align: right;
-              font-weight: bold;
               color: $labelKeyColor;
               width: 30%;
               &.hl {
@@ -100,7 +106,9 @@ $panelHeight: calc(100% - 85px);
               padding-left: 5px;
               > span {
                 cursor: pointer;
-                line-height: 1.3;
+              }
+              &:hover {
+                color: $hoverColor;
               }
             }
           }
@@ -111,17 +119,18 @@ $panelHeight: calc(100% - 85px);
         &::before {
           content: '数据格式：json';
           width: 100%;
-          height: 20px;
+          height: 30px;
           color: #fff;
-          background: #566573;
+          background: #141414;
           text-align: center;
-          line-height: 20px;
+          line-height: 30px;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 4px 0;
           border-radius: 3px;
           margin-bottom: 10px;
+          font-size: 16px;
         }
       }
       &.formData {
@@ -134,12 +143,14 @@ $panelHeight: calc(100% - 85px);
           justify-content: center;
           padding: 5px 0;
           border-radius: 3px;
+          margin-bottom: 10px;
         }
       }
     }
   }
 
   &.open {
+    display: block;
     .content {
       max-width: 820px;
     }
@@ -165,6 +176,7 @@ $panelHeight: calc(100% - 85px);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    line-height: 1.3;
   }
   .max-text-limit-2 {
     max-width: 200px;
@@ -172,6 +184,7 @@ $panelHeight: calc(100% - 85px);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    line-height: 1.3;
   }
 }
 
@@ -230,17 +243,33 @@ $panelHeight: calc(100% - 85px);
   overflow-x: hidden;
   line-height: 1;
   margin-top: 10px;
+  .not-support {
+    text-align: center;
+  }
   .image-preview-box {
     text-align: center;
+    .ant-spin {
+      display: block;
+    }
+  }
+  .video-preview-box {
+    video {
+      width: 100%;
+    }
   }
   .image-preview {
     max-width: 100%;
     max-height: 100%;
+    box-shadow: rgb(255 255 255 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px;
   }
   .handlers {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 10px;
+    .ant-btn {
+      margin-left: 10px;
+    }
   }
   pre {
     line-height: 1.3;

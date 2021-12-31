@@ -1,5 +1,10 @@
 # bproxy changelog
 
+
+## 5.0.27
+- 支持复制文本
+- 支持copy curl
+
 ## 5.0.26
 - 支持websocket代理
 - 支持配置文件编辑

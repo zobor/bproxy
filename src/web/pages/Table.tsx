@@ -4,44 +4,12 @@ import classNames from "classnames";
 import { Ctx } from "../ctx";
 import { HttpRequestRequest } from "../../types/web";
 import { formatSeconds } from "../../proxy/utils/format";
-import { get, take, takeRight } from "../modules/_";
-import { Tooltip } from "../components/UI";
+import { get } from "../modules/_";
+import { queryIpLocation } from '../modules/interactive';
+import { formatFileSize, shorthand, showResponseType } from '../modules/util';
 
-import "./table.scss";
+import "./Table.scss";
 
-const shorthand = (str, len = 20, max = 40) => {
-  if (str.length > max) {
-    const arr = str.split("");
-    const arr1 = take(arr, len);
-    const arr2 = takeRight(arr, len);
-
-    return `${arr1.join("")}...${arr2.join("")}`;
-  }
-  return str;
-};
-
-const formatFileSize = (str) => {
-  if (!str || !/^\d+$/.test(str)) {
-    return '-';
-  }
-  const num = Number(str);
-  if (num > 1024 * 1024) {
-    return `${parseInt((num / 1024 / 1024 * 10).toString(), 10) / 10}M`;
-  } else if (num > 1024) {
-    return `${parseInt((num / 1024 * 10).toString(), 10) / 10}K`;
-  }
-  return `${num}B`;
-};
-
-const showResponseType = (type) => {
-  if (!type) return "-";
-  const txt = type
-    .replace(/^\w+\//, "")
-    .replace(/;\s?\S+/, "")
-    .slice(0, 25);
-
-  return shorthand(txt, 4, 10);
-};
 
 const Table = (props: any) => {
   const { list } = props;
@@ -92,6 +60,14 @@ const Table = (props: any) => {
         <tbody>
           {list.map((req: HttpRequestRequest) => {
             const statusCode = `${req?.custom?.statusCode}`;
+            let filesize = get(req, 'responseHeaders["content-length"]');
+            const contentType = get(req, 'responseHeaders["content-type"]');
+            const body = get(req, 'responseBody');
+
+            if (typeof body === 'string' && !filesize) {
+              filesize = body.length;
+            }
+            
             return (
               <tr
                 key={req?.custom?.requestId}
@@ -122,14 +98,10 @@ const Table = (props: any) => {
                   {shorthand(req?.custom?.path)}
                 </td>
                 <td className="contentType">
-                  {showResponseType(
-                    get(req, 'responseHeaders["content-type"]')
-                  )}
+                  {showResponseType(contentType)}
                 </td>
                 <td className="size">
-                  {formatFileSize(
-                    get(req, 'responseHeaders["content-length"]')
-                  )}
+                  {formatFileSize(filesize)}
                 </td>
                 <td
                   className={classNames({
@@ -149,9 +121,7 @@ const Table = (props: any) => {
                 <td
                   className="ip"
                   onClick={() => {
-                    window.open(
-                      `https://www.ip138.com/iplookup.asp?ip=${req.ip}&action=2`
-                    );
+                    queryIpLocation(req.ip || '');
                     setTimeout(() => {
                       dispatch({ type: "setShowDetail", showDetail: false });
                     }, 10);
