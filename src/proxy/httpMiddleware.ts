@@ -403,7 +403,7 @@ export const httpMiddleware = {
         requestId: req.$requestId,
         responseHeaders: headers,
         statusCode: 200,
-        responseBody: stringToBytes(responseBody),
+        responseBody: responseBody,
       });
     } catch (err) {
       const s = new Readable();
