@@ -46,7 +46,7 @@ const showFormatJson = (jsonText) => {
     title: 'JSON 格式化',
     width: '50vw',
     content: (
-      <pre className="prettyprint lang-json" style={{ width: '80vw' }}>
+      <pre className="prettyprint lang-json" style={{ maxWidth: '80vw' }}>
         <code>{JSONFormat(JSON.parse(jsonText))}</code>
       </pre>
     ),

@@ -35,6 +35,12 @@ import "antd/es/col/style/css";
 import "antd/es/row/style/css";
 import "antd/es/spin/style/index.less";
 
+message.config({
+  top: 100,
+  duration: 1.5,
+  maxCount: 2,
+});
+
 export {
   Spin,
   Card,

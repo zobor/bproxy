@@ -39,3 +39,8 @@ pre.prettyprint {
   word-break: break-all;
   white-space: pre-wrap;
 }
+pre.prettyprint span {
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
