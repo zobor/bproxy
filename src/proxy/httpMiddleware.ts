@@ -273,7 +273,7 @@ export const httpMiddleware = {
   ): Promise<number> {
     return new Promise(async () => {
       const requestHeaders = { ...req.headers, ...requestOption.headers };
-      const syncLogs = matcherResult?.rule?.syncLogs;
+      const debug = matcherResult?.rule?.debug;
       if (config?.disableCache || matcherResult?.rule?.disableCache) {
         ["cache-control", "if-none-match", "if-modified-since"].forEach(
           (key: string) => {
@@ -339,8 +339,8 @@ export const httpMiddleware = {
                 requestId: req.$requestId,
                 responseBody: str,
               });
-              if (syncLogs) {
-                const txt = hookConsoleLog(str, syncLogs);
+              if (debug) {
+                const txt = hookConsoleLog(str, debug);
                 let resData = txt;
                 if (isgzip) {
                   resData = pako.gzip(txt);
@@ -369,7 +369,7 @@ export const httpMiddleware = {
             statusCode: 500,
           });
         });
-      if (!syncLogs) {
+      if (!debug) {
         // put response to proxy response
         rst.pipe(res);
       }

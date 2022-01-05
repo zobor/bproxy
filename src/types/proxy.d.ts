@@ -33,7 +33,7 @@ export interface ProxyRule {
   filepath?: string;
   delay?: number;
   disableCache?: boolean;
-  syncLogs?: boolean;
+  debug?: boolean | 'vconsole';
 }
 
 export interface ProxyDataSet {

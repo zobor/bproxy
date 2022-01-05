@@ -111,7 +111,7 @@ export const mapPage = (params: {
   const rule = `
 config.rules.push({
   regx: /${regx.replace(/\//g, '\\/')}/,
-  syncLogs: 'websocket',
+  debug: true,
 });
   `;
   try {

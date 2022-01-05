@@ -42,5 +42,5 @@ module.exports = config;
 | requestHeaders  | {}                       | {"cache-control": "no-store"}                                | 自定义http请求头       |
 | delay           | number                   | 1000                                                         | 1s                     |
 | disableCache    | boolean                  | false                                                        | 是否禁用缓存           |
-| syncLogs    | boolean/string                  | false                                                        | 是否开启远程调试：true: 开启，劫持console到bproxy的抓包界面。websocket: 注入websocket。vconsole: 注入vconsole实例           |
+| debug    | boolean/string                  | false                                                        | 是否开启远程调试：true: 开启远程调试，劫持console输出的日志，注入websocket，调用js代码。。vconsole: 注入vconsole实例           |
 

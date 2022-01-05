@@ -94,7 +94,7 @@ const ConfigModal = (props) => {
 const CodeRunnerModal = (props) => {
   return <ControllerDialog
     title="代码远程调用"
-    width={900}
+    width="90vw"
     {...props}
   >
     <CodeRunner />

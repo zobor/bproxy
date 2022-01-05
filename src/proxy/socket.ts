@@ -52,9 +52,11 @@ export const io = (server) => {
     socket.on('transferCodeCallback', (rs) => {
       emit('transferCodeCallback', rs);
     });
+    socket.on('syncRemotePageLogs', (rs) => {
+      emit('syncRemotePageLogs', rs);
+    });
   });
 }
-
 
 export const ioRequest = (params: InvokeRequestParams) => {
   emit('request', params);

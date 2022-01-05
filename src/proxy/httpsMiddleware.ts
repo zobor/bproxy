@@ -162,9 +162,6 @@ export default {
         },
       };
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
-      if (!useHttps) {
-        console.log(req.url);
-      }
       const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
       localServer.listen(0, () => {
         const localAddress = localServer.address();
@@ -197,12 +194,9 @@ export default {
         }
 
         (localServer as any).$upgrade = true;
-        console.log('hostname', hostname);
 
         const upgradeURL = `${proxyReq.headers.origin}${proxyReq.url}`;
-        console.log('upgradeURL', upgradeURL);
         const matchResult = matcher(config.rules, upgradeURL);
-        console.log('matchResult', matchResult);
         const options = {
           host: hostname,
           hostname,
@@ -214,7 +208,6 @@ export default {
           path: proxyReq.url,
         };
         const target = matchResult?.rule?.redirectTarget || matchResult?.rule?.redirect;
-        console.log('target', target);
         if (matchResult?.matched && target) {
           const urlParsed = url.parse(target);
           if (urlParsed?.hostname && urlParsed?.port) {
@@ -224,14 +217,12 @@ export default {
             options.port = urlParsed.port;
           }
         }
-        console.log('isBproxyDev', isBproxyDev);
         if (isBproxyDev) {
           options.host = '127.0.0.1';
           options.hostname = '127.0.0.1';
           options.headers.host = '127.0.0.1';
           options.port = config.port;
         }
-        console.log('options', options);
         if (!proxyReq.$requestId) {
           proxyReq.$requestId = utils.guid();
         }
@@ -244,7 +235,6 @@ export default {
           });
         }
         const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.indexOf('https:') === 0 && !isBproxyDev;
-        console.log('proxyWsHTTPS', proxyWsHTTPS);
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
 

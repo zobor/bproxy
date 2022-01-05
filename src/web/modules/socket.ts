@@ -1,6 +1,7 @@
 /**
  * web socket实例化
  */
+import { onLogRecive } from '../components/CodeRunner/watchLogs';
 import { getRandStr } from './util';
 
 const { io } = window as any;
@@ -65,4 +66,9 @@ export const remoteInvoke = (code: string, timeout?: number) => new Promise((res
   setTimeout(() => {
     reject(new Error('remote invoke timeout'));
   }, timeout || 5000);
+});
+
+
+$socket.on('syncRemotePageLogs', (data: any) => {
+  onLogRecive(data);
 });
