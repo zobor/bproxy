@@ -151,8 +151,7 @@ export default class LocalServer {
 
   static checkUpdate(): Promise<string> {
     return new Promise((resolve) => {
-      const url1 = 'https://external.githubfast.com/https/raw.githubusercontent.com/zobor/bproxy/master/package.json';
-      const url2 = 'https://raw.githubusercontent.com/zobor/bproxy/master/package.json';
+      const url1 = 'https://raw.githubusercontent.com/zobor/bproxy/master/package.json';
       const parse = (str) => {
         try {
           const json = JSON.parse(str);
@@ -167,13 +166,6 @@ export default class LocalServer {
         } catch(err) {}
       };
       request(url1, (err, response, body) => {
-        if (err) {
-          request(url2, (e, r, b) => {
-            if (!e && b) {
-              parse(b);
-            }
-          });
-        }
         if (!err && body) {
           parse(body);
         }
