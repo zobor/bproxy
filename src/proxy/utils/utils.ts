@@ -121,18 +121,12 @@ export function stringToBytes(str: string): Int8Array {
   return out;
 }
 
-export function hookConsoleLog(html, type: string | boolean) {
+export function hookConsoleLog(html, debug: boolean | string) {
   if (!html) {
     return html;
   }
   let replacement = '';
-  if (type === 'websocket') {
-    replacement = `
-      <script type="text/javascript" src="https://bproxy.dev/socket.io.min.js"></script>
-      <script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookWebsocket.js'), 'utf-8')}</script>
-    `;
-  }
-  else if (type === 'vconsole') {
+  if (debug === 'vconsole') {
     replacement = `
       <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.1/vconsole.min.js"></script>
       <script type="text/javascript">
@@ -141,8 +135,11 @@ export function hookConsoleLog(html, type: string | boolean) {
       }catch(err){}
       </script>
     `;
-  } else {
-    replacement = `<script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookLog.js'), 'utf-8')}</script>`
+  } else if (debug) {
+    replacement = `
+      <script type="text/javascript" src="https://bproxy.dev/socket.io.min.js"></script>
+      <script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookWebsocket.js'), 'utf-8')}</script>
+    `;
   }
 
   const res = html

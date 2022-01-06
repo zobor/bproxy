@@ -162,9 +162,6 @@ export default {
         },
       };
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
-      if (!useHttps) {
-        console.log(req.url);
-      }
       const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
       localServer.listen(0, () => {
         const localAddress = localServer.address();
@@ -180,8 +177,8 @@ export default {
       });
       localServer.on("request", (req, res) => {
         const $req = req as any;
-        $req.httpsURL = `https://${hostname}${req.url}`;
-        $req.url = `http://${hostname}${req.url}`;
+        $req.httpsURL = `https://${req.headers.host}${req.url}`;
+        $req.url = `http://${req.headers.host}${req.url}`;
         $req.protocol = "https";
         if (!$req.$requestId) {
           $req.$requestId = utils.guid();

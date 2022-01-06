@@ -290,4 +290,14 @@ $panelHeight: calc(100% - 85px);
       padding: 5px 0;
     }
   }
+  .format-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 3px;
+    background: chocolate;
+    color: #fff;
+    border-radius: 5px;
+    margin-left: 10px;
+    font-size: 11px;
+  }
 }

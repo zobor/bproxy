@@ -232,7 +232,7 @@ interface ProxyRule {
   // 是否禁用缓存
   disableCache?: boolean;
   // 远程调试
-  syncLogs?: boolean | 'websocket' | 'vconsole';
+  debug?: boolean | 'vconsole';
 }
 
 // 代理服务配置
