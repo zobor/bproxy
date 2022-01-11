@@ -106,7 +106,7 @@ export const httpMiddleware = {
         else if (_.isFunction(matcherResult.rule.response)) {
           const body =
             req.method.toLowerCase() === "post"
-              ? await (await getPostBody(req)).toString()
+              ? await getPostBody(req)
               : undefined;
           ioRequest({
             matched: true,
@@ -114,7 +114,7 @@ export const httpMiddleware = {
             url: req.httpsURL || req.requestOriginUrl || req.url,
             method: req.method,
             requestHeaders: req.headers,
-            requestBody: body,
+            requestBody: body && body.toString(),
           });
           if (delayTime) {
             await delay(delayTime);

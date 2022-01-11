@@ -86,6 +86,13 @@ export interface ProxyCertificateCreateResponse {
   key: string;
   cert: ProxyCertificate;
 }
+export interface WeinreOptions {
+  verbose: boolean;
+  debug: boolean;
+  readTimeout: number;
+  deathTimeout: number;
+  httpPort: number;
+}
 
 export interface ProxyConfig {
   port: number;
@@ -95,6 +102,7 @@ export interface ProxyConfig {
   sslAll?: boolean;
   host?: string[];
   rules: ProxyRule[];
+  weinre?: WeinreOptions;
   certificate: ProxyCertificateConfig;
   delay?: number;
   disableCache?: boolean;

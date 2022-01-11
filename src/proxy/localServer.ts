@@ -1,8 +1,10 @@
 import * as http from 'http';
 import * as _ from 'lodash';
+import chalk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as net from "net";
+import { run as weinre2 } from 'weinre2';
 import request from 'request';
 import settings from './config';
 import * as pkg from '../../package.json';
@@ -15,9 +17,8 @@ import { compareVersion, log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
 import dataset, { updateDataSet } from './utils/dataset';
 import { userConfirm } from './utils/confirm';
-import bproxyConfig from './config';
 import JSONFormat from '../web/libs/jsonFormat';
-import chalk from 'chalk';
+
 
 export default class LocalServer {
   static async start(port: number, configPath: string): Promise<void>{
@@ -27,21 +28,28 @@ export default class LocalServer {
       return;
     }
     let appConfig = config;
-    port && (appConfig.port = port);
-    updateDataSet('config', appConfig);
+    if (port) {
+      appConfig.port = port;
+    }
     // 监听配置文件
-    fs.watchFile(confPath, { interval: 1000 }, () => {
+    fs.watchFile(confPath, { interval: 1500 }, async() => {
       log.info(`配置文件已更新: ${confPath}`);
       try {
-        delete require.cache[require.resolve(confPath)];
-        appConfig = require(confPath);
-        updateDataSet('config', appConfig);
+        appConfig = await this.loadUserConfig(configPath, settings);
         onConfigFileChange();
       } catch(err){}
     });
     const server = new http.Server();
     const certConfig = httpsMiddleware.beforeStart();
+    // websocket server
     io(server);
+    log.info('✔ WebSocket 服务启动成功');
+    // weinre server
+    if (appConfig.weinre) {
+      weinre2(appConfig.weinre);
+      log.info('✔ Weinre 服务启动成功');
+    }
+
     server.listen(appConfig.port, () => {
       // http
       server.on('request', (req, res) => {
@@ -91,6 +99,7 @@ export default class LocalServer {
       });
     });
     const ips = getLocalIpAddress();
+    log.info('✔ HTTPS 服务启动成功');
     log.info(`代理启动成功: ${ips.map((ip: string) => `${chalk.green(`http://${ip}:${appConfig.port}`)}\t`)}`);
     log.info(`请求日志查看: ${chalk.green(`http://127.0.0.1:${appConfig.port}`)}`);
     log.info(`更多配置用法: ${chalk.green('https://t.hk.uy/aAMp')}`);
@@ -114,10 +123,12 @@ export default class LocalServer {
 
     const requireUserConfig = (confPath: string) => {
       try {
+        delete require.cache[require.resolve(confPath)];
         const userConfig = require(confPath);
         mixConfig = { ...defaultSettings, ...userConfig };
         res.configPath = confPath;
         res.config = mixConfig;
+        updateDataSet('config', res.config);
       } catch (err: any) {
         log.error(err.message);
       }
@@ -131,7 +142,7 @@ export default class LocalServer {
         const userInput = await userConfirm(`当前目录(${confPath})没有找到bproxy.config.js, 是否自动创建？(y/n)`);
 
         if (userInput.toString().toLocaleUpperCase() === 'Y') {
-          const defaultConfig = _.omit({...bproxyConfig}, ['configFile', 'certificate']);
+          const defaultConfig = _.omit({...settings}, ['configFile', 'certificate']);
           const template: string[] = [
             `const config = ${JSONFormat(defaultConfig)};`,
             'module.exports = config;',
@@ -146,6 +157,7 @@ export default class LocalServer {
       }
       requireUserConfig(confPath);
     }
+
     return res;
   }
 

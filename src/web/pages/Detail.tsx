@@ -9,7 +9,7 @@ import JSONFormat from '../libs/jsonFormat';
 import { tabList } from './settings';
 import { Button, message, Modal, Tooltip } from '../components/UI';
 import SImage from '../components/SImage';
-import { get, isObject, isString, isEmpty, isArray } from '../modules/_';
+import { get, isObject, isString, isEmpty, isArray, omit } from '../modules/_';
 import {
   findLinkFromString,
   formatWsSymbol,
@@ -25,7 +25,6 @@ import {
 } from '../modules/bridge';
 
 import '../libs/code-prettify.css';
-import classnames from 'classnames';
 import './Detail.scss';
 
 // 提示304解决办法
@@ -60,15 +59,26 @@ const showFormatJson = (jsonText) => {
 const copyCurl = (e, detail) => {
   const txt = [`curl -X ${detail?.custom.method} `];
   const type = get(detail, 'requestHeaders["content-type"]');
-  const isJson = type?.includes('/json');
+  // const isJson = type?.includes('/json');
   const isForm = type?.includes('form');
-  const {postData} = detail;
-  Object.keys(detail.requestHeaders || {}).filter(key => key.toLowerCase() !== 'accept-encoding').forEach((key: string) => {
-    txt.push(` -H "${key}: ${detail.requestHeaders[key].replace(/"/g, '\'')}" `);
-  });
+  const { postData } = detail;
+  Object.keys(detail.requestHeaders || {})
+    .filter((key) => key.toLowerCase() !== 'accept-encoding')
+    .forEach((key: string) => {
+      txt.push(
+        ` -H "${key}: ${detail.requestHeaders[key].replace(/"/g, "'")}" `
+      );
+    });
   if (!isEmpty(postData)) {
     if (isForm) {
-      txt.push(' -d "' + Object.keys(postData).filter((key: string) => key !== '$$type').map((key: string) => (`${key}=${postData[key]}`)).join('&') + '"');
+      txt.push(
+        ' -d "' +
+          Object.keys(postData)
+            .filter((key: string) => key !== '$$type')
+            .map((key: string) => `${key}=${postData[key]}`)
+            .join('&') +
+          '"'
+      );
     }
   }
 
@@ -147,17 +157,27 @@ const keyValueTable = (objects) => {
           return (
             <tr key={key}>
               <td title={key}>
-                <span className={classnames({
-                  'max-text-limit-2': true,
-                  'bproxy-key': key?.includes('x-bproxy'),
-                })}>{key}: </span>
+                <span
+                  className={classNames({
+                    'max-text-limit-2': true,
+                    'bproxy-key': key?.includes('x-bproxy'),
+                  })}
+                >
+                  {key}:{' '}
+                </span>
               </td>
               <td>
-                <span
-                  title={text}
-                  className="max-text-limit2"
-                >
-                  <span onClick={(e) => copyText(e, text)}>{text}</span> {isLikeJson(text) ? <span onClick={showFormatJson.bind(null, text)} className="format-btn"> 格式化 </span> : null}
+                <span title={text} className="max-text-limit2">
+                  <span onClick={(e) => copyText(e, text)}>{text}</span>{' '}
+                  {isLikeJson(text) ? (
+                    <span
+                      onClick={showFormatJson.bind(null, text)}
+                      className="format-btn"
+                    >
+                      {' '}
+                      格式化{' '}
+                    </span>
+                  ) : null}
                 </span>
               </td>
             </tr>
@@ -168,7 +188,14 @@ const keyValueTable = (objects) => {
 };
 
 // 内容详情多场景预览
-const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) => {
+const viewContent = ({
+  isJson,
+  content,
+  statusCode,
+  urlPath,
+  isImage,
+  isMp4,
+}) => {
   // 图片预览
   if (isImage) {
     return (
@@ -179,9 +206,11 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) =
   }
   // video 预览
   if (isMp4) {
-    return <div className='video-preview-box'>
-      <video controls src={content}></video>
-    </div>
+    return (
+      <div className="video-preview-box">
+        <video controls src={content}></video>
+      </div>
+    );
   }
   // json 预览
   if (isJson) {
@@ -200,7 +229,7 @@ const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) =
   }
   // 字符预览
   if (isString(content)) {
-    const filesize = content.length / ( 1024 * 1024);
+    const filesize = content.length / (1024 * 1024);
     if (filesize > 1) {
       return <div className="not-support">文件超过1M不支持预览</div>;
     }
@@ -269,7 +298,9 @@ const AutoMock = (props) => {
 
   return (
     <div className="handlers">
-      <Button type="primary" shape='round' onClick={e => copyCurl(e, detail)}>Copy CURL</Button>
+      <Button type="primary" shape="round" onClick={(e) => copyCurl(e, detail)}>
+        Copy CURL
+      </Button>
       {isJSON ? (
         <Tooltip title="mock文件，会下载文本内容，写入当前项目下的mock目录，并映射请求到本地的mock文件上。">
           <Button
@@ -345,6 +376,87 @@ const URLViewer = (props) => {
   );
 };
 
+const RawViewer = ({detail, isJSON}) => {
+  if (isEmpty(detail)) {
+    return null;
+  }
+  let body = '';
+  let postData: any = omit(detail.postData, '$$type');
+  try {
+    if (isJSON) {
+      body = JSON.stringify(JSON.parse(detail.responseBody));
+    }
+    postData = JSON.stringify(postData);
+  } catch(err){}
+  return (
+    <div className="row-body">
+      <h1>URL Query</h1>
+      <div>{isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}</div>
+      <h1>POST Data</h1>
+      <div>{isEmpty(postData) ? "无" : postData}</div>
+      <h1>Request Headers</h1>
+      <div>{JSON.stringify(detail.requestHeaders)}</div>
+      <h1>Response</h1>
+      <div>{isJSON ? body : null} </div>
+    </div>
+  );
+};
+
+const KeyValueViewer = ({ detail, postDataType, detailActiveTab, cookies }) => {
+  return (
+    <div
+      className={classNames({
+        'form scrollbar-style body-panel': true,
+        [postDataType]: postDataType,
+      })}
+    >
+      {!isEmpty(detail[detailActiveTab])
+        ? keyValueTable(detail[detailActiveTab])
+        : null}
+      {detailActiveTab === 'requestHeaders' ? (
+        <CookiesView cookies={cookies} />
+      ) : null}
+    </div>
+  );
+};
+
+const BodyViewer = ({
+  isJSON,
+  isHTML,
+  detail,
+  showBody,
+  canView,
+  custom,
+  isImage,
+  isMp4,
+}) => {
+  return (
+    <div className="body-panel scrollbar-style">
+      <AutoMock
+        visible={true}
+        isJSON={isJSON}
+        isHTML={isHTML}
+        detail={detail}
+        body={showBody}
+      />
+      {canView ? (
+        <div className="response-viewer">
+          {viewContent({
+            isJson: isJSON,
+            content: showBody,
+            statusCode: custom.statusCode,
+            urlPath: custom.path,
+            isImage,
+            isMp4,
+          })}
+        </div>
+      ) : (
+        <div className="not-support">不支持预览</div>
+      )}
+    </div>
+  );
+};
+
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
   const {
@@ -376,7 +488,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     .split('; ')
     .filter((item) => !!item);
   const postDataType = get(detail, `[${detailActiveTab}].$$type`);
-  const canView = isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
+  const canView =
+    isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
 
   // body解析
   useEffect(() => {
@@ -496,44 +609,29 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         {/* Tabs */}
         <TabList onClick={onTabChange} detailActiveTab={detailActiveTab} />
         {/* Body / keyValue viewer */}
-        {detailActiveTab !== 'responseBody' ? (
-          <div
-            className={classNames({
-              'form scrollbar-style body-panel': true,
-              [postDataType]: postDataType,
-            })}
-          >
-            {!isEmpty(detail[detailActiveTab])
-              ? keyValueTable(detail[detailActiveTab])
-              : null}
-            {detailActiveTab === 'requestHeaders' ? (
-              <CookiesView cookies={cookies} />
-            ) : null}
-          </div>
+        {detailActiveTab === 'raw' ? (
+          <RawViewer
+            detail={detail}
+            isJSON={$isJson.current}
+          />
+        ) : detailActiveTab !== 'responseBody' ? (
+          <KeyValueViewer
+            detail={detail}
+            postDataType={postDataType}
+            detailActiveTab={detailActiveTab}
+            cookies={cookies}
+          />
         ) : (
-          <div className="body-panel scrollbar-style">
-            <AutoMock
-              visible={true}
-              isJSON={$isJson.current}
-              isHTML={isHTML}
-              detail={detail}
-              body={showBody}
-            />
-            {canView ? (
-              <div className="response-viewer">
-                {viewContent({
-                  isJson: $isJson.current,
-                  content: showBody,
-                  statusCode: custom.statusCode,
-                  urlPath: custom.path,
-                  isImage,
-                  isMp4,
-                })}
-              </div>
-            ) : (
-              <div className="not-support">不支持预览</div>
-            )}
-          </div>
+          <BodyViewer
+            isJSON={$isJson.current}
+            isHTML={isHTML}
+            custom={custom}
+            detail={detail}
+            showBody={showBody}
+            canView={canView}
+            isImage={isImage}
+            isMp4={isMp4}
+          />
         )}
       </div>
     </div>

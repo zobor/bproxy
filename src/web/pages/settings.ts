@@ -23,4 +23,8 @@ export const tabList = [
     label: "响应内容",
     value: "responseBody",
   },
+  {
+    label: 'RAW',
+    value: 'raw',
+  },
 ];

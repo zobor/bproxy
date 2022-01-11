@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
 import JSONFormat from '../../libs/jsonFormat';
-import { Input, Modal } from '../UI';
-import './index.scss';
+import { Input } from '../UI';
 import { isString } from '../../modules/_';
 import { getClipboardData, setInputValue } from '../../modules/interactive';
 import { ruleTestInvoke } from '../../modules/bridge';
 
-
+import './index.scss';
 
 export default () => {
   const [result, setResult] = useState('');
@@ -24,18 +23,9 @@ export default () => {
 
   useEffect(() => {
     getClipboardData().then((rs) => {
-      if (isString(rs) && rs.indexOf('http') === 0) {
-        Modal.confirm({
-          title: '我猜，你是不是要粘贴剪切板里的URL？',
-          content: `URL: ${rs}`,
-          width: 600,
-          onOk() {
-            if ($input.current) {
-              setInputValue($input.current.input, rs);
-              onEnterPress({keyCode: 13, target: { value: rs}});
-            }
-          },
-        });
+      if (isString(rs) && rs.indexOf('http') === 0 && $input.current) {
+        setInputValue($input.current.input, rs);
+        onEnterPress({keyCode: 13, target: { value: rs}});
       }
     }).catch(() => {});
   }, []);

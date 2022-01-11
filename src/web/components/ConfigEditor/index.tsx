@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-import './index.scss';
 import { bridgeInvoke, onConfigFileChange } from '../../modules/socket';
 import { Button, message } from '../UI';
+
+import './index.scss';
 
 export default (props) => {
   const [code, setCode] = useState<string>('');
