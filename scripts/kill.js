@@ -5,6 +5,7 @@ const findTask = spawnSync('netstat', '-ano'.split(' '));
 const str = findTask.output.toString();
 
 function killTaskByPid (pid) {
+  console.log('kill task by pid = ', pid);
   const rs = spawnSync('taskkill', `/T /F /PID ${pid}`.split(' '));
   if (!!rs.output.toString()) {
     console.log('bproxy 进程已杀掉！');
@@ -19,8 +20,11 @@ if (str.length) {
     )
     .filter((item) => item.includes(`:${port}`));
   if (list && list.length) {
-    const values = list[0].split(/\s+/).filter(item => item);
-    const processPort = values[values.length - 1];
-    killTaskByPid(processPort);
+    
+    list.forEach(v => {
+      const values = v.split(/\s+/).filter(item => item);
+      const processPort = values[values.length - 1];
+      killTaskByPid(processPort);
+    })
   }
 }

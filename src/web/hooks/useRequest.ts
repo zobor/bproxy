@@ -3,12 +3,12 @@ import { InvokeRequestParams } from "../../types/proxy";
 import { HttpRequestRequest } from "../../types/web";
 import { onRequest } from "../modules/socket";
 import {
-  arrayBuf2string,
   filterRequestItem,
   filterRequestList,
-  parseQueryString,
   parseRequest,
 } from "../modules/util";
+import { get } from '../modules/_';
+import { parseFormData, parseJsonData } from '../../proxy/utils/format';
 
 const limit = 500;
 
@@ -68,10 +68,12 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
           pre[index] = history;
           return [...list];
         }
+        // history end
 
         // new request
         // request start but no response
         const item = parseRequest(req);
+        const contentType = get(req, 'requestHeaders["content-type"]') || '';
         const data: HttpRequestRequest = {
           matched: !!req.matched,
           requestStartTime: Date.now(),
@@ -92,29 +94,50 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
         }
         // handler post body
         if (req.requestBody) {
-          if (
-            req.requestHeaders &&
-            req.requestHeaders["content-type"] ===
-              "application/x-www-form-urlencoded"
-          ) {
-            const postData = arrayBuf2string(req.requestBody);
-            data.postData = parseQueryString(postData as string);
-            data.postData.$$type = "formData";
-          } else if (
-            req.requestHeaders &&
-            req.requestHeaders["content-type"] &&
-            req.requestHeaders["content-type"].includes("application/json")
-          ) {
-            const postData = arrayBuf2string(req.requestBody);
-            if (postData) {
-              try {
-                data.postData = JSON.parse(postData);
-                data.postData && (data.postData.$$type = "json");
-              } catch (err) {
-                console.error("[error] post data parse fail", err);
-              }
+          if (contentType.includes('x-www-form-urlencoded')) {
+            try {
+              data.postData = parseJsonData(req.requestBody);
+              data.postData && (data.postData.$$type = 'formData');
+            } catch (err) {
+              console.error('[error] post data parse fail', err);
             }
+          } else if (contentType.includes("/json")) {
+            try {
+              data.postData = JSON.parse(req.requestBody);
+              data.postData && (data.postData.$$type = "json");
+            } catch (err) {
+              console.error("[error] post data parse fail", err);
+            }
+          } else if (contentType.includes("/form")) {
+            data.postData = parseFormData(req.requestBody);
+            data.postData.$$type = "formData";
+          } else {
+            data.postData = req.requestBody as any;
           }
+          // if (
+          //   req.requestHeaders &&
+          //   req.requestHeaders["content-type"] ===
+          //     "application/x-www-form-urlencoded"
+          // ) {
+          //   console.log(req.requestBody);
+          //   const postData = arrayBuf2string(req.requestBody);
+          //   data.postData = parseQueryString(postData as string);
+          //   data.postData.$$type = "formData";
+          // } else if (
+          //   req.requestHeaders &&
+          //   req.requestHeaders["content-type"] &&
+          //   req.requestHeaders["content-type"].includes("application/json")
+          // ) {
+          //   const postData = arrayBuf2string(req.requestBody);
+          //   if (postData) {
+          //     try {
+          //       data.postData = JSON.parse(postData);
+          //       data.postData && (data.postData.$$type = "json");
+          //     } catch (err) {
+          //       console.error("[error] post data parse fail", err);
+          //     }
+          //   }
+          // }
         }
         if (filterRequestItem(data, { filterType, filterString })) {
           // done

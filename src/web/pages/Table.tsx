@@ -67,7 +67,7 @@ const Table = (props: any) => {
             if (typeof body === 'string' && !filesize) {
               filesize = body.length;
             }
-            
+
             return (
               <tr
                 key={req?.custom?.requestId}
@@ -95,7 +95,7 @@ const Table = (props: any) => {
                   {shorthand(req?.custom?.host, 8, 20)}
                 </td>
                 <td className="path" title={req?.custom?.path}>
-                  {shorthand(req?.custom?.path)}
+                  {shorthand(req?.custom?.path, 15)}
                 </td>
                 <td className="contentType">
                   {showResponseType(contentType)}

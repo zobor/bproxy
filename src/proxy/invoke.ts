@@ -39,6 +39,12 @@ export const getLocalProxyPort = async() => {
   return config?.port;
 }
 
+export const getProxyConfig = async() => {
+  const { config } = dataset;
+
+  return config;
+}
+
 export const getConfigFile = () => {
   const { configPath } = dataset;
 

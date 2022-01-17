@@ -18,12 +18,14 @@ import {
   UsbOutlined,
   CodeOutlined,
   SettingOutlined,
+  FunctionOutlined,
 } from "../components/UI";
 
 import "./Controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
 import CodeRunner from '../components/CodeRunner';
 import Settings from '../components/Settings';
+import Weinre from '../components/Weinre';
 import { bridgeInvoke } from '../modules/socket';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
@@ -111,6 +113,16 @@ const SettingsModal = (props) => {
   </ControllerDialog>
 };
 
+const WeinreModal = (props) => {
+  return <ControllerDialog
+    title="页面调试"
+    width={1000}
+    {...props}
+  >
+    <Weinre />
+  </ControllerDialog>
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -135,7 +147,9 @@ const Controller = (props: ControllerProps) => {
     useBool(false);
   const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
     useBool(false);
-    const { state: isShowSettings, toggle: toggleShowSettings } =
+  const { state: isShowSettings, toggle: toggleShowSettings } =
+    useBool(false);
+  const { state: isShowWeinre, toggle: toggleShowWeinre } =
     useBool(false);
 
   const toggleSwitch = useCallback(() => {
@@ -175,7 +189,7 @@ const Controller = (props: ControllerProps) => {
       </div>
       <div onClick={toggleShowInstall}>
         <WifiOutlined />
-        <span>Wi-Fi证书</span>
+        <span>手机调试</span>
       </div>
       <div onClick={toggleShowRuleTest}>
         <BugOutlined />
@@ -183,9 +197,6 @@ const Controller = (props: ControllerProps) => {
       </div>
       <div
         onClick={toggleShowFilter}
-        className={classNames({
-          // disabled: !filterString,
-        })}
       >
         <FilterOutlined />
         <span>过滤规则</span>
@@ -202,6 +213,10 @@ const Controller = (props: ControllerProps) => {
         <CodeOutlined />
         <span>远程调用</span>
       </div>
+      <div onClick={toggleShowWeinre}>
+        <FunctionOutlined />
+        <span>页面调试</span>
+      </div>
       <div onClick={toggleShowSettings}>
         <SettingOutlined />
         <span>个性化</span>
@@ -214,6 +229,7 @@ const Controller = (props: ControllerProps) => {
       <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
       <CodeRunnerModal onCancel={toggleShowCodeRunner} visible={isShowCodeRunner} />
       <SettingsModal onCancel={toggleShowSettings} visible={isShowSettings} />
+      <WeinreModal onCancel={toggleShowWeinre} visible={isShowWeinre} />
     </div>
   );
 };

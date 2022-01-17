@@ -19,7 +19,7 @@ program
 commands.run(program as any);
 
 process.on('uncaughtException', (err) => {
-  log.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
+  // log.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
   // 端口被占用，停止启动
   if (err?.message?.includes('address already in use')) {
     process.exit();

@@ -78,14 +78,21 @@ export const createHttpHeader = (line, headers) => {
   );
 };
 
+export const isNeedTransformString2RegExp = (str: string) => {
+  if (!str) return false;
+  return str.includes('*') || str.includes('^') || str.includes('$');
+};
+
 export const url2regx = (url: string): RegExp => {
   const newUrl = url
-    .replace(/\./g, '\.')
+    .replace(/\./g, '\\.')
     .replace(/\//g, '\/')
     .replace(/\*{2,}/g, '(\\S+)')
     .replace(/\*/g, '([^\\/]+)');
   return new RegExp(newUrl);
 };
+
+// console.log(url2regx('https://m.v.qq.com/a'))
 
 export const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   let rs;
@@ -137,7 +144,11 @@ export function hookConsoleLog(html, debug: boolean | string) {
     `;
   } else if (debug) {
     replacement = `
+      <script type="text/javascript">
+        window.WeinreServerURL='https://bproxy.dev/weinre/xhr';
+      </script>
       <script type="text/javascript" src="https://bproxy.dev/socket.io.min.js"></script>
+      <script type="text/javascript" src="https://bproxy.dev/weinre/target.js"></script>
       <script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookWebsocket.js'), 'utf-8')}</script>
     `;
   }

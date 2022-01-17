@@ -20,6 +20,8 @@ import FilterOutlined from "@ant-design/icons/FilterOutlined";
 import UsbOutlined from '@ant-design/icons/UsbOutlined';
 import CodeOutlined from '@ant-design/icons/CodeOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import FunctionOutlined from '@ant-design/icons/FunctionOutlined';
+
 
 
 import "antd/es/button/style/index.less";
@@ -63,4 +65,5 @@ export {
   UsbOutlined,
   CodeOutlined,
   SettingOutlined,
+  FunctionOutlined,
 };

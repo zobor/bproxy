@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import path from 'path';
 import MatcherResult, { ProxyRule } from '../types/proxy';
-import { url2regx } from './utils/utils';
+import { isNeedTransformString2RegExp, url2regx } from './utils/utils';
 import dataset from './utils/dataset';
 
 
@@ -18,7 +18,7 @@ export const matcher = (rules: ProxyRule[], url: string): MatcherResult => {
       return;
     }
     // string with *
-    if (_.isString(rule.regx) && rule.regx.includes('*')) {
+    if (_.isString(rule.regx) && isNeedTransformString2RegExp(rule.regx)) {
       rule.regx = url2regx(rule.regx);
     }
     // RegExp
