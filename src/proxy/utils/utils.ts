@@ -80,7 +80,7 @@ export const createHttpHeader = (line, headers) => {
 
 export const isNeedTransformString2RegExp = (str: string) => {
   if (!str) return false;
-  return str.includes('*') || str.includes('^') || str.includes('$');
+  return /[.*^$()/]/.test(str);
 };
 
 export const url2regx = (url: string): RegExp => {
@@ -92,7 +92,7 @@ export const url2regx = (url: string): RegExp => {
   return new RegExp(newUrl);
 };
 
-// console.log(url2regx('https://m.v.qq.com/a'))
+// console.log(isNeedTransformString2RegExp('/a'))
 
 export const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
   let rs;

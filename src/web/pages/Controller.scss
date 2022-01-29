@@ -14,17 +14,6 @@ $textShadowColor: #B7950B;
   margin-top: 5px;
   position: relative;
 
-  .version {
-    position: absolute;
-    top: 50%;
-    left: calc(100% + 10px);
-    transform: translateY(-50%);
-    color: #000;
-    letter-spacing: 2px;
-    font-size: 12px;
-    color: $textShadowColor;
-  }
-
   >div{
     display: flex;
     flex-direction: column;

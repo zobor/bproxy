@@ -26,7 +26,6 @@ import ConfigEditor from '../components/ConfigEditor';
 import CodeRunner from '../components/CodeRunner';
 import Settings from '../components/Settings';
 import Weinre from '../components/Weinre';
-import { bridgeInvoke } from '../modules/socket';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -134,7 +133,6 @@ const Disconnected = () => <div className="disconnected">
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
-  const [version, setVersion] = useState<string>('');
   const { proxySwitch, clean, disableCache, filterString } = state;
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
@@ -161,19 +159,18 @@ const Controller = (props: ControllerProps) => {
     }
   };
 
-  useEffect(() => {
-    bridgeInvoke({
-      api: 'getVersion',
-    }).then((rs) => {
-      setVersion(rs as string);
-    });
-  }, [])
+  // useEffect(() => {
+  //   bridgeInvoke({
+  //     api: 'getVersion',
+  //   }).then((rs) => {
+  //     setVersion(rs as string);
+  //   });
+  // }, [])
 
 
   return (
     <div className="controller">
       {!connected ? <Disconnected /> : null}
-      <div className="version" onClick={() => window.open('https://github.com/zobor/bproxy')}>V{version}</div>
       <div
         onClick={toggleSwitch}
         className={classNames({

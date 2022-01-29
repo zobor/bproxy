@@ -1,8 +1,6 @@
 import * as _ from 'lodash';
-import path from 'path';
 import MatcherResult, { ProxyRule } from '../types/proxy';
 import { isNeedTransformString2RegExp, url2regx } from './utils/utils';
-import dataset from './utils/dataset';
 
 
 

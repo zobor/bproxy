@@ -15,16 +15,16 @@ export function parseFormData(str) {
       .map((item) => item.split(/\n+/).filter((item) => item.length))
   ).filter(item => item.length);
 
-  const formItems = {};
+  const formItems: any[] = [];
   arr.forEach(item => {
     if (item.length === 2) {
       const [key, value] = item[1];
       const label = key.replace(/name="([^"]+)"/, '$1');
-      formItems[label] = value;
+      formItems.push([label, value]);
     } else if (item.length >= 3) {
       const [key] = item[1];
       const label = key.replace(/name="([^"]+)"/, '$1');
-      formItems[label] = '二进制文件';
+      formItems.push([label, '二进制文件']);
     }
   });
 
@@ -32,12 +32,11 @@ export function parseFormData(str) {
 }
 
 export function parseJsonData(str) {
-  const data = {};
+  const data: [][] = [];
   str.split('&').forEach(item => {
     const arr = item.split('=');
     if (arr.length === 2) {
-      const [key, value] = arr;
-      data[key] = value;
+      data.push(arr);
     }
   });
 
