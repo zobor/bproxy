@@ -97,22 +97,24 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
           if (contentType.includes('x-www-form-urlencoded')) {
             try {
               data.postData = parseJsonData(req.requestBody);
-              data.postData && (data.postData.$$type = 'formData');
             } catch (err) {
               console.error('[error] post data parse fail', err);
             }
           } else if (contentType.includes("/json")) {
             try {
               data.postData = JSON.parse(req.requestBody);
-              data.postData && (data.postData.$$type = "json");
             } catch (err) {
               console.error("[error] post data parse fail", err);
             }
           } else if (contentType.includes("/form")) {
             data.postData = parseFormData(req.requestBody);
-            data.postData.$$type = "formData";
           } else {
-            data.postData = req.requestBody as any;
+            try {
+              data.postData = JSON.parse(req.requestBody);
+              data.postData && (data.postData.$$type = 'json');
+            } catch (err) {
+              data.postData = req.requestBody as any;
+            }
           }
           // if (
           //   req.requestHeaders &&

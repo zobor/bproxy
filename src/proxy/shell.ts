@@ -22,6 +22,7 @@ process.on('uncaughtException', (err) => {
   // log.error(`uncaughtException: ${JSON.stringify(err.stack)}`);
   // 端口被占用，停止启动
   if (err?.message?.includes('address already in use')) {
+    log.error(`ERROR: 端口被占用，请检查bproxy是否已启动。`);
     process.exit();
   }
 });

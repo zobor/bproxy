@@ -196,6 +196,7 @@ const viewContent = ({
   isImage,
   isMp4,
 }) => {
+  // return <h1>haha</h1>;
   // 图片预览
   if (isImage) {
     return (
@@ -381,12 +382,19 @@ const RawViewer = ({detail, isJSON}) => {
     return null;
   }
   let body = '';
-  let postData: any = omit(detail.postData, '$$type');
+  const {postData: pData} = detail;
+  let postData = '';
+  try {
+    if (Array.isArray(pData)) {
+      postData = pData.map(item => `${item[0]}=${item[1]}`).join('&');
+    } else {
+      postData = JSON.stringify(pData);
+    }
+  } catch(err){}
   try {
     if (isJSON) {
       body = JSON.stringify(JSON.parse(detail.responseBody));
     }
-    postData = JSON.stringify(postData);
   } catch(err){}
   return (
     <div className="row-body">
@@ -402,12 +410,26 @@ const RawViewer = ({detail, isJSON}) => {
   );
 };
 
-const KeyValueViewer = ({ detail, postDataType, detailActiveTab, cookies }) => {
+const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
+  const data = detail[detailActiveTab];
+  if (Array.isArray(data)) {
+    return (
+      <div className="form scrollbar-style body-panel">
+        <table className="data-table">
+          {data.map((item) => (
+            <tr>
+              <td onClick={(e) => copyText(e, item[0])}>{item[0]}</td>
+              <td onClick={(e) => copyText(e, item[1])}>{item[1]}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+    );
+  }
   return (
     <div
       className={classNames({
         'form scrollbar-style body-panel': true,
-        [postDataType]: postDataType,
       })}
     >
       {!isEmpty(detail[detailActiveTab])
@@ -617,7 +639,6 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
         ) : detailActiveTab !== 'responseBody' ? (
           <KeyValueViewer
             detail={detail}
-            postDataType={postDataType}
             detailActiveTab={detailActiveTab}
             cookies={cookies}
           />
