@@ -7,7 +7,7 @@ export const formatSeconds = (sec: number): string => {
 };
 
 
-export function parseFormData(str) {
+export function parseFormData(str: string) {
   const arr = str.replace(/\r/g, '').split(/-{10,}\w+/).map((item) =>
     item
       .split('; ')
@@ -16,7 +16,7 @@ export function parseFormData(str) {
   ).filter(item => item.length);
 
   const formItems: any[] = [];
-  arr.forEach(item => {
+  arr.forEach((item: any) => {
     if (item.length === 2) {
       const [key, value] = item[1];
       const label = key.replace(/name="([^"]+)"/, '$1');
@@ -31,8 +31,8 @@ export function parseFormData(str) {
   return formItems;
 }
 
-export function parseJsonData(str) {
-  const data: [][] = [];
+export function parseJsonData(str: string) {
+  const data: any[] = [];
   str.split('&').forEach(item => {
     const arr = item.split('=');
     if (arr.length === 2) {
