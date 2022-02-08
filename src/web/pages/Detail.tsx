@@ -13,6 +13,7 @@ import { get, isObject, isString, isEmpty, isArray, omit } from '../modules/_';
 import {
   findLinkFromString,
   formatWsSymbol,
+  highlight,
   isLikeJson,
 } from '../modules/util';
 import { isDetailViewAble } from '../../proxy/utils/is';
@@ -42,7 +43,7 @@ const copyText = (e, text) => {
 // 显示格式化json
 const showFormatJson = (jsonText) => {
   Modal.success({
-    title: 'JSON 格式化',
+    // title: 'JSON 格式化',
     width: '50vw',
     content: (
       <pre className="prettyprint lang-json" style={{ maxWidth: '80vw' }}>
@@ -51,7 +52,7 @@ const showFormatJson = (jsonText) => {
     ),
   });
   setTimeout(() => {
-    (window as any)?.PR?.prettyPrint();
+    highlight();
   }, 300);
 };
 
@@ -74,7 +75,6 @@ const copyCurl = (e, detail) => {
       txt.push(
         ' -d "' +
           Object.keys(postData)
-            .filter((key: string) => key !== '$$type')
             .map((key: string) => `${key}=${postData[key]}`)
             .join('&') +
           '"'
@@ -132,7 +132,6 @@ const keyValueTable = (objects) => {
   return (
     <table className="kv-table">
       {Object.keys(objects)
-        .filter((key) => key !== '$$type')
         .map((key) => {
           let dataValue = objects[key];
           if (
@@ -397,14 +396,14 @@ const RawViewer = ({detail, isJSON}) => {
     }
   } catch(err){}
   return (
-    <div className="row-body">
-      <h1>URL Query</h1>
+    <div className="raw-body scrollbar-style">
+      <div className="title">URL Query</div>
       <div>{isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}</div>
-      <h1>POST Data</h1>
+      <div  className="title">POST Data</div>
       <div>{isEmpty(postData) ? "无" : postData}</div>
-      <h1>Request Headers</h1>
+      <div className="title">Request Headers</div>
       <div>{JSON.stringify(detail.requestHeaders)}</div>
-      <h1>Response</h1>
+      <div className="title">Response</div>
       <div>{isJSON ? body : null} </div>
     </div>
   );
@@ -419,7 +418,7 @@ const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
           {data.map((item) => (
             <tr>
               <td onClick={(e) => copyText(e, item[0])}>{item[0]}</td>
-              <td onClick={(e) => copyText(e, item[1])}>{item[1]}</td>
+              <td onClick={(e) => copyText(e, decodeURIComponent(item[1]))}>{decodeURIComponent(item[1])}</td>
             </tr>
           ))}
         </table>
@@ -509,7 +508,6 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const cookies = (get(detail, 'requestHeaders.cookie') || '')
     .split('; ')
     .filter((item) => !!item);
-  const postDataType = get(detail, `[${detailActiveTab}].$$type`);
   const canView =
     isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
 
@@ -572,7 +570,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   useEffect(() => {
     if ($isJson.current && showBody && detailActiveTab === 'responseBody') {
       setTimeout(() => {
-        (window as any)?.PR?.prettyPrint();
+        highlight();
       }, 0);
     }
   }, [showBody, detailActiveTab]);

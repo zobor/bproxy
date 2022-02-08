@@ -21,7 +21,7 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
   };
   useEffect(() => {
     onRequest((req: InvokeRequestParams) => {
-      if (!proxySwitch) {
+      if (!proxySwitch || !req) {
         return;
       }
       setLastUpdate(Date.now());
@@ -111,35 +111,10 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
           } else {
             try {
               data.postData = JSON.parse(req.requestBody);
-              data.postData && (data.postData.$$type = 'json');
             } catch (err) {
               data.postData = req.requestBody as any;
             }
           }
-          // if (
-          //   req.requestHeaders &&
-          //   req.requestHeaders["content-type"] ===
-          //     "application/x-www-form-urlencoded"
-          // ) {
-          //   console.log(req.requestBody);
-          //   const postData = arrayBuf2string(req.requestBody);
-          //   data.postData = parseQueryString(postData as string);
-          //   data.postData.$$type = "formData";
-          // } else if (
-          //   req.requestHeaders &&
-          //   req.requestHeaders["content-type"] &&
-          //   req.requestHeaders["content-type"].includes("application/json")
-          // ) {
-          //   const postData = arrayBuf2string(req.requestBody);
-          //   if (postData) {
-          //     try {
-          //       data.postData = JSON.parse(postData);
-          //       data.postData && (data.postData.$$type = "json");
-          //     } catch (err) {
-          //       console.error("[error] post data parse fail", err);
-          //     }
-          //   }
-          // }
         }
         if (filterRequestItem(data, { filterType, filterString })) {
           // done

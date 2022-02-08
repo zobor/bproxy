@@ -6,7 +6,7 @@ import Certificate from './certifica';
 import LocalServer from './localServer';
 import { matcher } from './matcher';
 import { log } from './utils/utils';
-import { setActiveNetworkProxyStatus } from './system';
+import { setActiveNetworkProxyStatus } from './macos/proxy';
 
 export default {
   async run(params: any): Promise<string> {
@@ -54,7 +54,7 @@ export default {
 
   // set system proxy
   proxy(proxy: string | boolean, port: number): void {
-    const sysProxyPort = port || settings.port;
+    // const sysProxyPort = port || settings.port;
     if (process.platform !== 'darwin') {
       log.warn('设置系统代理指令，不支持当前系统');
       return;

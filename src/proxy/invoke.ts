@@ -5,8 +5,10 @@ import * as mkdirp from 'mkdirp';
 import { matcher } from './matcher';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
-export * from './system';
+export * from './macos/os';
+export * from './systemProxy';
 import * as pkg from '../../package.json';
+import { channelManager } from './socket/socket';
 
 export const test = async (url: string) => {
   const { config } = dataset;
@@ -124,4 +126,8 @@ config.rules.push({
     const newConfig = configText.replace('module.exports', `\n${rule}\nmodule.exports`);
     fs.writeFileSync(path.resolve(configFilePath), newConfig);
   } catch(er) {}
+}
+
+export const getDebugTargets = () => {
+  return channelManager._targets;
 }

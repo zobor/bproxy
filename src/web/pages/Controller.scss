@@ -30,6 +30,9 @@ $textShadowColor: #B7950B;
         color: $disabled;
       }
     }
+    &.warn {
+      color: rgb(231, 76, 60)
+    }
     >span {
       font-size: 13px;
       &:nth-child(2) {

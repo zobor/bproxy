@@ -48,7 +48,34 @@ const inspectResponse = (req, res) => {
   }
 };
 
+const responseChromeDev = (req, res) => {
+  const headers = {};
+  let { url } = req;
+  url = url.replace(/\?\S+/, '');
+  if (url === '/chrome-dev-tools/') {
+    const file = fs.createReadStream(path.resolve(__dirname, '../../chrome-dev-tools/devtools_app.html'));
+    file.pipe(res);
+    headers['content-type'] = 'text/html; charset=utf-8';
+    res.writeHead(200, headers);
+    return;
+  }
+  const filename = url.replace('/chrome-dev-tools/', '');
+  if (filename.includes('.js')) {
+    headers['content-type'] = 'text/javascript; charset=utf-8';
+  }else if (filename.includes('.css')) {
+    headers['content-type'] = 'text/css; charset=utf-8';
+  }  else if (filename.includes('.svg')) {
+    headers['content-type'] = 'image/svg+xml';
+  }
+  const file = fs.createReadStream(path.resolve(__dirname, `../../chrome-dev-tools/${filename}`));
+  file.pipe(res);
+  res.writeHead(200, headers);
+};
+
 export const requestJac = (req, res, certConfig) => {
+  if (req.url.startsWith('/chrome-dev-tools')) {
+    return responseChromeDev(req, res);
+  }
   switch (req.url) {
     case '/':
       res.end(html);

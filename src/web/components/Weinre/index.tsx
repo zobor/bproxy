@@ -1,22 +1,64 @@
 import { useEffect, useState } from 'react';
-import { WeinreOptions } from '../../../types/proxy';
-import { bridgeInvoke } from '../../modules/socket';
-import { isEmpty } from '../../modules/_';
+import { getDebugTargets } from '../../modules/bridge';
+import { onDebuggerClientChange, onDebuggerClientChangeUnmount } from '../../modules/socket';
+import { highlight } from '../../modules/util';
+import { Button } from '../UI';
 import './index.scss';
 
-export default () => {
-  const [weinreConfig, setWeinreConfig] = useState<WeinreOptions>({} as WeinreOptions);
+const EmptyTips = () => {
+  const txt = `\t{
+    regx: 'm.v.qq.com/tvp/$',
+    debug: true
+  }`;
   useEffect(() => {
-    bridgeInvoke({api: 'getProxyConfig'}).then((rs: any) => {
-      if (rs && rs.weinre) {
-        setWeinreConfig(rs.weinre);
-      }
-    });
+    highlight();
   }, []);
-  if (isEmpty(weinreConfig)) {
-    return null;
-  }
+  return (<div className="empty-sockets">
+    <div className="title">没有调试页面建立连接</div>
+    <div>（示例）设置页面代理规则：</div>
+      <pre className="prettyprint lang-json">
+        <code>{txt}</code>
+      </pre>
+  </div>);
+};
+
+export default () => {
+  const [clients, setClients] = useState<any>({});
+  const openNewPage = (id) => {
+    const url = `http://localhost:8888/chrome-dev-tools/?ws=127.0.0.1:8888/client/inspect?target=${id}`;
+    window.open(url);
+  };
+  useEffect(() => {
+    const getClients = () => {
+      getDebugTargets().then((rs: any) => {
+        if (rs && Object.keys(rs).length) {
+          setClients(rs);
+        } else {
+          setClients({});
+        }
+      });
+    };
+    onDebuggerClientChange(getClients);
+    getClients();
+
+    return () => {
+      onDebuggerClientChangeUnmount(getClients);
+    }
+  }, []);
+
   return <div className="dialog-page-debug">
-    <iframe src={`http://localhost:${weinreConfig.httpPort}/client/#anonymous`} style={{border: 'none', width: '100%', height: '100%'}} />
+    {Object.keys(clients).length === 0 ? <EmptyTips /> : null}
+    <ul>
+    {Object.keys(clients).map((id: string) => <li>
+      <div className="dialog-page-debug-group">
+        <div className="img"><img src={clients[id]?.favicon} /></div>
+        <div className="content">
+          <div>{clients[id].title}</div>
+          <div>{clients[id].url}</div>
+        </div>
+        <Button shape="round" type="primary" onClick={openNewPage.bind(null, id)}>调试</Button>
+      </div>
+    </li>)}
+    </ul>
   </div>
 };

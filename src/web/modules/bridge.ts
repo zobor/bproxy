@@ -46,3 +46,62 @@ export const insertRemoteInspectRule = async({urlPath, configFilePath}) => {
     configFilePath,
   }});
 }
+
+// 获取配置文件内容
+export const getConfigContent = () =>
+  bridgeInvoke({
+    api: 'getConfigFileContent',
+  });
+// 设置配置文件内容
+export const setConfigContent = (content: string) =>
+  bridgeInvoke({
+    api: 'setConfigFileContent',
+    params: {
+      data: content,
+    },
+  });
+
+// 获取配置端口
+export const getProxyPort = () =>
+  bridgeInvoke({
+    api: 'getLocalProxyPort',
+  });
+
+// 获取本机局域网IP
+export const getLocalIP = () =>
+  bridgeInvoke({
+    api: 'getLocalIp',
+  });
+
+// 获取系统名称
+export const getOsName = () =>
+  bridgeInvoke({
+    api: 'getOsName',
+  });
+
+// 获取调试目标页面
+export const getDebugTargets = () => bridgeInvoke({api: 'getDebugTargets'});
+
+// 获取bproxy版本号
+export const getVersion = () => bridgeInvoke({ api: 'getVersion' });
+
+// 检查系统代理桥接
+export const checkSystemProxy = (host, port) => bridgeInvoke({ api: 'checkSystemProxy', params: {host, port}});
+
+// 检查系统代理
+export const checkProxy = async() => {
+  const port = await getProxyPort();
+  return await checkSystemProxy('127.0.0.1', port);
+}
+
+// 配置系统代理桥接
+export const configSystemProxy = (host, port) => bridgeInvoke({api: 'configSystemProxy', params: {host, port}});
+
+// 关闭系统代理
+export const disActiveProxy = () => bridgeInvoke({api: 'setSystemProxyOff'});
+
+// 打开系统代理
+export const activeProxy = async() => {
+  const port = await getProxyPort();
+  return configSystemProxy('127.0.0.1', port);
+}

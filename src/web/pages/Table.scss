@@ -1,4 +1,5 @@
 @import '../theme.scss';
+@import '../mixin.scss';
 
 /* 数据表格 */
 .table-box {
@@ -14,6 +15,7 @@
   width: 100%;
   position: relative;
   font-size: 17px;
+  @include noselect;
 
   thead {
     tr {
@@ -21,7 +23,7 @@
       top: 0;
       background-color: $cardColor;
       color: $theadTextColor;
-      font-size: 15px;
+      font-size: 14px;
     }
     td {
       font-weight: normal;
@@ -33,12 +35,15 @@
   }
 
   td {
-    padding: 6px 10px;
+    padding: 6px 0px;
     word-wrap: break-word;
     word-break: break-all;
     white-space: pre-wrap;
     vertical-align: middle;
     border-bottom: solid 1px $tableBorderColor;
+    &:nth-child(1) {
+      text-align: center;
+    }
   }
 
   tbody {
@@ -62,13 +67,13 @@
       }
       &.highlight {
         color: $highlightTextColor;
-        // font-weight: bold;
       }
     }
   }
 
   .status {
-    width: 60px;
+    width: 40px;
+    text-align: center;
     &.s200,
     &.s101 {
       color: $httpStatus200;
@@ -78,29 +83,32 @@
     }
   }
   .method {
-    width: 90px;
+    width: 70px;
     text-transform: lowercase;
+    overflow: hidden;
   }
   .protocol {
-    width: 70px;
+    width: 60px;
   }
   .host {
-    width: 200px;
+    width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .size {
-    width: 90px;
+    width: 70px;
   }
   .contentType {
-      width: 130px;
+      width: 110px;
   }
   .speed {
-    width: 100px;
+    width: 80px;
     &.slow {
       color: red;
     }
   }
   .ip {
-    width: 170px;
+    width: 130px;
     &:hover {
       color: $hoverColor;
     }
@@ -112,6 +120,10 @@
   font-size: 15px;
   color: #999;
   padding: 20px 0;
+  span {
+    color: rgb(241, 196, 15);
+    padding: 0 5px;
+  }
 }
 
 @media screen and (max-width: 1325px) {
@@ -177,6 +189,9 @@
     td {
       &:nth-child(1) {
         display: none;
+      }
+      &.host {
+        width: 40%;
       }
     }
   }

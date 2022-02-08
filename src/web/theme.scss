@@ -8,13 +8,13 @@ $boxColor: rgb(20, 20, 20);
 // $cardColor: rgb(38, 38, 38);
 $cardColor: #30363d;
 
-$iconColor: rgb(244, 176, 38);
+$iconColor: rgb(93, 173, 226);
 
 $hoverColor: #1ABC9C;
 
 $linkColor: #58D68D;
 
-$disabled: rgba(100, 100, 100, 0.5);
+$disabled: rgba(100, 100, 100, 0.9);
 
 $trHoverColor: #30363d;
 
@@ -33,7 +33,7 @@ $highlightTextColor: #58a6ff;
 // $matchedTextColor: rgba(52, 152, 219, 0.9);
 // $matchedTextColor: #58a6ff;
 // $matchedTextColor: #c9d1d9;
-$matchedTextColor: $iconColor;
+$matchedTextColor: rgb(244, 208, 63);
 
 $modalBackground: #1B4F72;
 $panelBackground: #1d1f21;
@@ -45,9 +45,9 @@ $labelValueColor: #139dcb;
 
 $appPadding: 0px;
 
-$httpStatus200: #145A32;
+$httpStatus200: rgb(46, 204, 113);
 $httpStatus304: #7F8C8D;
 
 $scrollBarColor: rgb(56, 188, 215);
 
-$errorTextColor: #CB4335;
+$errorTextColor: rgb(120, 40, 31);

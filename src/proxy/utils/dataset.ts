@@ -9,6 +9,10 @@ const getDefaultRulesList = (port: number, weinrePort) => [
     file: `${path.resolve(__dirname, "../../web/libs/socket.io.min.js")}`,
   },
   {
+    regx: "https://bproxy.dev/inspect.js",
+    file: `${path.resolve(__dirname, "../../web/libs/inspect.umd.js")}`,
+  },
+  {
     regx: "https://bproxy.dev/weinre/target.js",
     redirect: `http://localhost:${weinrePort || 9527}/target/target-script-min.js#anonymous`,
   },

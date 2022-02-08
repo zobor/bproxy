@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-import { bridgeInvoke, onConfigFileChange } from '../../modules/socket';
+import { onConfigFileChange } from '../../modules/socket';
 import { Button, message } from '../UI';
 
 import './index.scss';
+import { getConfigContent, setConfigContent } from '../../modules/bridge';
 
 export default (props) => {
   const [code, setCode] = useState<string>('');
-  const loadConfig = () => bridgeInvoke({
-    api: 'getConfigFileContent',
-  }).then(rs => {
+  const loadConfig = () => getConfigContent().then(rs => {
     setCode(rs as string);
   });
   useEffect(() => {
@@ -18,12 +17,7 @@ export default (props) => {
     onConfigFileChange(loadConfig);
   }, []);
   const onSave = useCallback(() => {
-    bridgeInvoke({
-      api: 'setConfigFileContent',
-      params: {
-        data: code,
-      },
-    }).then(rs => {
+    setConfigContent(code).then(rs => {
       if (rs && props.onCancel) {
         message.success('配置文件修改成功');
         setTimeout(() => props.onCancel(), 300);
