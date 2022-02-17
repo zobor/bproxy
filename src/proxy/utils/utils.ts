@@ -144,12 +144,7 @@ export function hookConsoleLog(html, debug: boolean | string) {
     `;
   } else if (debug) {
     replacement = `
-      <script type="text/javascript">
-        window.WeinreServerURL='https://bproxy.dev/weinre/xhr';
-      </script>
-      <script type="text/javascript" src="https://bproxy.dev/socket.io.min.js"></script>
-      <script type="text/javascript" src="https://bproxy.dev/weinre/target.js"></script>
-      <script type="text/javascript">${fs.readFileSync(path.resolve(__dirname, './hookWebsocket.js'), 'utf-8')}</script>
+      <script defer="defer" type="text/javascript" src="https://bproxy.dev/inspect.js"></script>
     `;
   }
 

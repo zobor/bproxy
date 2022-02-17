@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { ProxyConfig } from '../types/proxy';
-import { getComputerName } from './system';
+import { getComputerName } from './macos/os';
 
 const config: ProxyConfig = {
   port: 8888,

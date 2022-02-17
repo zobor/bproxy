@@ -138,3 +138,7 @@ export const isLikeJson = (str) => {
 
   return false;
 };
+
+export const highlight = () => {
+  (window as any)?.PR?.prettyPrint();
+};

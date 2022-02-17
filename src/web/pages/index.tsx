@@ -1,10 +1,11 @@
-import { memo, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useContext, useEffect, useMemo, useState } from "react";
 import { Ctx } from "../ctx";
 import useRequest from "../hooks/useRequest";
 import Detail from "./Detail";
 import Table from "./Table";
 import Controller from './Controller';
 import './index.scss';
+import { ws } from '../modules/socket';
 
 const DetailMemo = memo(Detail);
 
@@ -17,7 +18,6 @@ export default () => {
     return detail;
   }, [detail?.custom?.requestId]);
   const [connected, setConnected] = useState(true);
-  const $statusCount = useRef(0);
   useEffect(() => {
     const item = list.find((item: any) => item.custom.requestId === requestId);
     if (item) {
@@ -27,18 +27,13 @@ export default () => {
 
   useEffect(() => {
     dispatch({ type: 'setClean', clean });
+    ws.on('close', () => {
+      setConnected(false);
+    });
+    ws.on('open', () => {
+      setConnected(true);
+    });
 
-    setInterval(() => {
-      if (!(window as any)?.$socket?.connected) {
-        $statusCount.current += 1;
-        if ($statusCount.current >= 5) {
-          setConnected(false);
-        }
-      } else {
-        setConnected(true);
-        $statusCount.current = 0;
-      }
-    }, 500);
   }, []);
 
   useEffect(() => {

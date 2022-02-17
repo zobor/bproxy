@@ -1,4 +1,4 @@
-import { ioRequest } from "./socket";
+import { ioRequest } from "./socket/socket";
 import * as net from "net";
 import * as https from "https";
 import * as http from "http";

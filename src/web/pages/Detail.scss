@@ -302,7 +302,7 @@ $panelHeight: calc(100% - 85px);
   }
 }
 
-.row-body {
+.raw-body {
   position: relative;
   max-width: 800px;
   width: 100%;
@@ -312,15 +312,15 @@ $panelHeight: calc(100% - 85px);
   word-break: break-all;
   white-space: pre-wrap;
   background-color: $cardColor;
-  color: #aaa;
+  color: #fff;
   padding: 15px;
   border-radius: $panelBorderRadius;
   overflow-y: auto;
   overflow-x: hidden;
   line-height: 1.3;
   margin-top: 10px;
-  h1 {
+  .title {
     font-size: 16px;
-    color: rgb(249, 231, 159)
+    color: rgb(22, 160, 133);
   }
 }

@@ -1,4 +1,6 @@
 # bproxy changelog
+#5.0.31
+- chrome-dev-tools
 
 #5.0.29
 - 支持页面调试

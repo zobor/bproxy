@@ -4,14 +4,14 @@ import chalk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as net from "net";
-import { run as weinre2 } from 'weinre2';
+import * as url from 'url';
 import request from 'request';
 import settings from './config';
 import * as pkg from '../../package.json';
 import { httpMiddleware } from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import { isLocal, requestJac } from './routers';
-import { io, onConfigFileChange } from './socket';
+import { ioInit, onConfigFileChange, wsApi, wss } from './socket/socket';
 import { getLocalIpAddress } from './utils/ip';
 import { compareVersion, log, utils } from './utils/utils';
 import { ProxyConfig } from '../types/proxy';
@@ -42,13 +42,8 @@ export default class LocalServer {
     const server = new http.Server();
     const certConfig = httpsMiddleware.beforeStart();
     // websocket server
-    io(server);
+    ioInit(server);
     log.info('✔ WebSocket 服务启动成功');
-    // weinre server
-    if (appConfig.weinre) {
-      weinre2(appConfig.weinre);
-      log.info('✔ Weinre 服务启动成功');
-    }
 
     server.listen(appConfig.port, () => {
       // http
@@ -80,22 +75,52 @@ export default class LocalServer {
       });
       // ws
       server.on('upgrade', (req, socket, head) => {
-        let hostname = req.headers.host;
-        let port = 80;
-        if (hostname === 'bproxy.io') {
-          hostname = '127.0.0.1';
-          port = 8888;
-        } else if (hostname.indexOf(':') > -1) {
-          const hostPort = hostname.split(':');
-          hostname = hostPort[0];
-          port = hostPort[1]
+        const urlObj: any = url.parse(req.url, true);
+        const pathname = urlObj.pathname.split('/');
+
+        const type = pathname[1];
+        const id = pathname[2];
+
+        if (type === 'target' || type === 'client') {
+          wss.handleUpgrade(req, socket, head, ws => {
+            ws.type = type;
+            ws.id = id;
+            const q: any = urlObj.query;
+            if (type === 'target') {
+              ws.pageURL = q.url;
+              ws.title = q.title;
+              ws.favicon = q.favicon;
+            } else {
+              ws.target = q.target;
+            }
+            wss.emit('connection', ws, req);
+          });
+        } else if (type === 'data') {
+          wss.handleUpgrade(req, socket, head, ws => {
+            wsApi(ws);
+          });
+        } else {
+          socket.destroy();
         }
-        const socketAgent = net.connect(port, hostname, () => {
-          try {
-            socketAgent.write(head);
-            socketAgent.pipe(socket)
-          } catch(err) {}
-        });
+        // let hostname = req.headers.host;
+        // console.log(req.headers);
+        // console.log(req.url);
+        // let port = 80;
+        // if (hostname.includes('bproxy.io')) {
+        //   hostname = '127.0.0.1';
+        //   port = 8888;
+        // } else if (hostname.includes(':')) {
+        //   const hostPort = hostname.split(':');
+        //   hostname = hostPort[0];
+        //   port = hostPort[1]
+        // }
+        // console.log(hostname, port);
+        // const socketAgent = net.connect(port, hostname, () => {
+        //   try {
+        //     socketAgent.write(head);
+        //     socketAgent.pipe(socket)
+        //   } catch(err) {}
+        // });
       });
     });
     const ips = getLocalIpAddress();

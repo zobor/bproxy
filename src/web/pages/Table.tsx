@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 
 import { Ctx } from "../ctx";
@@ -14,8 +14,9 @@ import "./Table.scss";
 const Table = (props: any) => {
   const { list } = props;
   const { state, dispatch } = useContext(Ctx);
-  const { requestId, highlight } = state;
+  const { requestId, highlight, filterContentType } = state;
   const $table = useRef<HTMLTableElement>(null);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const onClick = (req: any) => {
     dispatch({ type: "setShowDetail", showDetail: true });
     if (req.custom.requestId) {
@@ -31,13 +32,32 @@ const Table = (props: any) => {
     };
     document.body.addEventListener("keydown", onPressESC);
 
+    const onResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", onResize);
+
     return () => {
       document.body.removeEventListener("keydown", onPressESC);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
+  // const defaultWindowSize = windowWidth < 690 ? 690 : 1326;
+  // const shorthandRate = windowWidth / defaultWindowSize;
+  // const hostPrefixLength = Math.min(parseInt(`${shorthandRate * 8}`, 10), 8);
+  // const hostMaxLength = Math.min(parseInt(`${shorthandRate * 40}`, 10), 40);
+  // const pathPrefixLength = Math.min(parseInt(`${shorthandRate * 15}`, 10),20);
+  // const pathMaxLength = Math.min(parseInt(`${shorthandRate * 40}`, 10), 40);
+  const hostPrefixLength = 8;
+  const hostMaxLength = 40;
+  const pathPrefixLength = 20;
+  const pathMaxLength = 40;
+
   if (list.length === 0) {
-    return <div className="empty-tip">我在等待 HTTP 请求的到来...</div>;
+    return <div className="empty-tip">
+      暂无数据，您可以尝试开启<span>系统代理</span>再试试。
+    </div>;
   }
 
   return (
@@ -49,16 +69,25 @@ const Table = (props: any) => {
             <td>方式</td>
             <td>协议</td>
             <td>域名</td>
-            <td>地址</td>
+            <td>路径</td>
             <td>类型</td>
             <td>大小</td>
             <td>耗时</td>
-            <td>host</td>
+            <td>HOST</td>
           </tr>
         </thead>
 
         <tbody>
-          {list.map((req: HttpRequestRequest) => {
+          {(filterContentType === 'all' ? list : list.filter(item => {
+            const contentType = get(item, 'responseHeaders["content-type"]');
+            if (!contentType) {
+              return false;
+            }
+            if (filterContentType === 'image') {
+              return contentType.includes(filterContentType) || contentType.includes('icon');
+            }
+            return contentType.includes(filterContentType)
+          })).map((req: HttpRequestRequest) => {
             const statusCode = `${req?.custom?.statusCode}`;
             let filesize = get(req, 'responseHeaders["content-length"]');
             const contentType = get(req, 'responseHeaders["content-type"]');
@@ -92,10 +121,10 @@ const Table = (props: any) => {
                 <td className="method">{req?.custom?.method}</td>
                 <td className="protocol">{req?.custom?.protocol}</td>
                 <td className="host" title={req?.custom?.host}>
-                  {shorthand(req?.custom?.host, 8, 20)}
+                  {shorthand(req?.custom?.host, hostPrefixLength, hostMaxLength)}
                 </td>
                 <td className="path" title={req?.custom?.path}>
-                  {shorthand(req?.custom?.path, 15)}
+                  {shorthand(req?.custom?.path, pathPrefixLength, pathMaxLength)}
                 </td>
                 <td className="contentType">
                   {showResponseType(contentType)}

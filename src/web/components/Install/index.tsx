@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
+import { Button, Card, Col, Row } from '../UI';
+import { getLocalIP, getProxyPort } from '../../modules/bridge';
 
-import { bridgeInvoke } from '../../modules/socket';
 import './index.scss';
-import { Card, Col, Row } from '../UI';
 
 const help = `
 MacOS 安装证书：
@@ -19,12 +19,8 @@ export default () => {
   };
 
   useEffect(() => {
-    bridgeInvoke({
-      api: "getLocalProxyPort",
-    }).then((port) => {
-      bridgeInvoke({
-        api: "getLocalIp",
-      }).then((list) => {
+    getProxyPort().then((port) => {
+      getLocalIP().then((list) => {
         const ips = Array.isArray(list) ? list : [];
         const [ip] = ips.filter((item: string) => item !== "127.0.0.1");
         if (ip) {
@@ -38,19 +34,19 @@ export default () => {
   return <div className="install-modal">
     <Row gutter={16}>
       <Col span={8}>
-        <Card title="手机扫码安装证书" bordered={false}>
-          <div className="tip-text">请保持手机跟PC在一个局域网内</div>
+        <Card title="Windows电脑端下载证书" bordered={false}>
+          {href ? <div className="url">{href}</div> : null}
+          {href ? <div><Button type="primary" shape="round" onClick={() => window.open(href)}>下载证书</Button></div> : null}
+        </Card>
+      </Col>
+      <Col span={8}>
+        <Card title="手机端安装证书" bordered={false}>
+          <div className="tip-text">请保持手机跟电脑在一个局域网内</div>
           <canvas ref={$canvas} />
         </Card>
       </Col>
       <Col span={8}>
-        <Card title="PC下载证书" bordered={false}>
-          {href ? <div className="url">{href}</div> : null}
-          {href ? <div><a href={href}>点击下载证书</a></div> : null}
-        </Card>
-      </Col>
-      <Col span={8}>
-        <Card title="MacOS安装证书" bordered={false}>
+        <Card title="MacOS端安装证书" bordered={false}>
           <pre><code>{help}</code></pre>
         </Card>
       </Col>

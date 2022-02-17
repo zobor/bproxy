@@ -26,7 +26,6 @@ export interface HttpRequestRequest {
   };
   postData?: {
     [key: string]: any;
-    $$type?: string;
   };
   ip?: string;
 }

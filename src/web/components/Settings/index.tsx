@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { getVersion } from '../../modules/bridge';
 import { Form, Input, Radio } from '../UI';
 import './index.scss';
 
@@ -19,6 +21,11 @@ const onChange = (e) => {
 };
 
 export default () => {
+  const [version, setVersion] = useState<string>('');
+
+  useEffect(() => {
+    getVersion().then((v: any) => setVersion(v));
+  }, []);
   return (
     <div className="dialog-settings">
       <Form name="time_related_controls" {...formItemLayout}>
@@ -30,8 +37,12 @@ export default () => {
             <Radio value={1.1}>10%</Radio>
             <Radio value={1.2}>20%</Radio>
             <Radio value={1.3}>30%</Radio>
-            <Radio value={1.4}>40%</Radio>
           </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label="版本号"
+        >
+          <div>{version}</div>
         </Form.Item>
       </Form>
     </div>

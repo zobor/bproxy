@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import classNames from "classnames";
 
 import RuleTest from "../components/ruleTest";
@@ -6,7 +6,6 @@ import useBool from "../hooks/useBool";
 import { Ctx } from "../ctx";
 import Filter from '../components/Filter';
 import Install from "../components/Install";
-import SystemProxy from '../components/SystemProxy';
 import {
   BugOutlined,
   ClearOutlined,
@@ -18,14 +17,14 @@ import {
   UsbOutlined,
   CodeOutlined,
   SettingOutlined,
-  FunctionOutlined,
 } from "../components/UI";
 
 import "./Controller.scss";
 import ConfigEditor from '../components/ConfigEditor';
-import CodeRunner from '../components/CodeRunner';
 import Settings from '../components/Settings';
 import Weinre from '../components/Weinre';
+import { activeProxy, checkProxy, disActiveProxy } from "../modules/bridge";
+import { ws } from '../modules/socket';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
@@ -53,32 +52,22 @@ const RuleTestModal = (props) => {
 const FilterModal = (props) => {
   return (
     <ControllerDialog
-      title="过滤HTTP日志"
+      title="过滤 HTTP 日志"
       width={700}
       {...props}
     >
-      <Filter visible={props.visible} />
+      <Filter />
     </ControllerDialog>
   );
 };
 
 const InstallModal = (props) => {
   return <ControllerDialog
-    title="安装HTTPS证书"
+    title="安装 HTTPS 证书"
     width={800}
     {...props}
   >
     <Install />
-  </ControllerDialog>
-};
-
-const SystemProxylModal = (props) => {
-  return <ControllerDialog
-    title="系统代理开关"
-    width={500}
-    {...props}
-  >
-    <SystemProxy />
   </ControllerDialog>
 };
 
@@ -89,16 +78,6 @@ const ConfigModal = (props) => {
     {...props}
   >
     <ConfigEditor onCancel={props.onCancel} />
-  </ControllerDialog>
-};
-
-const CodeRunnerModal = (props) => {
-  return <ControllerDialog
-    title="代码远程调用"
-    width="90vw"
-    {...props}
-  >
-    <CodeRunner />
   </ControllerDialog>
 };
 
@@ -115,7 +94,7 @@ const SettingsModal = (props) => {
 const WeinreModal = (props) => {
   return <ControllerDialog
     title="页面调试"
-    width={1000}
+    width={500}
     {...props}
   >
     <Weinre />
@@ -133,22 +112,20 @@ const Disconnected = () => <div className="disconnected">
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
-  const { proxySwitch, clean, disableCache, filterString } = state;
+  const { proxySwitch, clean, filterString, filterContentType } = state;
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } =
     useBool(false);
-  const { state: isShowSystemProxy, toggle: toggleShowSystemProxy } =
-    useBool(false);
   const { state: isShowConfig, toggle: toggleShowConfig } =
     useBool(false);
-  const { state: isShowCodeRunner, toggle: toggleShowCodeRunner } =
     useBool(false);
   const { state: isShowSettings, toggle: toggleShowSettings } =
     useBool(false);
   const { state: isShowWeinre, toggle: toggleShowWeinre } =
     useBool(false);
+  const { state: systemProxyStatus, toggle: toggleSystemProxyStatus} = useBool(false);
 
   const toggleSwitch = useCallback(() => {
     dispatch({ type: "setProxySwitch", proxySwitch: !proxySwitch });
@@ -158,15 +135,32 @@ const Controller = (props: ControllerProps) => {
       clean();
     }
   };
+  const onClickSystemProxy = useCallback(() => {
+    if (systemProxyStatus) {
+      disActiveProxy();
+    } else {
+      activeProxy();
+    }
+    toggleSystemProxyStatus();
+  }, [systemProxyStatus]);
+  useEffect(() => {
+    ws.on('open', () => {
+      checkProxy().then(isOpen => {
+        if (isOpen) {
+          toggleSystemProxyStatus();
+        } else {
+          activeProxy();
+          toggleSystemProxyStatus();
+        }
+      });
+    });
 
-  // useEffect(() => {
-  //   bridgeInvoke({
-  //     api: 'getVersion',
-  //   }).then((rs) => {
-  //     setVersion(rs as string);
-  //   });
-  // }, [])
+    const closeProxySettings = () => {
+      disActiveProxy();
+    };
 
+    window.addEventListener('beforeunload', closeProxySettings);
+  }, []);
 
   return (
     <div className="controller">
@@ -186,7 +180,7 @@ const Controller = (props: ControllerProps) => {
       </div>
       <div onClick={toggleShowInstall}>
         <WifiOutlined />
-        <span>手机调试</span>
+        <span>安装证书</span>
       </div>
       <div onClick={toggleShowRuleTest}>
         <BugOutlined />
@@ -194,11 +188,19 @@ const Controller = (props: ControllerProps) => {
       </div>
       <div
         onClick={toggleShowFilter}
+        className={classNames({
+          warn: !!filterString || filterContentType !== 'all',
+        })}
       >
         <FilterOutlined />
         <span>过滤规则</span>
       </div>
-      <div onClick={toggleShowSystemProxy}>
+      <div
+        className={classNames({
+          [systemProxyStatus ? 'warn' : 'disabled']: true,
+        })}
+        onClick={onClickSystemProxy}
+      >
         <MacCommandOutlined />
         <span>系统代理</span>
       </div>
@@ -206,25 +208,19 @@ const Controller = (props: ControllerProps) => {
         <UsbOutlined />
         <span>配置文件</span>
       </div>
-      <div onClick={toggleShowCodeRunner}>
-        <CodeOutlined />
-        <span>远程调用</span>
-      </div>
       <div onClick={toggleShowWeinre}>
-        <FunctionOutlined />
+        <CodeOutlined />
         <span>页面调试</span>
       </div>
       <div onClick={toggleShowSettings}>
         <SettingOutlined />
-        <span>个性化</span>
+        <span>设置</span>
       </div>
 
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
-      <SystemProxylModal onCancel={toggleShowSystemProxy} visible={isShowSystemProxy} />
       <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
-      <CodeRunnerModal onCancel={toggleShowCodeRunner} visible={isShowCodeRunner} />
       <SettingsModal onCancel={toggleShowSettings} visible={isShowSettings} />
       <WeinreModal onCancel={toggleShowWeinre} visible={isShowWeinre} />
     </div>

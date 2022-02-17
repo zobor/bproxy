@@ -9,4 +9,3 @@ bproxy.config*.js
 yarn.lock
 mock/
 node_modules/
-coverage/

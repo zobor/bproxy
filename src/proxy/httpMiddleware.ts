@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as url from 'url';
 import { matcher } from './matcher';
-import { ioRequest } from './socket';
+import { ioRequest } from './socket/socket';
 import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
 import { hookConsoleLog, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
@@ -335,10 +335,7 @@ export const httpMiddleware = {
               } else if (!encoding) {
                 str = buf.toString();
               }
-              ioRequest({
-                requestId: req.$requestId,
-                responseBody: str,
-              });
+
               if (debug) {
                 const txt = hookConsoleLog(str, debug);
                 let resData = txt;
@@ -346,6 +343,15 @@ export const httpMiddleware = {
                   resData = pako.gzip(txt);
                 }
                 responseText(resData, res);
+                ioRequest({
+                  requestId: req.$requestId,
+                  responseBody: txt,
+                });
+              } else {
+                ioRequest({
+                  requestId: req.$requestId,
+                  responseBody: str,
+                });
               }
             });
           }
@@ -359,9 +365,6 @@ export const httpMiddleware = {
           res.writeHead(statusCode, headers);
         })
         .on("error", (err) => {
-          // log.warn(
-          //   `[http request error]: message-->${err.message} url--->${rOpts.url}`
-          // );
           res.writeHead(500, {});
           res.end(err.message);
           ioRequest({
