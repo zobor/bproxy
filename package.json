@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.0.31",
+  "version": "5.0.32",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"

@@ -148,9 +148,18 @@ const Controller = (props: ControllerProps) => {
       checkProxy().then(isOpen => {
         if (isOpen) {
           toggleSystemProxyStatus();
+        } else {
+          activeProxy();
+          toggleSystemProxyStatus();
         }
       });
     });
+
+    const closeProxySettings = () => {
+      disActiveProxy();
+    };
+
+    window.addEventListener('beforeunload', closeProxySettings);
   }, []);
 
   return (
