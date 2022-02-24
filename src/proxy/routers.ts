@@ -52,8 +52,16 @@ const responseChromeDev = (req, res) => {
   const headers = {};
   let { url } = req;
   url = url.replace(/\?\S+/, '');
+  let chromeRoot = path.resolve(__dirname, '../../chrome-dev-tools/');
+  if (!fs.existsSync(chromeRoot)) {
+    chromeRoot = path.resolve(__dirname, '../../../chrome-dev-tools/');
+    if (!fs.existsSync(chromeRoot)) {
+      console.log(`文件查找失败：${chromeRoot}`);
+      process.exit(0);
+    }
+  }
   if (url === '/chrome-dev-tools/') {
-    const file = fs.createReadStream(path.resolve(__dirname, '../../chrome-dev-tools/devtools_app.html'));
+    const file = fs.createReadStream(path.resolve(chromeRoot, 'devtools_app.html'));
     file.pipe(res);
     headers['content-type'] = 'text/html; charset=utf-8';
     res.writeHead(200, headers);
@@ -67,7 +75,7 @@ const responseChromeDev = (req, res) => {
   }  else if (filename.includes('.svg')) {
     headers['content-type'] = 'image/svg+xml';
   }
-  const file = fs.createReadStream(path.resolve(__dirname, `../../chrome-dev-tools/${filename}`));
+  const file = fs.createReadStream(path.resolve(chromeRoot, filename));
   file.pipe(res);
   res.writeHead(200, headers);
 };
