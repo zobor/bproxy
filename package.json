@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.0.34",
+  "version": "5.0.35",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -27,7 +27,8 @@
     "mkdirp": "1.0.4",
     "node-forge": "1.2.1",
     "pako": "2.0.4",
-    "request": "2.88.2"
+    "request": "2.88.2",
+    "ws": "8.5.0"
   },
   "devDependencies": {
     "@ant-design/icons": "4.7.0",
@@ -67,7 +68,6 @@
     "@uiw/react-codemirror": "4.2.4",
     "chobitsu": "0.3.3",
     "licia": "1.34.0",
-    "ws": "8.5.0",
     "rxjs": "7.5.1",
     "cross-env": "7.0.3"
   },
