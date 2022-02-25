@@ -1,5 +1,5 @@
 # bproxy changelog
-#5.0.31
+#5.0.35
 - chrome-dev-tools
 
 #5.0.29
