@@ -60,6 +60,14 @@ export default {
       this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
         fakeServer: null,
       });
+      req.$requestId = utils.guid();
+      ioRequest({
+        requestId: req.$requestId,
+        url: `https://${urlParsed.hostname}`,
+        method: 'connect',
+        requestHeaders: {},
+        responseBody: '',
+      });
       return;
     }
 
@@ -120,7 +128,6 @@ export default {
       if (socketAgent.destroyed || others?.fakeServer?.$url || others?.fakeServer?.$upgrade) {
         return;
       }
-      // log.warn(`[timeout]--> ${$hostname}:${$port} --> ${hostname}:${port}`);
       others?.fakeServer?.close();
       socketAgent?.end();
       socketAgent?.destroy();

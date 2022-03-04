@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { parseFormData, parseJsonData } from '../../proxy/utils/format';
 import { InvokeRequestParams } from "../../types/proxy";
 import { HttpRequestRequest } from "../../types/web";
 import { onRequest } from "../modules/socket";
 import {
   filterRequestItem,
   filterRequestList,
-  parseRequest,
+  parseRequest
 } from "../modules/util";
 import { get } from '../modules/_';
-import { parseFormData, parseJsonData } from '../../proxy/utils/format';
 
 const limit = 500;
 

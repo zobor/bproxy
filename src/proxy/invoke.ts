@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import * as URL from 'url';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import { matcher } from './matcher';
@@ -12,7 +13,23 @@ import { channelManager } from './socket/socket';
 
 export const test = async (url: string) => {
   const { config } = dataset;
+  if (!/https?:\/\//.test(url)) {
+    return {
+      error: '不是有效的URL'
+    };
+  }
   if (config) {
+    if (!config.sslAll) {
+      const urlParsed = URL.parse(url);
+      const { protocol, host, port } = urlParsed;
+      const hostname = `${host}:${port||443}`;
+      if (protocol === 'https:' && !config.https?.includes(hostname)) {
+        return {
+          error: `您开启了https白名单，当前url域名(${hostname})不在白名单`,
+          help: `请将 ${hostname} 添加到bproxy.config.js的https字段配置中`,
+        };
+      }
+    }
     const matchResult = _.cloneDeep(matcher(config.rules, url));
 
     for (const key in matchResult) {
@@ -30,6 +47,12 @@ export const test = async (url: string) => {
 
   return {};
 }
+
+const conf = require('../../../../work/dy-channel/bproxy.config');
+dataset.config = conf;
+test('https://baidu.com/a').then(rs => {
+  console.log(rs)
+})
 
 export const getLocalIp = async() => {
   return getLocalIpAddress();
