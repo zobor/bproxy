@@ -1,21 +1,19 @@
-import { ioRequest } from "./socket/socket";
-import * as net from "net";
-import * as https from "https";
+import * as fs from "fs";
 import * as http from "http";
+import * as https from "https";
+import * as net from "net";
+import * as forge from "node-forge";
 import * as tls from "tls";
 import * as url from "url";
-import * as forge from "node-forge";
-import * as fs from "fs";
+import { ProxyConfig } from "../types/proxy";
 import Certificate from "./certifica";
 import { httpMiddleware } from "./httpMiddleware";
-import {
-  createHttpHeader,
-  utils,
-  isHttpsHostRegMatch,
-  log,
-} from "./utils/utils";
-import { ProxyConfig } from "../types/proxy";
 import { matcher } from "./matcher";
+import { ioRequest } from "./socket/socket";
+import {
+  createHttpHeader, isHttpsHostRegMatch,
+  log, utils
+} from "./utils/utils";
 
 const { pki } = forge;
 let certInstance;
@@ -124,15 +122,15 @@ export default {
       }
     })
 
-    timer = setTimeout(() => {
-      if (socketAgent.destroyed || others?.fakeServer?.$url || others?.fakeServer?.$upgrade) {
-        return;
-      }
-      others?.fakeServer?.close();
-      socketAgent?.end();
-      socketAgent?.destroy();
-      socket?.end();
-    }, (10 * 1000));
+    // timer = setTimeout(() => {
+    //   if (socketAgent.destroyed || others?.fakeServer?.$url || others?.fakeServer?.$upgrade) {
+    //     return;
+    //   }
+    //   others?.fakeServer?.close();
+    //   socketAgent?.end();
+    //   socketAgent?.destroy();
+    //   socket?.end();
+    // }, (10 * 1000));
   },
 
   startLocalHttpsServer(

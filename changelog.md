@@ -1,4 +1,8 @@
 # bproxy changelog
+
+#5.0.37
+- 修复websocket自动断开的问题
+
 #5.0.35
 - chrome-dev-tools
 

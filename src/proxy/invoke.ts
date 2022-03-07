@@ -1,15 +1,15 @@
 import fs from 'fs';
-import path from 'path';
-import * as URL from 'url';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
+import path from 'path';
+import * as URL from 'url';
+import * as pkg from '../../package.json';
 import { matcher } from './matcher';
+import { channelManager } from './socket/socket';
 import dataset from './utils/dataset';
 import { getLocalIpAddress } from './utils/ip';
 export * from './macos/os';
 export * from './systemProxy';
-import * as pkg from '../../package.json';
-import { channelManager } from './socket/socket';
 
 export const test = async (url: string) => {
   const { config } = dataset;
@@ -47,12 +47,6 @@ export const test = async (url: string) => {
 
   return {};
 }
-
-const conf = require('../../../../work/dy-channel/bproxy.config');
-dataset.config = conf;
-test('https://baidu.com/a').then(rs => {
-  console.log(rs)
-})
 
 export const getLocalIp = async() => {
   return getLocalIpAddress();
