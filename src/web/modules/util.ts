@@ -142,3 +142,7 @@ export const isLikeJson = (str) => {
 export const highlight = () => {
   (window as any)?.PR?.prettyPrint();
 };
+
+export const objectToUrlQueryString = (obj) => {
+  return Object.keys(obj).map(key => `${key}=${obj[key]}`).join('&');
+};

@@ -1,32 +1,33 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import copy from 'copy-to-clipboard';
 import classNames from 'classnames';
+import copy from 'copy-to-clipboard';
 import moment from 'moment';
-
-import { Ctx } from '../ctx';
-import { buffer2string, textDecode } from '../modules/buffer';
-import JSONFormat from '../libs/jsonFormat';
-import { tabList } from './settings';
-import { Button, message, Modal, Tooltip } from '../components/UI';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { isDetailViewAble } from '../../proxy/utils/is';
 import SImage from '../components/SImage';
-import { get, isObject, isString, isEmpty, isArray, omit } from '../modules/_';
+import { Button, message, Modal, Tooltip } from '../components/UI';
+import { Ctx } from '../ctx';
+import useBool from '../hooks/useBool';
+import '../libs/code-prettify.css';
+import JSONFormat from '../libs/jsonFormat';
+import {
+  getConfigFilePath,
+  insertRemoteInspectRule,
+  updateConfigFile
+} from '../modules/bridge';
+import { buffer2string, textDecode } from '../modules/buffer';
+import { openUrl } from '../modules/interactive';
 import {
   findLinkFromString,
   formatWsSymbol,
   highlight,
   isLikeJson,
+  objectToUrlQueryString
 } from '../modules/util';
-import { isDetailViewAble } from '../../proxy/utils/is';
-import { openUrl } from '../modules/interactive';
-import useBool from '../hooks/useBool';
-import {
-  getConfigFilePath,
-  insertRemoteInspectRule,
-  updateConfigFile,
-} from '../modules/bridge';
-
-import '../libs/code-prettify.css';
+import { get, isArray, isEmpty, isObject, isString } from '../modules/_';
 import './Detail.scss';
+import { tabList } from './settings';
+
+
 
 // 提示304解决办法
 const remove304 = (path: string) => {
@@ -398,7 +399,7 @@ const RawViewer = ({detail, isJSON}) => {
   return (
     <div className="raw-body scrollbar-style">
       <div className="title">URL Query</div>
-      <div>{isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}</div>
+      <div>{isEmpty(detail.requestParams) ? '无' : objectToUrlQueryString(detail.requestParams)}</div>
       <div  className="title">POST Data</div>
       <div>{isEmpty(postData) ? "无" : postData}</div>
       <div className="title">Request Headers</div>
