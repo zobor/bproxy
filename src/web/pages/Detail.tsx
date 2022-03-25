@@ -20,8 +20,8 @@ import {
   findLinkFromString,
   formatWsSymbol,
   highlight,
-  isLikeJson,
-  objectToUrlQueryString
+
+  isLikeJson
 } from '../modules/util';
 import { get, isArray, isEmpty, isObject, isString } from '../modules/_';
 import './Detail.scss';
@@ -399,11 +399,11 @@ const RawViewer = ({detail, isJSON}) => {
   return (
     <div className="raw-body scrollbar-style">
       <div className="title">URL Query</div>
-      <div>{isEmpty(detail.requestParams) ? '无' : objectToUrlQueryString(detail.requestParams)}</div>
+      <div style={{color:'rgb(229, 152, 102)'}}>{isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}</div>
       <div  className="title">POST Data</div>
-      <div>{isEmpty(postData) ? "无" : postData}</div>
+      <div style={{color: 'rgb(229, 152, 102)'}}>{isEmpty(postData) ? "无" : postData}</div>
       <div className="title">Request Headers</div>
-      <div>{JSON.stringify(detail.requestHeaders)}</div>
+      <div style={{color: '#999', fontSize: 12 }}>{JSON.stringify(detail.requestHeaders)}</div>
       <div className="title">Response</div>
       <div>{isJSON ? body : null} </div>
     </div>

@@ -1,41 +1,47 @@
-import { useCallback, useContext, useEffect } from "react";
-import classNames from "classnames";
-
-import RuleTest from "../components/ruleTest";
-import useBool from "../hooks/useBool";
-import { Ctx } from "../ctx";
+import classNames from 'classnames';
+import { useCallback, useContext, useEffect } from 'react';
+import ConfigEditor from '../components/ConfigEditor';
 import Filter from '../components/Filter';
-import Install from "../components/Install";
+import Install from '../components/Install';
+import RuleTest from '../components/ruleTest';
+import Settings from '../components/Settings';
 import {
   BugOutlined,
   ClearOutlined,
+  CodeOutlined,
   FilterOutlined,
   MacCommandOutlined,
+  message,
   Modal,
   PlayCircleOutlined,
-  WifiOutlined,
-  UsbOutlined,
-  CodeOutlined,
   SettingOutlined,
-} from "../components/UI";
-
-import "./Controller.scss";
-import ConfigEditor from '../components/ConfigEditor';
-import Settings from '../components/Settings';
+  UsbOutlined,
+  WifiOutlined
+} from '../components/UI';
 import Weinre from '../components/Weinre';
-import { activeProxy, checkProxy, disActiveProxy } from "../modules/bridge";
+import { Ctx } from '../ctx';
+import useBool from '../hooks/useBool';
+import { activeProxy, checkProxy, disActiveProxy } from '../modules/bridge';
 import { ws } from '../modules/socket';
+import './Controller.scss';
 
 const ControllerDialog = ({ title, children, visible, ...others }) => {
   if (!visible) {
     return null;
   }
   return (
-    <Modal centered title={title} visible={visible} footer={null} width={1000} {...others}>
+    <Modal
+      centered
+      title={title}
+      visible={visible}
+      footer={null}
+      width={1000}
+      {...others}
+    >
       {children}
     </Modal>
   );
-}
+};
 
 const RuleTestModal = (props) => {
   return (
@@ -51,63 +57,51 @@ const RuleTestModal = (props) => {
 
 const FilterModal = (props) => {
   return (
-    <ControllerDialog
-      title="过滤 HTTP 日志"
-      width={700}
-      {...props}
-    >
+    <ControllerDialog title="过滤 HTTP 日志" width={700} {...props}>
       <Filter />
     </ControllerDialog>
   );
 };
 
 const InstallModal = (props) => {
-  return <ControllerDialog
-    title="安装 HTTPS 证书"
-    width={800}
-    {...props}
-  >
-    <Install />
-  </ControllerDialog>
+  return (
+    <ControllerDialog title="安装 HTTPS 证书" width={800} {...props}>
+      <Install />
+    </ControllerDialog>
+  );
 };
 
 const ConfigModal = (props) => {
-  return <ControllerDialog
-    title="编辑配置文件"
-    width={900}
-    {...props}
-  >
-    <ConfigEditor onCancel={props.onCancel} />
-  </ControllerDialog>
+  return (
+    <ControllerDialog title="编辑配置文件" width={900} {...props}>
+      <ConfigEditor onCancel={props.onCancel} />
+    </ControllerDialog>
+  );
 };
 
 const SettingsModal = (props) => {
-  return <ControllerDialog
-    title="个性化设置"
-    width={1000}
-    {...props}
-  >
-    <Settings />
-  </ControllerDialog>
+  return (
+    <ControllerDialog title="个性化设置" width={1000} {...props}>
+      <Settings />
+    </ControllerDialog>
+  );
 };
 
 const WeinreModal = (props) => {
-  return <ControllerDialog
-    title="页面调试"
-    width={500}
-    {...props}
-  >
-    <Weinre />
-  </ControllerDialog>
+  return (
+    <ControllerDialog title="页面调试" width={500} {...props}>
+      <Weinre />
+    </ControllerDialog>
+  );
 };
 
 interface ControllerProps {
   connected?: boolean;
 }
 
-const Disconnected = () => <div className="disconnected">
-  bproxy 已经停止工作，等待连接中...
-</div>
+const Disconnected = () => (
+  <div className="disconnected">bproxy 已经停止工作，等待连接中...</div>
+);
 
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
@@ -116,19 +110,16 @@ const Controller = (props: ControllerProps) => {
 
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
-  const { state: isShowInstall, toggle: toggleShowInstall } =
+  const { state: isShowInstall, toggle: toggleShowInstall } = useBool(false);
+  const { state: isShowConfig, toggle: toggleShowConfig } = useBool(false);
+  useBool(false);
+  const { state: isShowSettings, toggle: toggleShowSettings } = useBool(false);
+  const { state: isShowWeinre, toggle: toggleShowWeinre } = useBool(false);
+  const { state: systemProxyStatus, toggle: toggleSystemProxyStatus } =
     useBool(false);
-  const { state: isShowConfig, toggle: toggleShowConfig } =
-    useBool(false);
-    useBool(false);
-  const { state: isShowSettings, toggle: toggleShowSettings } =
-    useBool(false);
-  const { state: isShowWeinre, toggle: toggleShowWeinre } =
-    useBool(false);
-  const { state: systemProxyStatus, toggle: toggleSystemProxyStatus} = useBool(false);
 
   const toggleSwitch = useCallback(() => {
-    dispatch({ type: "setProxySwitch", proxySwitch: !proxySwitch });
+    dispatch({ type: 'setProxySwitch', proxySwitch: !proxySwitch });
   }, [proxySwitch]);
   const onClean = () => {
     if (clean) {
@@ -142,24 +133,22 @@ const Controller = (props: ControllerProps) => {
       activeProxy();
     }
     toggleSystemProxyStatus();
+    message.success(!systemProxyStatus ? '系统代理已开启' : '系统代理已关闭');
   }, [systemProxyStatus]);
   useEffect(() => {
     ws.on('open', () => {
-      checkProxy().then(isOpen => {
+      checkProxy().then((isOpen) => {
         if (isOpen) {
-          toggleSystemProxyStatus();
-        } else {
-          activeProxy();
           toggleSystemProxyStatus();
         }
       });
     });
 
-    const closeProxySettings = () => {
-      disActiveProxy();
-    };
+    // const closeProxySettings = () => {
+    //   disActiveProxy();
+    // };
 
-    window.addEventListener('beforeunload', closeProxySettings);
+    // window.addEventListener('beforeunload', closeProxySettings);
   }, []);
 
   return (

@@ -50,11 +50,13 @@ export default {
   // https代理入口
   proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
     const { https: httpsList, sslAll } = config;
-    const urlParsed = url.parse(`https://${req.url}`);
+    const httpsUrl = `https://${req.url}`;
+    const urlParsed = url.parse(httpsUrl);
     const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, urlParsed.host);
+    const matcherResult = matcher(config.rules, httpsUrl);
 
     // 没有开启https抓取的队列 直接放过 不需要构建代理服务器
-    if (!isHttpsMatch) {
+    if (!isHttpsMatch && !matcherResult?.matched) {
       this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
         fakeServer: null,
       });

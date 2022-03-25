@@ -8,19 +8,33 @@ const port = location.port === '8889' ? '8888' : location.port;
 const url = `ws://127.0.0.1:${port}/data`;
 export const ws = new WS({ url });
 
+const cache: any = {};
+
 export function onRequest(callback) {
-  ws.on('request', ({ payload }) => {
+  if (cache.onRequest) {
+    cache.onRequest.unsubscribe();
+  }
+  cache.onRequest = ws.on('request', ({ payload }) => {
     callback(payload);
   });
 }
 export function onConfigFileChange(callback) {
-  ws.on('onConfigFileChange', callback);
+  if (cache.onConfigFileChange) {
+    cache.onConfigFileChange.unsubscribe();
+  }
+  cache.onConfigFileChange = ws.on('onConfigFileChange', callback);
 }
 export function onDebuggerClientChange(callback) {
-  ws.on('onDebuggerClientChange', callback);
+  if (cache.onDebuggerClientChange) {
+    cache.onDebuggerClientChange.unsubscribe();
+  }
+  cache.onDebuggerClientChange = ws.on('onDebuggerClientChange', callback);
 }
 export function onDebuggerClientChangeUnmount(callback) {
-  ws.on('onDebuggerClientChangeUnmount', callback);
+  if (cache.onDebuggerClientChangeUnmount) {
+    cache.onDebuggerClientChangeUnmount.unsubscribe();
+  }
+  cache.onDebuggerClientChangeUnmount = ws.on('onDebuggerClientChangeUnmount', callback);
 }
 
 const bridgeCallback = {};

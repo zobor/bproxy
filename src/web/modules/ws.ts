@@ -1,4 +1,4 @@
-import { BehaviorSubject  } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 interface WsConfig {
   url?: string;
@@ -49,14 +49,14 @@ class WS {
   }
   on(type: string, callback) {
     const $channel = this.checkAndCreate(type);
-    $channel.subscribe(callback);
+    return $channel.subscribe(callback);
   }
   once(type: string, callback) {
     if (this.$stream[type]) {
       return;
     }
     const $channel = this.checkAndCreate(type);
-    $channel.subscribe(callback);
+    return $channel.subscribe(callback);
   }
   emit(type: string, data?: any) {
     const $channel = this.checkAndCreate(type);

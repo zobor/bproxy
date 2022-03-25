@@ -1,10 +1,10 @@
-import React, { useReducer, lazy, Suspense, PropsWithoutRef, useEffect, useRef } from 'react';
-import { Route, HashRouter, Switch } from 'react-router-dom';
+import 'animate.css';
+import React, { lazy, PropsWithoutRef, Suspense, useEffect, useReducer, useRef } from 'react';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+import './App.scss';
 import { Ctx, defaultState, reducer } from './ctx';
 import { omit } from './modules/_';
 
-import './App.scss';
-import 'animate.css';
 
 const keepAliveCache: Record<string, React.MemoExoticComponent<React.ComponentType<any>>> = {};
 

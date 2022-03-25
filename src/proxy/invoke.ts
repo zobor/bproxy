@@ -19,7 +19,9 @@ export const test = async (url: string) => {
     };
   }
   if (config) {
-    if (!config.sslAll) {
+    const matchResult = _.cloneDeep(matcher(config.rules, url));
+
+    if (!config.sslAll && !matchResult.matched) {
       const urlParsed = URL.parse(url);
       const { protocol, host, port } = urlParsed;
       const hostname = `${host}:${port||443}`;
@@ -30,7 +32,6 @@ export const test = async (url: string) => {
         };
       }
     }
-    const matchResult = _.cloneDeep(matcher(config.rules, url));
 
     for (const key in matchResult) {
       if (key === 'rule') {

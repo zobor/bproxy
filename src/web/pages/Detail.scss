@@ -51,7 +51,7 @@ $panelHeight: calc(100% - 85px);
       display: flex;
       align-items: center;
       background-color: $cardColor;
-      height: 35px;
+      height: 30px;
       box-shadow: $cardColor 0px 10px 10px -10px;
     }
 
@@ -66,19 +66,14 @@ $panelHeight: calc(100% - 85px);
         text-align: center;
         cursor: pointer;
         font-weight: bold;
-        font-size: 19px;
+        font-size: 16px;
         display: inline-flex;
         align-items: center;
         color: #999;
 
         &.active {
-          color: #D35400;
-          background-image: var(--rainbow-gradient,#fff);
+          color: rgb(231, 76, 60);
           background-repeat: repeat;
-          background-size: 100%;
-          -webkit-text-fill-color: transparent;
-          -webkit-background-clip: text;
-          filter: drop-shadow(0 0 2rem #000);
         }
       }
     }
@@ -304,7 +299,7 @@ $panelHeight: calc(100% - 85px);
 
 .raw-body {
   position: relative;
-  max-width: 800px;
+  // max-width: 800px;
   width: 100%;
   height: $panelHeight;
   margin: 0 auto;
@@ -314,11 +309,11 @@ $panelHeight: calc(100% - 85px);
   background-color: $cardColor;
   color: #fff;
   padding: 15px;
-  border-radius: $panelBorderRadius;
+  // border-radius: $panelBorderRadius;
   overflow-y: auto;
   overflow-x: hidden;
   line-height: 1.3;
-  margin-top: 10px;
+  margin-top: 3px;
   .title {
     font-size: 16px;
     color: rgb(22, 160, 133);
