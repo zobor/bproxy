@@ -95,9 +95,9 @@ npm i bproxy -g
 `package.json`
 ```json
 {
-    "scripts": {
-        "proxy": "bproxy"
-    }
+  "scripts": {
+      "proxy": "bproxy"
+  }
 }
 ```
 

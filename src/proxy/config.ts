@@ -8,13 +8,6 @@ const config: ProxyConfig = {
   https: [],
   sslAll: true,
   host: [],
-  weinre: {
-    verbose: false,
-    debug: false,
-    readTimeout: 5,
-    deathTimeout: 15,
-    httpPort: 9527,
-  },
   rules: [
     {
       regx: 'https://google.com/bproxy',

@@ -7,7 +7,7 @@ const config = {
   https: [],
   sslAll: true,
   host: [],
-  rules: [{ regx: "baidu.com/bproxy", response: "hello bproxy\n" }],
+  rules: [{ regx: "google.com/bproxy", response: "hello bproxy\n" }],
 };
 module.exports = config;
 ```
