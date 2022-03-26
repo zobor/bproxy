@@ -96,11 +96,11 @@ export const formatFileSize = (str) => {
   return `${num}B`;
 };
 
-export const shorthand = (str, len = 20, max = 40) => {
+export const shorthand = (str, leftLength = 20, max = 40) => {
   if (str.length > max) {
     const arr = str.split("");
-    const arr1 = take(arr, len);
-    const arr2 = takeRight(arr, len);
+    const arr1 = take(arr, leftLength);
+    const arr2 = takeRight(arr, leftLength);
 
     return `${arr1.join("")}...${arr2.join("")}`;
   }

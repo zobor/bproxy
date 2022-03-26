@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { isDetailViewAble } from '../../proxy/utils/is';
 import SImage from '../components/SImage';
 import { Button, message, Modal, Tooltip } from '../components/UI';
+import ViewAll from '../components/ViewAll';
 import { Ctx } from '../ctx';
 import useBool from '../hooks/useBool';
 import '../libs/code-prettify.css';
@@ -20,7 +21,6 @@ import {
   findLinkFromString,
   formatWsSymbol,
   highlight,
-
   isLikeJson
 } from '../modules/util';
 import { get, isArray, isEmpty, isObject, isString } from '../modules/_';
@@ -118,7 +118,7 @@ const CookiesView = (props: {
             <tr key={`${arr[0]}-${arr[1]}`}>
               <td>{arr[0]}</td>
               <td onClick={(e) => copyText(e, text)}>
-                <span>{text}</span>
+                <ViewAll limit={70}>{text}</ViewAll>
               </td>
             </tr>
           ) : null;
@@ -130,6 +130,7 @@ const CookiesView = (props: {
 
 // key value 表格视图
 const keyValueTable = (objects) => {
+  console.log(111, objects)
   return (
     <table className="kv-table">
       {Object.keys(objects)
@@ -152,7 +153,7 @@ const keyValueTable = (objects) => {
           }
           const text = isObject(dataValue)
             ? JSON.stringify(dataValue)
-            : (dataValue || '').toString();
+            : (dataValue).toString();
 
           return (
             <tr key={key}>
@@ -167,8 +168,10 @@ const keyValueTable = (objects) => {
                 </span>
               </td>
               <td>
-                <span title={text} className="max-text-limit2">
-                  <span onClick={(e) => copyText(e, text)}>{text}</span>{' '}
+                <span className="max-text-limit2">
+                  <span onClick={(e) => copyText(e, text)}>
+                    <ViewAll limit={50}>{text}</ViewAll>
+                  </span>
                   {isLikeJson(text) ? (
                     <span
                       onClick={showFormatJson.bind(null, text)}
@@ -377,6 +380,51 @@ const URLViewer = (props) => {
   );
 };
 
+// kv
+const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
+  const data = detail[detailActiveTab];
+  if (Array.isArray(data)) {
+    return (
+      <div className="form scrollbar-style body-panel">
+        <table className="data-table">
+          {data.map((item) => (
+            <tr>
+              <td onClick={(e) => copyText(e, item[0])}>{item[0]}</td>
+              <td onClick={(e) => copyText(e, decodeURIComponent(item[1]))}>{decodeURIComponent(item[1])}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+    );
+  }
+  return (
+    <div
+      className={classNames({
+        'form scrollbar-style body-panel': true,
+        empty: isEmpty(data),
+      })}
+    >
+      {!isEmpty(data)
+        ? keyValueTable(data)
+        : null}
+      {detailActiveTab === 'requestHeaders' ? (
+        <CookiesView cookies={cookies} />
+      ) : null}
+    </div>
+  );
+};
+
+// params
+const ParamsView = ({detail}) => {
+  return <div className="params-view">
+    <h4>URL参数</h4>
+    <KeyValueViewer detail={detail} detailActiveTab="requestParams" cookies={[]} />
+    <h4>POST参数</h4>
+    <KeyValueViewer detail={detail} detailActiveTab="postData" cookies={[]} />
+  </div>
+};
+
+// raw
 const RawViewer = ({detail, isJSON}) => {
   if (isEmpty(detail)) {
     return null;
@@ -403,45 +451,18 @@ const RawViewer = ({detail, isJSON}) => {
       <div  className="title">POST Data</div>
       <div style={{color: 'rgb(229, 152, 102)'}}>{isEmpty(postData) ? "无" : postData}</div>
       <div className="title">Request Headers</div>
-      <div style={{color: '#999', fontSize: 12 }}>{JSON.stringify(detail.requestHeaders)}</div>
+      <div style={{color: '#999', fontSize: 12 }}>
+        <ViewAll limit={100}>
+          {JSON.stringify(detail.requestHeaders)}
+        </ViewAll>
+      </div>
       <div className="title">Response</div>
       <div>{isJSON ? body : null} </div>
     </div>
   );
 };
 
-const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
-  const data = detail[detailActiveTab];
-  if (Array.isArray(data)) {
-    return (
-      <div className="form scrollbar-style body-panel">
-        <table className="data-table">
-          {data.map((item) => (
-            <tr>
-              <td onClick={(e) => copyText(e, item[0])}>{item[0]}</td>
-              <td onClick={(e) => copyText(e, decodeURIComponent(item[1]))}>{decodeURIComponent(item[1])}</td>
-            </tr>
-          ))}
-        </table>
-      </div>
-    );
-  }
-  return (
-    <div
-      className={classNames({
-        'form scrollbar-style body-panel': true,
-      })}
-    >
-      {!isEmpty(detail[detailActiveTab])
-        ? keyValueTable(detail[detailActiveTab])
-        : null}
-      {detailActiveTab === 'requestHeaders' ? (
-        <CookiesView cookies={cookies} />
-      ) : null}
-    </div>
-  );
-};
-
+// body
 const BodyViewer = ({
   isJSON,
   isHTML,
@@ -635,7 +656,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
             detail={detail}
             isJSON={$isJson.current}
           />
-        ) : detailActiveTab !== 'responseBody' ? (
+        ) : detailActiveTab === 'params' ? <ParamsView detail={detail} /> : detailActiveTab !== 'responseBody' ? (
           <KeyValueViewer
             detail={detail}
             detailActiveTab={detailActiveTab}

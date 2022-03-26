@@ -8,13 +8,17 @@ export const tabList = [
     value: "requestHeaders",
   },
   {
-    label: "请求参数",
-    value: "requestParams",
+    label: "参数",
+    value: "params",
   },
-  {
-    label: "POST参数",
-    value: "postData",
-  },
+  // {
+  //   label: "GET参数",
+  //   value: "requestParams",
+  // },
+  // {
+  //   label: "POST参数",
+  //   value: "postData",
+  // },
   {
     label: "响应头",
     value: "responseHeaders",
