@@ -73,7 +73,7 @@ const InstallModal = (props) => {
 
 const ConfigModal = (props) => {
   return (
-    <ControllerDialog title="编辑配置文件" width={900} {...props}>
+    <ControllerDialog title="编辑配置文件(ctrl/command + s 保存)" width={900} {...props}>
       <ConfigEditor onCancel={props.onCancel} />
     </ControllerDialog>
   );
@@ -136,7 +136,7 @@ const Controller = (props: ControllerProps) => {
     message.success(!systemProxyStatus ? '系统代理已开启' : '系统代理已关闭');
   }, [systemProxyStatus]);
   useEffect(() => {
-    ws.on('open', () => {
+    const open$ = ws.on('open', () => {
       checkProxy().then((isOpen) => {
         if (isOpen) {
           toggleSystemProxyStatus();
@@ -149,7 +149,25 @@ const Controller = (props: ControllerProps) => {
     // };
 
     // window.addEventListener('beforeunload', closeProxySettings);
+
+    return () => {
+      open$.unsubscribe();
+    };
   }, []);
+
+  useEffect(() => {
+    const watchHotKey = (e) => {
+      const { altKey, keyCode } = e;
+      if (altKey && keyCode === 88) {
+        onClean();
+      }
+    };
+    document.body.addEventListener('keydown', watchHotKey);
+
+    return () => {
+      document.body.removeEventListener('keydown', watchHotKey);
+    };
+  }, [onClean]);
 
   return (
     <div className="controller">

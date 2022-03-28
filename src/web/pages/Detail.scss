@@ -51,7 +51,6 @@ $panelHeight: calc(100% - 60px);
       display: flex;
       align-items: center;
       background-color: $cardColor;
-      height: 30px;
       box-shadow: $cardColor 0px 10px 10px -10px;
     }
 
@@ -67,10 +66,16 @@ $panelHeight: calc(100% - 60px);
         cursor: pointer;
         font-weight: bold;
         font-size: 16px;
-        display: inline-flex;
         align-items: center;
+        justify-content: center;
         color: #999;
+        height: 30px;
+        line-height: 30px;
+        flex: 1;
 
+        &:hover {
+          color:rgb(46, 204, 113);
+        }
         &.active {
           color: rgb(231, 76, 60);
           background-repeat: repeat;
@@ -84,7 +89,10 @@ $panelHeight: calc(100% - 60px);
         font-size: 17px;
         border-collapse: collapse;
         .bproxy-key {
-          color: #CB4335;
+          color: rgb(175, 122, 197);
+          background: #000;
+          padding: 5px;
+          border-radius: 5px;
         }
         tr {
           td {
@@ -225,7 +233,6 @@ $panelHeight: calc(100% - 60px);
 
 .body-panel {
   position: relative;
-  max-width: 800px;
   width: 100%;
   height: $panelHeight;
   margin: 0 auto;
@@ -234,12 +241,12 @@ $panelHeight: calc(100% - 60px);
   white-space: pre-wrap;
   background-color: $cardColor;
   color: #aaa;
-  padding: 15px;
-  border-radius: $panelBorderRadius;
+  padding: 10px;
+  // border-radius: $panelBorderRadius;
   overflow-y: auto;
   overflow-x: hidden;
   line-height: 1;
-  margin-top: 10px;
+  margin-top: 3px;
   .not-support {
     text-align: center;
   }
@@ -270,11 +277,11 @@ $panelHeight: calc(100% - 60px);
   }
   pre {
     line-height: 1.3;
-    font-size: 14px;
+    font-size: 13px;
     a {
-      color: #839192;
+      color: rgb(39, 174, 96);
       .str {
-        color: #839192;
+        color: rgb(39, 174, 96);
       }
       &:hover {
         text-decoration: underline;
@@ -321,16 +328,23 @@ $panelHeight: calc(100% - 60px);
 }
 
 .params-view {
-  h4 {
+  .title {
     font-size: 13px;
     font-weight: bold;
     padding: 5px 10px;
-    color: rgb(86, 101, 115);
+    color: rgb(46, 204, 113);
+    margin-top: 10px;
   }
   .form {
     height: auto;
     &.empty {
       display: none;
     }
+    background-color: rgb(27, 38, 49);
+    padding: 10px;
+  }
+  .emptyText {
+    color: #666;
+    padding-left: 20px;
   }
 }

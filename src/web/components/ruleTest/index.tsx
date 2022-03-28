@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-
+import { useEffect, useRef, useState } from 'react';
 import JSONFormat from '../../libs/jsonFormat';
-import { Input, message } from '../UI';
-import { isString } from '../../modules/_';
-import { getClipboardData, setInputValue } from '../../modules/interactive';
 import { ruleTestInvoke } from '../../modules/bridge';
-
+import { getClipboardData, setInputValue } from '../../modules/interactive';
+import { isString } from '../../modules/_';
+import { Input, message } from '../UI';
 import './index.scss';
+
+
 
 export default () => {
   const [result, setResult] = useState('');
@@ -33,6 +33,10 @@ export default () => {
         onEnterPress({keyCode: 13, target: { value: rs}});
       }
     }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    $input.current?.input?.focus();
   }, []);
 
   return (

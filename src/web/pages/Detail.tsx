@@ -130,7 +130,6 @@ const CookiesView = (props: {
 
 // key value 表格视图
 const keyValueTable = (objects) => {
-  console.log(111, objects)
   return (
     <table className="kv-table">
       {Object.keys(objects)
@@ -173,13 +172,14 @@ const keyValueTable = (objects) => {
                     <ViewAll limit={50}>{text}</ViewAll>
                   </span>
                   {isLikeJson(text) ? (
-                    <span
-                      onClick={showFormatJson.bind(null, text)}
-                      className="format-btn"
-                    >
-                      {' '}
-                      格式化{' '}
-                    </span>
+                    <Tooltip title="格式化">
+                      <span
+                        onClick={showFormatJson.bind(null, text)}
+                        className="format-btn"
+                      >
+                        ...
+                      </span>
+                    </Tooltip>
                   ) : null}
                 </span>
               </td>
@@ -417,10 +417,10 @@ const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
 // params
 const ParamsView = ({detail}) => {
   return <div className="params-view">
-    <h4>URL参数</h4>
-    <KeyValueViewer detail={detail} detailActiveTab="requestParams" cookies={[]} />
-    <h4>POST参数</h4>
-    <KeyValueViewer detail={detail} detailActiveTab="postData" cookies={[]} />
+    <div className='title'>URL参数</div>
+    {isEmpty(detail.requestParams) ? <div className="emptyText">无</div> : <KeyValueViewer detail={detail} detailActiveTab="requestParams" cookies={[]} />}
+    <div className='title'>POST参数</div>
+    {isEmpty(detail.postData) ? <div className="emptyText">无</div> : <KeyValueViewer detail={detail} detailActiveTab="postData" cookies={[]} />}
   </div>
 };
 
@@ -457,7 +457,7 @@ const RawViewer = ({detail, isJSON}) => {
         </ViewAll>
       </div>
       <div className="title">Response</div>
-      <div>{isJSON ? body : null} </div>
+      <div style={{ fontSize: 13 }}>{isJSON ? body : null} </div>
     </div>
   );
 };

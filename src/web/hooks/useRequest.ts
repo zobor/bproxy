@@ -10,7 +10,7 @@ import {
 } from "../modules/util";
 import { get } from '../modules/_';
 
-const limit = 500;
+const limit = 100;
 
 export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void; lastUpdate: number } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
