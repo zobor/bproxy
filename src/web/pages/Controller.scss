@@ -4,7 +4,7 @@ $textShadowColor: #B7950B;
 
 .controller {
   max-width: 600px;
-  padding: 10px 25px;
+  padding: 6px 25px;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
@@ -39,8 +39,8 @@ $textShadowColor: #B7950B;
       }
     }
     >.anticon {
-      width: 19px;
-      height: 19px;
+      width: 14px;
+      height: 14px;
       cursor: pointer;
       >svg {
         width: 100%;

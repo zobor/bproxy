@@ -14,9 +14,7 @@ import {
   message,
   Modal,
   PlayCircleOutlined,
-  SettingOutlined,
-  UsbOutlined,
-  WifiOutlined
+  SettingOutlined, WifiOutlined
 } from '../components/UI';
 import Weinre from '../components/Weinre';
 import { Ctx } from '../ctx';
@@ -212,11 +210,11 @@ const Controller = (props: ControllerProps) => {
         <span>系统代理</span>
       </div>
       <div onClick={toggleShowConfig}>
-        <UsbOutlined />
+        <CodeOutlined />
         <span>配置文件</span>
       </div>
       <div onClick={toggleShowWeinre}>
-        <CodeOutlined />
+        <BugOutlined />
         <span>页面调试</span>
       </div>
       <div onClick={toggleShowSettings}>
