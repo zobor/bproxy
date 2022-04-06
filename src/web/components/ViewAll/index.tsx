@@ -18,8 +18,8 @@ export default function ViewAll(props: {
     <span onClick={onClick}>
       {showAll ? (
         children
-      ) : tooltip || tooltip === undefined && children.length >= max ? (
-        <Tooltip title={children}>
+      ) : tooltip || tooltip === undefined && children && children.length >= max ? (
+        <Tooltip overlayStyle={{ minWidth: 550, textAlign: 'center' }} title={<div style={{ width: 500, textAlign: 'center' }}>{children}</div>}>
           {shorthand(children, parseInt(`${max / 2}`, 10), max)}
         </Tooltip>
       ) : (

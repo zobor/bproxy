@@ -6,12 +6,10 @@ const config: ProxyConfig = {
   port: 8888,
   configFile: path.resolve(process.cwd(), 'bproxy.config.js'),
   https: [],
-  sslAll: true,
-  host: [],
   rules: [
     {
-      regx: 'https://google.com/bproxy',
-      response: 'hello bproxy\n',
+      url: 'https://google.com/bproxy',
+      target: 'hello bproxy\n',
     }
   ],
   certificate: {

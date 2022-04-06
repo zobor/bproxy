@@ -48,6 +48,22 @@ $appPadding: 0px;
 $httpStatus200: rgb(46, 204, 113);
 $httpStatus304: #7F8C8D;
 
-$scrollBarColor: rgb(56, 188, 215);
+$scrollBarColor: rgb(231, 76, 60);
 
 $errorTextColor: rgb(120, 40, 31);
+
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background: $panelBackground;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: $scrollBarColor;
+    box-shadow: inset 0 0 10px $scrollBarColor;
+  }
+}

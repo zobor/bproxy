@@ -80,7 +80,8 @@ pre {
 }
 
 .cm-theme-dark {
-  height: calc(100% - 30px);
+  // height: calc(100% - 30px);
+  height: 100%;
 
   .ͼ1.cm-editor {
     height: 100%;
@@ -111,19 +112,7 @@ pre {
         white-space: pre-wrap;
       }
 
-      &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      &::-webkit-scrollbar-track {
-        border-radius: 3px;
-        background: $panelBackground;
-      }
-      &::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background: $scrollBarColor;
-        box-shadow: inset 0 0 10px $scrollBarColor;
-      }
+      @include scrollbar();
     }
   }
 }

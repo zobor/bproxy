@@ -4,8 +4,8 @@ export interface NormalObject {
 
 export interface ResponseCallbackParams {
   response: any;
+  fetch: any;
   request: any;
-  req: any;
   rules: any;
   body: any;
 }
@@ -13,7 +13,9 @@ export interface ResponseCallbackParams {
 export type MatchRegxFunction = (url: string) => boolean;
 export type ResponseHandler = (params: ResponseCallbackParams) => void;
 export interface ProxyRule {
-  regx: RegExp | string | MatchRegxFunction;
+  url?: string;
+  target?: string;
+  regx?: RegExp | string | MatchRegxFunction;
   host?: string;
   file?: string;
   path?: string;
@@ -22,7 +24,6 @@ export interface ProxyRule {
   redirectTarget?: string;
   rewrite?: (path: string) => string;
   proxy?: string;
-  download?: boolean;
   responseHeaders?: {
     [key: string]: any;
   };
@@ -31,8 +32,11 @@ export interface ProxyRule {
   };
   statusCode?: number;
   filepath?: string;
+  // 模拟弱网
   delay?: number;
+  // 禁止缓存
   disableCache?: boolean;
+  // 页面调试
   debug?: boolean | 'vconsole';
 }
 
@@ -90,10 +94,7 @@ export interface ProxyCertificateCreateResponse {
 export interface ProxyConfig {
   port: number;
   configFile: string;
-  downloadPath?: string;
-  https?: string[];
-  sslAll?: boolean;
-  host?: string[];
+  https?: string[] | boolean;
   rules: ProxyRule[];
   certificate: ProxyCertificateConfig;
   delay?: number;

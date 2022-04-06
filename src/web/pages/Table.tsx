@@ -1,14 +1,14 @@
-import { useContext, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-
-import { Ctx } from "../ctx";
-import { HttpRequestRequest } from "../../types/web";
+import { useContext, useEffect, useRef, useState } from "react";
 import { formatSeconds } from "../../proxy/utils/format";
-import { get } from "../modules/_";
+import { HttpRequestRequest } from "../../types/web";
+import { Ctx } from "../ctx";
 import { queryIpLocation } from '../modules/interactive';
 import { formatFileSize, shorthand, showResponseType } from '../modules/util';
-
+import { get } from "../modules/_";
 import "./Table.scss";
+
+
 
 
 const Table = (props: any) => {
@@ -127,7 +127,9 @@ const Table = (props: any) => {
                   {shorthand(req?.custom?.path, pathPrefixLength, pathMaxLength)}
                 </td>
                 <td className="contentType">
-                  {showResponseType(contentType)}
+                  <span className={showResponseType(contentType)}>
+                    {showResponseType(contentType)}
+                  </span>
                 </td>
                 <td className="size">
                   {formatFileSize(filesize)}

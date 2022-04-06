@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.0.41",
+  "version": "5.1.0",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -16,7 +16,7 @@
     "inspect": "cross-env NODE_ENV=development vite build --mode development",
     "dts": "node scripts/dts",
     "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node scripts/replace",
-    "pm2": "pm2 start ecosystem.config.js",
+    "pm2": "pm2 start ecosystem.config.js && pm2 log",
     "start": "ts-node src/proxy/shell.ts -s"
   },
   "dependencies": {

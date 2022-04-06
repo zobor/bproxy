@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import chalk from "chalk";
-import fs from 'fs';
-import path from 'path';
+import { spawn } from 'child_process';
 
 const { log: terminalLog } = console;
 
@@ -153,4 +152,19 @@ export function hookConsoleLog(html, debug: boolean | string) {
     .replace("</head>", `${replacement}</head>`);
 
   return res;
+}
+
+export function runShellCode(shell, callback?, onerror = (error) => {}, onend = () => {}) {
+  if (!shell) {
+    return;
+  }
+  const params = shell.split(' ');
+  const cmd = params.shift();
+  const sh = spawn(cmd, params);
+
+  if (callback) {
+    sh.stdout.on('data', callback);
+    sh.stderr.on('data', onerror);
+    sh.on('close', onend);
+  }
 }

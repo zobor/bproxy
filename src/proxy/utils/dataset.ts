@@ -43,11 +43,13 @@ export const updateDataSet = (key, value) => {
 
   if (key === 'config') {
     const config: any = dataset.config;
-    const https = dataset?.config?.https || [];
-    config.https = https.concat([
-      'bproxy.dev:443',
-      'bproxy.io:443',
-    ]);
+    // 内置的 https cdn
+    if (Array.isArray(dataset?.config?.https)) {
+      config.https = dataset.config.https.concat([
+        'bproxy.dev:443',
+        'bproxy.io:443',
+      ]);
+    }
     config.rules = getDefaultRulesList(config.port, config?.weinre?.httpPort).concat(config.rules);
 
     dataset.config = config;

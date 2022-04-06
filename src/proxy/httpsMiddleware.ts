@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
+import _ from "lodash";
 import * as net from "net";
 import * as forge from "node-forge";
 import * as tls from "tls";
@@ -22,6 +23,33 @@ let certificatePem;
 let certificateKeyPem;
 let localCertificate;
 let localCertificateKey;
+
+const wsFrameFormat = `
+Frame format:
+​​
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-------+-+-------------+-------------------------------+
+     |F|R|R|R| opcode|M| Payload len |    Extended payload length    |
+     |I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
+     |N|V|V|V|       |S|             |   (if payload len==126/127)   |
+     | |1|2|3|       |K|             |                               |
+     +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+     |     Extended payload length continued, if payload len == 127  |
+     + - - - - - - - - - - - - - - - +-------------------------------+
+     |                               |Masking-key, if MASK set to 1  |
+     +-------------------------------+-------------------------------+
+     | Masking-key (continued)       |          Payload Data         |
+     +-------------------------------- - - - - - - - - - - - - - - - +
+     :                     Payload Data continued ...                :
+     + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+     |                     Payload Data continued ...                |
+     +---------------------------------------------------------------+
+`;
+
+if (false) {
+  console.log(wsFrameFormat);
+}
 
 interface CertConfig {
   certPath: string;
@@ -49,10 +77,10 @@ export default {
 
   // https代理入口
   proxy(req: any, socket: any, head: any, config: ProxyConfig): void {
-    const { https: httpsList, sslAll } = config;
+    const { https: httpsList } = config;
     const httpsUrl = `https://${req.url}`;
     const urlParsed = url.parse(httpsUrl);
-    const isHttpsMatch = sslAll || isHttpsHostRegMatch(httpsList, urlParsed.host);
+    const isHttpsMatch = (_.isBoolean(httpsList) && httpsList) || isHttpsHostRegMatch(httpsList, urlParsed.host);
     const matcherResult = matcher(config.rules, httpsUrl);
 
     // 没有开启https抓取的队列 直接放过 不需要构建代理服务器
@@ -91,9 +119,6 @@ export default {
   },
 
   web(socket, head, hostname, port, req, others: WebOthers = {}): void {
-    const $hostname = others.originHost || hostname;
-    const $port = others.originPort || port;
-    let timer;
     const socketAgent = net.connect(port, hostname, () => {
       const agent = "bproxy Agent";
       socket
@@ -113,26 +138,9 @@ export default {
       socketAgent.write(head);
       socketAgent.pipe(socket).pipe(socketAgent);
     });
-    socketAgent.on("error", () => {
-      log.warn(`[https socket agent error]: ${$hostname} ${$port}`);
+    socketAgent.on("error", (error) => {
       socketAgent.end();
     });
-    socketAgent.on('close', () => {
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-    })
-
-    // timer = setTimeout(() => {
-    //   if (socketAgent.destroyed || others?.fakeServer?.$url || others?.fakeServer?.$upgrade) {
-    //     return;
-    //   }
-    //   others?.fakeServer?.close();
-    //   socketAgent?.end();
-    //   socketAgent?.destroy();
-    //   socket?.end();
-    // }, (10 * 1000));
   },
 
   startLocalHttpsServer(
@@ -202,7 +210,9 @@ export default {
 
         (localServer as any).$upgrade = true;
 
-        const upgradeURL = `${proxyReq.headers.origin}${proxyReq.url}`;
+        const upgradeProtocol = proxyReq.headers.origin.indexOf('https:') === 0 || port === '443' ? 'wss://' : 'ws://'
+        const upgradeURL = `${upgradeProtocol}${hostname}${proxyReq.url}`;
+        console.log('upgradeURL', upgradeURL);
         const matchResult = matcher(config.rules, upgradeURL);
         const options = {
           host: hostname,
@@ -235,7 +245,7 @@ export default {
         }
         if (!isBproxyDev) {
           ioRequest({
-            url: `${proxyReq.headers?.origin}${proxyReq.url}`,
+            url: upgradeURL,
             method: proxyReq.headers.origin.includes("https:") ? "wss" : "ws",
             requestHeaders: proxyReq.headers,
             requestId: proxyReq.$requestId,
@@ -251,10 +261,29 @@ export default {
             r1.headers
           );
           if (!isBproxyDev) {
-            s1.on("data", (d) => {
+            s1.on("data", (frameData) => {
+              const d = frameData;
+              const fin = (d[0] & 128) == 128;
+              const opcode = d[0] & 15;
+              const isMasked = (d[1] & 128) == 128;
+              const payloadLength = d[1] & 127;
+              const dir = payloadLength === 126 ? 'down' : 'up';
+
+              if (d.length < 2) {
+                return;
+              }
+
+              const wsFrameContent = d.slice(fin ? (payloadLength === 126 ? 4 : 2) : 0).toString();
+
               ioRequest({
                 requestId: proxyReq.$requestId,
-                responseBody: d.toString(),
+                url: upgradeURL,
+                method: proxyReq.headers.origin.includes("https:") ? "wss" : "ws",
+                requestHeaders: proxyReq.headers,
+                responseBody: JSON.stringify({
+                  message: wsFrameContent,
+                  dir,
+                }),
                 statusCode: 101,
                 responseHeaders: {
                   'content-type': 'text/plain-bproxy',

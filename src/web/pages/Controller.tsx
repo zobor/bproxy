@@ -29,7 +29,6 @@ const ControllerDialog = ({ title, children, visible, ...others }) => {
   }
   return (
     <Modal
-      centered
       title={title}
       visible={visible}
       footer={null}
@@ -71,7 +70,7 @@ const InstallModal = (props) => {
 
 const ConfigModal = (props) => {
   return (
-    <ControllerDialog title="编辑配置文件(ctrl/command + s 保存)" width={900} {...props}>
+    <ControllerDialog title="编辑配置文件(ctrl/command + s 保存)" width={window.innerWidth} centered {...props}>
       <ConfigEditor onCancel={props.onCancel} />
     </ControllerDialog>
   );
@@ -79,7 +78,7 @@ const ConfigModal = (props) => {
 
 const SettingsModal = (props) => {
   return (
-    <ControllerDialog title="个性化设置" width={1000} {...props}>
+    <ControllerDialog title="个性化设置" width="1000" {...props} centered>
       <Settings />
     </ControllerDialog>
   );
@@ -87,7 +86,7 @@ const SettingsModal = (props) => {
 
 const WeinreModal = (props) => {
   return (
-    <ControllerDialog title="页面调试" width={500} {...props}>
+    <ControllerDialog title="页面调试" width={500} centered {...props}>
       <Weinre />
     </ControllerDialog>
   );
@@ -141,12 +140,6 @@ const Controller = (props: ControllerProps) => {
         }
       });
     });
-
-    // const closeProxySettings = () => {
-    //   disActiveProxy();
-    // };
-
-    // window.addEventListener('beforeunload', closeProxySettings);
 
     return () => {
       open$.unsubscribe();
@@ -222,11 +215,17 @@ const Controller = (props: ControllerProps) => {
         <span>设置</span>
       </div>
 
+      {/* 规则检查 */}
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
+      {/* 过滤 */}
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
+      {/* 安装证书 */}
       <InstallModal onCancel={toggleShowInstall} visible={isShowInstall} />
+      {/* 代理配置文件 */}
       <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
+      {/* 个性化设置 */}
       <SettingsModal onCancel={toggleShowSettings} visible={isShowSettings} />
+      {/* 远程调试 */}
       <WeinreModal onCancel={toggleShowWeinre} visible={isShowWeinre} />
     </div>
   );

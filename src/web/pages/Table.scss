@@ -100,6 +100,30 @@
   }
   .contentType {
       width: 110px;
+      .css, .javascript, .html, .json {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 4px;
+        border-radius: 3px;
+        font-size: 15px;
+      }
+      .html {
+        background-color: rgb(112, 184, 166);
+        color: #fff;
+      }
+      .javascript {
+        background-color: rgb(242, 204, 47);
+        color: #fff;
+      }
+      .css {
+        background-color: rgb(94, 159, 19);
+        color: #fff;
+      }
+      .json {
+        background-color: rgb(228, 119, 84);
+        color: #fff;
+      }
   }
   .speed {
     width: 80px;

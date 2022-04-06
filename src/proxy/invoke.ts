@@ -25,7 +25,7 @@ export const test = async (url: string) => {
       const urlParsed = URL.parse(url);
       const { protocol, host, port } = urlParsed;
       const hostname = `${host}:${port||443}`;
-      if (protocol === 'https:' && !config.https?.includes(hostname)) {
+      if (protocol === 'https:' && Array.isArray(config.https) && !config.https?.includes(hostname)) {
         return {
           error: `您开启了https白名单，当前url域名(${hostname})不在白名单`,
           help: `请将 ${hostname} 添加到bproxy.config.js的https字段配置中`,
@@ -36,8 +36,8 @@ export const test = async (url: string) => {
     for (const key in matchResult) {
       if (key === 'rule') {
         for (const k in matchResult.rule) {
-          if (k === 'regx' && matchResult && matchResult.rule && matchResult.rule[k]) {
-            matchResult.rule[k] = matchResult.rule[k].toString();
+          if (k === 'regx' && _.get(matchResult, 'rule.regx')) {
+            matchResult.rule[k] = _.get(matchResult, 'rule.regx').toString();
           }
         }
       }

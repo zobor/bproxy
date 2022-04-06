@@ -97,7 +97,7 @@ export const formatFileSize = (str) => {
 };
 
 export const shorthand = (str, leftLength = 20, max = 40) => {
-  if (str.length > max) {
+  if (typeof str === 'string' && str.length > max) {
     const arr = str.split("");
     const arr1 = take(arr, leftLength);
     const arr2 = takeRight(arr, leftLength);
@@ -117,22 +117,60 @@ export const showResponseType = (type) => {
   return shorthand(txt, 4, 10);
 };
 
+export const findUrlHasImageType = (url) => {
+  return /\.(png|jpg|webp|gif)/i.test(url);
+};
+
 export const findLinkFromString = (str) => {
   if (!(str && str.replace)) {
     return str;
   }
+  const cls = (url) => findUrlHasImageType(url) ? 'json-viewer-link' : '';
   return htmlEscape(str)
-    .replace(/"(https?:\/\/[^"]+)"/g, `"<a href='$1' target="_blank">$1</a>"`);
+    .replace(/"(https?:\/\/[^"]+)"/g, (a,b) => {
+      const $cls = cls(b);
+      if ($cls) {
+        return `"<a class="${$cls}" href='${b}' target="_blank">${b}<img src="${b}" /></a>"`.replace(/\n/g, '');
+      }
+      return `"<a href='${b}' target="_blank">${b}</a>"`;
+    });
 };
 
 export const formatWsSymbol = (str) => {
-  const down = ' ↓ ';
-  const up = ' ↑ ';
-  return str.replace(/�~�/g, down).replace(/�~�/g, down).replace(/�~/g, down).replace(/�~\u000\d�/g, down).replace(/�n/g, up);
+  let data = {
+    dir: '',
+    message: '',
+  };
+
+  try {
+    data = JSON.parse(str);
+  } catch(err) {}
+
+
+  return data;
+  // const down = 'down';
+  // const up = 'up';
+  // const WIDE_CHAR_REG = /^[^{^<]+/;
+  // const wideChars = str.match(WIDE_CHAR_REG);
+  // let dir = '';
+  // if (wideChars && wideChars.length) {
+  //   const wideChar = wideChars[0];
+  //   const list = wideChar.split('').map(i => i.codePointAt(0));
+  //   if (list && list.length && list[1] === 126) {
+  //     dir = down;
+  //   } else {
+  //     dir = up;
+  //   }
+  // }
+  // return {
+  //   className: dir,
+  //   // content: str.replace(WIDE_CHAR_REG, ''),
+  //   content: str,
+  // };
 }
 
 export const isLikeJson = (str) => {
-  if (str) {
+  if (typeof str === 'string') {
     return /^\{[\S\s]+\}$/.test(str.trim()) || /^\[[\S\s]+\]$/.test(str.trim());
   }
 

@@ -1,17 +1,17 @@
-import { ProxyRule } from './../types/proxy.d';
-import request from 'request';
 import * as fs from 'fs';
-import { Readable } from 'stream';
-import pako from 'pako';
 import * as _ from 'lodash';
+import pako from 'pako';
 import * as path from 'path';
+import request from 'request';
+import { Readable } from 'stream';
 import * as url from 'url';
+import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
+import { ProxyRule } from './../types/proxy.d';
 import { matcher } from './matcher';
 import { ioRequest } from './socket/socket';
-import MatcherResult, { ProxyConfig, RequestOptions } from '../types/proxy';
-import { hookConsoleLog, stringToBytes } from './utils/utils';
 import { getFileTypeFromSuffix, getResponseContentType } from './utils/file';
 import { isInspectContentType, isPromise } from './utils/is';
+import { hookConsoleLog } from './utils/utils';
 
 const getDalay = (rule: ProxyRule, config: ProxyConfig) => {
   return rule?.delay || config?.delay || 0;
@@ -121,8 +121,8 @@ export const httpMiddleware = {
           }
           const rs = matcherResult.rule.response({
             response: res,
+            fetch: request,
             request,
-            req,
             rules: matcherResult?.rule,
             body,
           });
@@ -182,10 +182,10 @@ export const httpMiddleware = {
           ioRequest({
             requestId: req.$requestId,
             statusCode: matcherResult.rule.statusCode,
-            responseBody: matcherResult.rule.statusCode.toString(),
+            responseBody: '',
           });
           res.writeHead(matcherResult.rule.statusCode, {});
-          res.end(matcherResult.rule.statusCode.toString());
+          res.end();
         }
         // network response
         // 4. rule.redirect
@@ -245,6 +245,9 @@ export const httpMiddleware = {
             config
           );
         } else {
+          if (delayTime) {
+            await delay(delayTime);
+          }
           return this.proxyByRequest(
             req,
             res,
@@ -307,14 +310,15 @@ export const httpMiddleware = {
         ...requestOption,
       };
 
-      ioRequest({
+      const ioRequestParams = {
         url: req.requestOriginUrl || options.url,
         method: rOpts.method,
         requestHeaders: rOpts.headers,
         requestId: req.$requestId,
         requestBody: rOpts.body ? rOpts.body.toString() : null,
         matched: matcherResult?.matched,
-      });
+      };
+      ioRequest(ioRequestParams);
 
       const rst = request(rOpts)
         .on("response", function (response) {
@@ -357,12 +361,14 @@ export const httpMiddleware = {
           }
 
           ioRequest({
+            ...ioRequestParams,
             requestId: req.$requestId,
             responseHeaders: headers,
             statusCode,
             ip,
           });
-          res.writeHead(statusCode, headers);
+
+          res.writeHead(statusCode, _.omit(headers, ''));
         })
         .on("error", (err) => {
           res.writeHead(500, {});

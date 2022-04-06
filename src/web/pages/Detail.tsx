@@ -27,8 +27,6 @@ import { get, isArray, isEmpty, isObject, isString } from '../modules/_';
 import './Detail.scss';
 import { tabList } from './settings';
 
-
-
 // 提示304解决办法
 const remove304 = (path: string) => {
   const tips = `\n\n<span class='tips'>如何禁用缓存?\n代理规则添加：<b>{ regx: '${path}', disableCache: true }</b></span>`;
@@ -152,7 +150,7 @@ const keyValueTable = (objects) => {
           }
           const text = isObject(dataValue)
             ? JSON.stringify(dataValue)
-            : (dataValue).toString();
+            : dataValue;
 
           return (
             <tr key={key}>
@@ -243,11 +241,14 @@ const viewContent = ({
   if (isArray(content)) {
     return (
       <ol className="ws-list">
-        {content.map((item, idx) => (
-          <li key={`ws-list-li-${idx}`} onClick={(e) => copyText(e, item)}>
-            {formatWsSymbol(item)}
-          </li>
-        ))}
+        {content.map((item, idx) => {
+          const formatContent = formatWsSymbol(item);
+          return (
+            <li key={`ws-list-li-${idx}`}>
+              <div className={formatContent.dir}>{formatContent.message}</div>
+            </li>
+          );
+        })}
       </ol>
     );
   }
