@@ -212,7 +212,6 @@ export default {
 
         const upgradeProtocol = proxyReq.headers.origin.indexOf('https:') === 0 || port === '443' ? 'wss://' : 'ws://'
         const upgradeURL = `${upgradeProtocol}${hostname}${proxyReq.url}`;
-        console.log('upgradeURL', upgradeURL);
         const matchResult = matcher(config.rules, upgradeURL);
         const options = {
           host: hostname,

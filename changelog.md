@@ -1,5 +1,8 @@
 # bproxy changelog
 
+#5.1.1
+- 参数调整为url & target 组合匹配
+
 #5.0.37
 - 修复websocket自动断开的问题
 
