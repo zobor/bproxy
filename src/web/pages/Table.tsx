@@ -78,16 +78,7 @@ const Table = (props: any) => {
         </thead>
 
         <tbody>
-          {(filterContentType === 'all' ? list : list.filter(item => {
-            const contentType = get(item, 'responseHeaders["content-type"]');
-            if (!contentType) {
-              return false;
-            }
-            if (filterContentType === 'image') {
-              return contentType.includes(filterContentType) || contentType.includes('icon');
-            }
-            return contentType.includes(filterContentType)
-          })).map((req: HttpRequestRequest) => {
+          {list.map((req: HttpRequestRequest) => {
             const statusCode = `${req?.custom?.statusCode}`;
             let filesize = get(req, 'responseHeaders["content-length"]');
             const contentType = get(req, 'responseHeaders["content-type"]');

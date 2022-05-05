@@ -26,6 +26,8 @@ import Radio from "antd/es/radio";
 import "antd/es/radio/style/index.less";
 import Row from "antd/es/row";
 import "antd/es/row/style/css";
+import Select from "antd/es/select";
+import "antd/es/select/style/index.less";
 import Spin from "antd/es/spin";
 import "antd/es/spin/style/index.less";
 import Switch from "antd/es/switch";
@@ -52,6 +54,7 @@ export {
   Switch,
   Form,
   Input,
+  Select,
   Radio,
   Modal,
   PlayCircleOutlined,

@@ -16,6 +16,7 @@ export const defaultState = {
   proxySwitch: true,
   filterType: 'url',
   filterString: '',
+  historyFilterStringData: [],
   filterContentType: 'all',
   highlight: '',
   ready: false,

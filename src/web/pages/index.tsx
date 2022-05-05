@@ -1,18 +1,18 @@
 import { memo, useContext, useEffect, useMemo, useState } from "react";
 import { Ctx } from "../ctx";
 import useRequest from "../hooks/useRequest";
-import Detail from "./Detail";
-import Table from "./Table";
-import Controller from './Controller';
-import './index.scss';
 import { ws } from '../modules/socket';
+import Controller from './Controller';
+import Detail from "./Detail";
+import './index.scss';
+import Table from "./Table";
 
 const DetailMemo = memo(Detail);
 
 export default () => {
   const { state, dispatch } = useContext(Ctx);
-  const { requestId, filterString, filterType, updateRequestListFlag, showDetail, proxySwitch } = state;
-  const { list, clean, lastUpdate } = useRequest(proxySwitch, filterType, filterString, updateRequestListFlag);
+  const { requestId, filterString, filterType, updateRequestListFlag, showDetail, proxySwitch, filterContentType } = state;
+  const { list, clean, lastUpdate } = useRequest(proxySwitch, filterType, filterString, filterContentType, updateRequestListFlag);
   const [detail, setDetail] = useState<any>(null);
   const detailMemo = useMemo(() => {
     return detail;

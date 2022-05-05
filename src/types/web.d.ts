@@ -33,4 +33,5 @@ export interface HttpRequestRequest {
 export interface FilterParams {
   filterType: string;
   filterString: string;
+  filterContentType: string;
 }

@@ -1,6 +1,6 @@
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Ctx } from '../../ctx';
-import { Form, Input, Radio } from '../UI';
+import { Button, Form, Input, Radio, Select } from '../UI';
 
 const typesList: string[] = ['url', 'host', 'path'];
 const contentType: string[] = [
@@ -14,22 +14,31 @@ const contentType: string[] = [
 
 export default () => {
   const { state, dispatch } = useContext(Ctx);
-  const { filterType, filterContentType, filterString, highlight } = state;
-  const setType = (val: string) => {
-    dispatch({ type: 'setFilterType', filterType: val });
-  };
-  const setContentType = (val: string) => {
-    dispatch({ type: 'setFilterContentType', filterContentType: val });
-  };
-  const setFilter = (val: string) => {
-    dispatch({ type: 'setFilterString', filterString: val });
-  };
-  const onTextChange = (e) => {
-    setFilter(e.target.value.trim());
-  };
-  const onHighlighChange = (e) => {
-    const v = e.target.value.trim();
-    dispatch({ type: 'setHighlight', highlight: v });
+  const { filterType, filterContentType, filterString, highlight, historyFilterStringData = [] } = state;
+  const [historyFilterString, setHistoryFilterString] = useState<string[]>(historyFilterStringData);
+  const [currentFilterText, setCurrentFilterText] = useState<string>('');
+  const setType = (val: string) => dispatch({ type: 'setFilterType', filterType: val });
+  const setContentType = (val: string) => dispatch({ type: 'setFilterContentType', filterContentType: val });
+  const setFilter = (val: string) => dispatch({ type: 'setFilterString', filterString: val });
+
+  const onTextChange = (v: string) => v.length && setCurrentFilterText(v);
+  const onClearFilterText = () => setCurrentFilterText('');
+  const onSelectFilterString = (v: string) => setFilter(v);
+  const onSaveFilterValue = useCallback(
+    () =>
+      currentFilterText &&
+      !historyFilterString.includes(currentFilterText) &&
+      setHistoryFilterString((pre) => [...pre, currentFilterText]),
+    [historyFilterString, currentFilterText]
+  );
+
+  const onHighlighChange = (e) => dispatch({ type: 'setHighlight', highlight: e.target.value.trim() });
+  const onClearHistory = () => {
+    dispatch({
+      type: 'setHistoryFilterStringData',
+      historyFilterStringData: [],
+    });
+    setHistoryFilterString([]);
   };
 
   useEffect(() => {
@@ -40,6 +49,15 @@ export default () => {
       });
     };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      dispatch({
+        type: 'setHistoryFilterStringData',
+        historyFilterStringData: historyFilterString
+      });
+    };
+  }, [historyFilterString]);
 
   return (
     <div>
@@ -69,12 +87,22 @@ export default () => {
           </Radio.Group>
         </Form.Item>
         <Form.Item label="过滤值">
-          <Input
+          <Select
             placeholder="过滤功能会更新当前的列表"
             allowClear
+            showSearch
             value={filterString}
-            onChange={onTextChange}
-          />
+            onSearch={onTextChange}
+            onBlur={onSaveFilterValue}
+            onClear={onClearFilterText}
+            onChange={onSelectFilterString}
+            style={{ width: '70%' }}
+          >
+            {historyFilterString.map(item => (
+              <Select.Option key={`historyFilterString-${item}`} value={item}>{item}</Select.Option>
+            ))}
+          </Select>
+          <Button onClick={onClearHistory}>清除历史记录</Button>
         </Form.Item>
         <Form.Item label="高亮">
           <Input

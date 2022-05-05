@@ -100,7 +100,13 @@ function parseRequestData(req: InvokeRequestParams, history: any = {}) {
   return data;
 }
 
-export default (proxySwitch: boolean, filterType: string, filterString: string, updateRequestListFlag: number): { list: HttpRequestRequest[]; clean: () => void; lastUpdate: number } => {
+export default (
+  proxySwitch: boolean,
+  filterType: string,
+  filterString: string,
+  filterContentType: string,
+  updateRequestListFlag: number
+): { list: HttpRequestRequest[]; clean: () => void; lastUpdate: number } => {
   const [list, setList] = useState<HttpRequestRequest[]>([]);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
   const lastUpdateFlag = useRef<number>(updateRequestListFlag);
@@ -115,11 +121,13 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
       setLastUpdate(Date.now());
       setList((pre: any) => {
         // merge history request and response
-        const list = filterRequestList(pre, { filterType, filterString });
+        const list = filterRequestList(pre, { filterType, filterString, filterContentType });
         const history = list.find(
-          (item: any) => item.custom.requestId === req.requestId
+          (item: any) => item?.custom?.requestId === req.requestId
         );
-        const index = list.findIndex(item => item?.custom?.requestId === req.requestId);
+        const index = list.findIndex(
+          (item) => item?.custom?.requestId === req.requestId
+        );
 
         // append keys to previours
         if (history) {
@@ -132,7 +140,7 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
         // new request
         const data = parseRequestData(req, {});
 
-        if (filterRequestItem(data, { filterType, filterString })) {
+        if (filterRequestItem(data, { filterType, filterString, filterContentType })) {
           // done
           const newList = pre.concat([data]);
           if (pre.length > limit) {
@@ -152,13 +160,13 @@ export default (proxySwitch: boolean, filterType: string, filterString: string, 
     }
     if (lastUpdateFlag.current !== updateRequestListFlag) {
       setList((pre: any) => {
-        const list = filterRequestList(pre, { filterType, filterString });
+        const list = filterRequestList(pre, { filterType, filterString, filterContentType });
 
         return list;
       });
       lastUpdateFlag.current = updateRequestListFlag;
     }
-  }, [proxySwitch, updateRequestListFlag, filterType, filterString]);
+  }, [proxySwitch, updateRequestListFlag, filterType, filterString, filterContentType]);
 
   return {
     list,

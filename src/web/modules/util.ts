@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as qs from 'qs';
 import { FilterParams, HttpRequestRequest } from '../../types/web';
 import { take, takeRight } from './_';
@@ -48,20 +49,31 @@ export const filterRequestItem = (
   request: HttpRequestRequest,
   filter: FilterParams
 ) => {
-  const { filterString, filterType } = filter;
-  if (!filterString) {
+  const { filterString, filterType, filterContentType } = filter;
+  if (!filterString && filterContentType === 'all') {
     return true;
   }
-  switch (filterType) {
-    case "url":
-      return request?.custom?.url?.includes(filterString);
-    case "path":
-      return request?.custom?.path?.includes(filterString);
-    case "host":
-      return request?.custom?.host?.includes(filterString);
-    default:
-      return false;
+  if (filterString) {
+    switch (filterType) {
+      case "url":
+        return request?.custom?.url?.includes(filterString);
+      case "path":
+        return request?.custom?.path?.includes(filterString);
+      case "host":
+        return request?.custom?.host?.includes(filterString);
+      default:
+        break;
+    }
   }
+  if (filterContentType) {
+    const contentType = _.get(request, 'responseHeaders["content-type"]');
+    if (filterContentType === 'image') {
+      return contentType.includes(filterContentType) || contentType.includes('icon');
+    }
+    return contentType && contentType.includes(filterContentType);
+  }
+
+  return false;
 };
 
 export const filterRequestList = (list: HttpRequestRequest[], filter: FilterParams) => list.filter((item: HttpRequestRequest) => filterRequestItem(item, filter));
