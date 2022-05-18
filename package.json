@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "开发代理工具",
   "bin": {
     "bproxy": "./bin/bproxy"
@@ -17,7 +17,7 @@
     "dts": "node scripts/dts",
     "build": "rimraf dist && npm run lint && npm run tsc && npm run dts && npm run web && node scripts/replace",
     "pm2": "pm2 start ecosystem.config.js && pm2 log",
-    "start": "ts-node src/proxy/shell.ts -s"
+    "start": "ts-node src/proxy/commands.ts -s"
   },
   "dependencies": {
     "chalk": "2.4.2",

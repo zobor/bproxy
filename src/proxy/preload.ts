@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import _ from "lodash";
 
 const REG_IP = /^(\d{1,3}\.){3}\d{1,3}$/;
@@ -28,6 +29,10 @@ function checkResponseType(target: any) {
       }
     }
 
+    if (/^\./.test(target)) {
+      return 'path';
+    }
+
     return 'response';
   }
 
@@ -51,7 +56,15 @@ function checkSingleRule(rule: any) {
     if (!ruleKey) {
       console.error('target参数错误');
     } else {
-      rule[ruleKey] = rule.target;
+      switch(ruleKey){
+        case 'path':
+          rule[ruleKey] = path.resolve(rule.target);
+          break;
+        default:
+          rule[ruleKey] = rule.target;
+          break;
+      }
+
       delete rule.target;
     }
   }

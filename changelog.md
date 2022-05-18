@@ -1,4 +1,6 @@
 # bproxy changelog
+#5.1.2
+- 修复debug参数的bug
 
 #5.1.1
 - 参数调整为url & target 组合匹配

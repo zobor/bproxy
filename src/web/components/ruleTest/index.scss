@@ -2,7 +2,8 @@
   width: 100%;
 
   pre {
-    margin-top: 10px;
+    margin: 0;
+    margin-top: 5px;
     width: 100%;
     background: #333;
     color: #fff;
@@ -13,9 +14,15 @@
     font-size: 16px;
     white-space: 2;
     border-radius: 7px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 
     &.matched {
       background-color: #117A65;
     }
+  }
+
+  input {
+    border-color: #117A65;
   }
 }

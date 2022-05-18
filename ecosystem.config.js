@@ -9,7 +9,7 @@ module.exports = {
     watch_delay: 300,
     interpreter: "node",
     interpreter_args: "./node_modules/ts-node/dist/bin.js",
-    script: "./src/proxy/shell.ts",
+    script: "./src/proxy/commands.ts",
     args: "-s",
     exec_mode: "fork_mode",
     instances: 1,

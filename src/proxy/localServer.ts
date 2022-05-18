@@ -32,7 +32,7 @@ export default class LocalServer {
     }
     // 监听配置文件
     fs.watchFile(confPath, { interval: 1500 }, async() => {
-      log.info(`🔃 配置已更新: ${chalk.yellow(confPath)}`);
+      log.info(`配置已更新: ${chalk.yellow(confPath)}`);
       try {
         appConfig = await this.loadUserConfig(configPath, settings);
         onConfigFileChange();

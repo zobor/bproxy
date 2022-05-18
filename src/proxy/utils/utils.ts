@@ -127,7 +127,7 @@ export function stringToBytes(str: string): Int8Array {
   return out;
 }
 
-export function hookConsoleLog(html, debug: boolean | string) {
+export function hookConsoleLog(html: string, debug: boolean | string) {
   if (!html) {
     return html;
   }

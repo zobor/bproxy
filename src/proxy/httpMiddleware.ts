@@ -324,7 +324,7 @@ export const httpMiddleware = {
         .on("response", function (response) {
           const headers = { ...response.headers, ...responseOptions.headers };
           const encoding = _.get(headers, '["content-encoding"]');
-          const isgzip = encoding === "gzip";
+          const isGzip = encoding === "gzip";
           const showContent = isInspectContentType(headers || {});
           const ip = response?.socket?.remoteAddress;
           const statusCode = response?.statusCode || 500;
@@ -334,7 +334,7 @@ export const httpMiddleware = {
             response.on("end", () => {
               const buf = Buffer.concat(body);
               let str: any = buf;
-              if (isgzip) {
+              if (isGzip) {
                 str = pako.ungzip(new Uint8Array(buf), { to: "string" });
               } else if (!encoding) {
                 str = buf.toString();
@@ -343,9 +343,14 @@ export const httpMiddleware = {
               if (debug) {
                 const txt = hookConsoleLog(str, debug);
                 let resData = txt;
-                if (isgzip) {
+                if (isGzip) {
                   resData = pako.gzip(txt);
                 }
+                console.log(resData);
+                res.writeHead(statusCode, {
+                  ...headers,
+                  'content-length': txt.length,
+                });
                 responseText(resData, res);
                 ioRequest({
                   requestId: req.$requestId,
@@ -368,7 +373,7 @@ export const httpMiddleware = {
             ip,
           });
 
-          res.writeHead(statusCode, _.omit(headers, ''));
+          !debug && res.writeHead(statusCode, headers);
         })
         .on("error", (err) => {
           res.writeHead(500, {});

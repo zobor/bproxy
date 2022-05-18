@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
-import { Button, Card, Col, Row } from '../UI';
+import { useEffect, useRef, useState } from 'react';
 import { getLocalIP, getProxyPort } from '../../modules/bridge';
-
+import { Button, Card, Col, Row } from '../UI';
 import './index.scss';
+
 
 const help = `
 MacOS 安装证书：
@@ -27,6 +27,10 @@ export default () => {
           const url = `http://${ip}:${port}/install`;
           render(url);
           setHref(url);
+        } else {
+          const url = `http://127.0.0.1:${port||8888}/install`;
+          render(url);
+          setHref(url);
         }
       });
     });
@@ -37,6 +41,9 @@ export default () => {
         <Card title="Windows电脑端下载证书" bordered={false}>
           {href ? <div className="url">{href}</div> : null}
           {href ? <div><Button type="primary" shape="round" onClick={() => window.open(href)}>下载证书</Button></div> : null}
+          <div className="install-helper">
+            <a href="https://www.yuque.com/zobor/bo4kgc/txy5nz" target="_blank">Windows系统安装证书指引</a>
+          </div>
         </Card>
       </Col>
       <Col span={8}>
