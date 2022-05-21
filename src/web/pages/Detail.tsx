@@ -21,7 +21,8 @@ import {
   findLinkFromString,
   formatWsSymbol,
   highlight,
-  isLikeJson
+  isLikeJson,
+  formatObjectKeyRender,
 } from '../modules/util';
 import { get, isArray, isEmpty, isObject, isString } from '../modules/_';
 import './Detail.scss';
@@ -143,9 +144,7 @@ const keyValueTable = (objects) => {
             ].includes(key.toLocaleLowerCase())
           ) {
             try {
-              dataValue = `${dataValue} -> (${moment(dataValue).format(
-                'YYYY-MM-DD HH:mm:ss'
-              )})`;
+              dataValue = `${dataValue}`;
             } catch (err) {}
           }
           const text = isObject(dataValue)
@@ -161,13 +160,13 @@ const keyValueTable = (objects) => {
                     'bproxy-key': key?.includes('x-bproxy'),
                   })}
                 >
-                  {key}:{' '}
+                  {key}:
                 </span>
               </td>
               <td>
                 <span className="max-text-limit2">
                   <span onClick={(e) => copyText(e, text)}>
-                    <ViewAll limit={50}>{text}</ViewAll>
+                    <ViewAll limit={50}>{formatObjectKeyRender(text)}</ViewAll>
                   </span>
                   {isLikeJson(text) ? (
                     <Tooltip title="格式化">
@@ -641,8 +640,8 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       className={classNames({
         detail: true,
         open: visible,
-        'animate__animated animate__bounceInRight': cssAnimate,
-        'animate__animated animate__bounceOutLeft': cssAnimateHide,
+        'animate__animated animate__fadeInDownBig': cssAnimate,
+        'animate__animated animate__fadeOutDownBig': cssAnimateHide,
       })}
     >
       <div className="mask" onClick={onClose} />

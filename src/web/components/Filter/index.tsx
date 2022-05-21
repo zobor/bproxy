@@ -25,10 +25,13 @@ export default () => {
   const onClearFilterText = () => setCurrentFilterText('');
   const onSelectFilterString = (v: string) => setFilter(v);
   const onSaveFilterValue = useCallback(
-    () =>
-      currentFilterText &&
-      !historyFilterString.includes(currentFilterText) &&
-      setHistoryFilterString((pre) => [...pre, currentFilterText]),
+    () =>{
+      if(currentFilterText &&
+      !historyFilterString.includes(currentFilterText)) {
+        setHistoryFilterString((pre) => [...pre, currentFilterText]);
+        setFilter(currentFilterText);
+      }
+    },
     [historyFilterString, currentFilterText]
   );
 

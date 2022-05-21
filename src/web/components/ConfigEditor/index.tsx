@@ -54,13 +54,17 @@ export default (props) => {
     }
   }, [onSave]);
   return <div className='dialog-logs'>
-    <div className="config-path">配置文件地址：{configFilePath}</div>
+    <div className="config-path">
+      配置文件地址：
+      <span>{configFilePath}</span>
+    </div>
     <div className="config-wrap">
       <div className="left">
         <CodeMirror
           value={code}
           theme="dark"
           extensions={[javascript()]}
+          autoFocus
           onChange={(value, viewUpdate) => {
             setCode(value);
           }}

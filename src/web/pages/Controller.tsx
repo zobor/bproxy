@@ -70,7 +70,7 @@ const InstallModal = (props) => {
 
 const ConfigModal = (props) => {
   return (
-    <ControllerDialog title="编辑配置文件(ctrl/command + s 保存)" width={window.innerWidth * 0.7} centered {...props}>
+    <ControllerDialog title="编辑配置文件" width={window.innerWidth * 0.7} centered {...props}>
       <ConfigEditor onCancel={props.onCancel} />
     </ControllerDialog>
   );

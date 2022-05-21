@@ -346,10 +346,9 @@ export const httpMiddleware = {
                 if (isGzip) {
                   resData = pako.gzip(txt);
                 }
-                console.log(resData);
                 res.writeHead(statusCode, {
                   ...headers,
-                  'content-length': txt.length,
+                  'content-length': resData.length,
                 });
                 responseText(resData, res);
                 ioRequest({

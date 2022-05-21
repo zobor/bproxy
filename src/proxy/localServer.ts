@@ -102,7 +102,6 @@ export default class LocalServer {
         }
       });
     });
-    log.info(`✔ ${chalk.cyan('HTTPS')} & ${chalk.cyan('WebSocket')} 服务启动成功`);
     log.info(`✔ bproxy[${chalk.green.bold(pkg.version)}] 启动成功✨`);
     log.info(`♨️  操作面板地址：${chalk.green.underline(`http://127.0.0.1:${appConfig.port}`)}`);
 

@@ -29,12 +29,14 @@ export function onDebuggerClientChange(callback) {
     cache.onDebuggerClientChange.unsubscribe();
   }
   cache.onDebuggerClientChange = ws.on('onDebuggerClientChange', callback);
+
+  return cache.onDebuggerClientChange;
 }
 export function onDebuggerClientChangeUnmount(callback) {
   if (cache.onDebuggerClientChangeUnmount) {
     cache.onDebuggerClientChangeUnmount.unsubscribe();
   }
-  cache.onDebuggerClientChangeUnmount = ws.on('onDebuggerClientChangeUnmount', callback);
+  // cache.onDebuggerClientChangeUnmount = ws.on('onDebuggerClientChangeUnmount', callback);
 }
 
 const bridgeCallback = {};

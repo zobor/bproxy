@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { isBoolean } from 'lodash';
 import * as qs from 'qs';
 import { FilterParams, HttpRequestRequest } from '../../types/web';
 import { take, takeRight } from './_';
@@ -195,4 +195,15 @@ export const highlight = () => {
 
 export const objectToUrlQueryString = (obj) => {
   return Object.keys(obj).map(key => `${key}=${obj[key]}`).join('&');
+};
+
+export const formatObjectKeyRender = (value) => {
+  switch (Object.prototype.toString.call(value)) {
+    case '[object Boolean]':
+      return JSON.stringify(value);
+      break;
+    default:
+      return decodeURIComponent(value);
+      break;
+  }
 };

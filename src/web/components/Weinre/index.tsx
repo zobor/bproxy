@@ -3,11 +3,12 @@ import { getDebugTargets } from '../../modules/bridge';
 import { onDebuggerClientChange, onDebuggerClientChangeUnmount } from '../../modules/socket';
 import { highlight } from '../../modules/util';
 import { Button } from '../UI';
+import DefaultIcon from '../../assets/icon-image.svg';
 import './index.scss';
 
 const EmptyTips = () => {
   const txt = `\t{
-    regx: 'm.v.qq.com/tvp/$',
+    url: 'm.v.qq.com/tvp/$',
     debug: true
   }`;
   useEffect(() => {
@@ -20,6 +21,19 @@ const EmptyTips = () => {
         <code>{txt}</code>
       </pre>
   </div>);
+};
+
+const IconImage = ({ src }) => {
+  const [url, setUrl] = useState<string>(src);
+  const onError = () => {
+    setUrl(DefaultIcon);
+  };
+
+  useEffect(() => {
+    setUrl(src);
+  }, [src]);
+
+  return <img src={url} alt="" onError={onError} />
 };
 
 export default () => {
@@ -49,9 +63,11 @@ export default () => {
   return <div className="dialog-page-debug">
     {Object.keys(clients).length === 0 ? <EmptyTips /> : null}
     <ul>
-    {Object.keys(clients).map((id: string) => <li>
+    {Object.keys(clients).map((id: string) => <li key={id}>
       <div className="dialog-page-debug-group">
-        <div className="img"><img src={clients[id]?.favicon} /></div>
+        <div className="img">
+          <IconImage src={clients[id]?.favicon} />
+        </div>
         <div className="content">
           <div>{clients[id].title}</div>
           <div>{clients[id].url}</div>
