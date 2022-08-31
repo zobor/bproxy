@@ -1,1 +1,0 @@
-import{FormattedContentBuilder}from"./FormattedContentBuilder.js";export class IdentityFormatter{constructor(t){this._builder=t}format(t,r,o,e){const d=t.substring(o,e);this._builder.addToken(d,o)}}

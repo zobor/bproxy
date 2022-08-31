@@ -1,1 +1,0 @@
-export function registerCustomElement(e,t,s){return self.customElements.define(t,class extends s{constructor(){super(),this.setAttribute("is",t)}},{extends:e}),()=>createElement(e,t)}

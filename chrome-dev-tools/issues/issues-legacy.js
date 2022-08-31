@@ -1,1 +1,0 @@
-import*as IssuesModule from"./issues.js";self.Issues=self.Issues||{},Issues=Issues||{},Issues.IssuesPane=IssuesModule.IssuesPane.IssuesPaneImpl,Issues.IssueRevealer=IssuesModule.IssueRevealer.IssueRevealer;

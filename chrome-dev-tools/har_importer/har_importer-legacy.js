@@ -1,1 +1,0 @@
-import*as HARImporterModule from"./har_importer.js";self.HARImporter=self.HARImporter||{},HARImporter=HARImporter||{},HARImporter.HARRoot=HARImporterModule.HARFormat.HARRoot,HARImporter.Importer=HARImporterModule.HARImporter.Importer;

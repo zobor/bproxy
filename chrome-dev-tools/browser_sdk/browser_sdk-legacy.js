@@ -1,1 +1,0 @@
-import"./browser_sdk.js";self.BrowserSDK=self.BrowserSDK||{},BrowserSDK=BrowserSDK||{};

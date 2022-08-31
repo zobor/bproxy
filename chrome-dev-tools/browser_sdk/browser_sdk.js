@@ -1,1 +1,0 @@
-import*as LogManager from"./LogManager.js";export const logManager=new LogManager.LogManager;export{LogManager};

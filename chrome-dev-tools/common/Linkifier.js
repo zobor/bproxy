@@ -1,1 +1,0 @@
-export class Linkifier{linkify(i,e){throw new Error("linkify not implemented")}static linkify(i,e){return i?self.runtime.extension(Linkifier,i).instance().then(n=>n.linkify(i,e)):Promise.reject(new Error("Can't linkify "+i))}}export let Options;

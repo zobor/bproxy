@@ -1,1 +1,0 @@
-import{App}from"./App.js";export class AppProvider{createApp(){throw new Error("not implemented")}}

@@ -1,1 +1,0 @@
-import*as ConsoleCountersModule from"./console_counters.js";self.ConsoleCounters=self.ConsoleCounters||{},ConsoleCounters=ConsoleCounters||{},ConsoleCounters.WarningErrorCounter=ConsoleCountersModule.WarningErrorCounter.WarningErrorCounter;

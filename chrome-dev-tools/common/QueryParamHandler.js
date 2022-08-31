@@ -1,1 +1,0 @@
-export class QueryParamHandler{handleQueryParam(a){}}
