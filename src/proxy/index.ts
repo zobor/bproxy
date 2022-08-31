@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash';
 import * as url from 'url';
 import * as packageJson from '../../package.json';
 import { appConfigFilePath, appDataPath, configModuleTemplate } from './config';
-import { showErrorDialog } from './electronApi';
 import { updateConfigPathAndWatch } from './getUserConfig';
 import httpMiddleware from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
@@ -16,6 +15,13 @@ import dataset from './utils/dataset';
 import { isLocalServerRequest } from './utils/is';
 import { checkUpgrade } from './utils/request';
 import { delay, utils } from './utils/utils';
+
+let showErrorDialog = (arg: any) => {};
+
+if (dataset.platform === 'app') {
+  const electronApi = require('./electronApi');
+  showErrorDialog = electronApi.showErrorDialog;
+}
 
 const pkg: any = packageJson;
 
@@ -185,7 +191,9 @@ export default class LocalServer {
       // 端口被占用，停止启动
       if (err?.message?.includes('address already in use')) {
         logger.error(`ERROR: 端口被占用，请检查bproxy是否已启动。`);
-        await showErrorDialog('端口被占用，请检查bproxy是否已启动');
+        if (dataset.platform === 'app') {
+          await showErrorDialog('端口被占用，请检查bproxy是否已启动');
+        }
         process.exit();
       } else {
         logger.error(`uncaughtException: ${JSON.stringify(err.stack)}`);

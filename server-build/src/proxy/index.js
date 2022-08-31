@@ -41,7 +41,6 @@ const lodash_1 = require("lodash");
 const url = __importStar(require("url"));
 const packageJson = __importStar(require("../../package.json"));
 const config_1 = require("./config");
-const electronApi_1 = require("./electronApi");
 const getUserConfig_1 = require("./getUserConfig");
 const httpMiddleware_1 = __importDefault(require("./httpMiddleware"));
 const httpsMiddleware_1 = __importDefault(require("./httpsMiddleware"));
@@ -53,6 +52,11 @@ const dataset_1 = __importDefault(require("./utils/dataset"));
 const is_1 = require("./utils/is");
 const request_1 = require("./utils/request");
 const utils_1 = require("./utils/utils");
+let showErrorDialog = (arg) => { };
+if (dataset_1.default.platform === 'app') {
+    const electronApi = require('./electronApi');
+    showErrorDialog = electronApi.showErrorDialog;
+}
 const pkg = packageJson;
 class LocalServer {
     static beforeStart() {
@@ -207,7 +211,9 @@ class LocalServer {
                 var _a;
                 if ((_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.includes('address already in use')) {
                     logger_1.default.error(`ERROR: 端口被占用，请检查bproxy是否已启动。`);
-                    yield (0, electronApi_1.showErrorDialog)('端口被占用，请检查bproxy是否已启动');
+                    if (dataset_1.default.platform === 'app') {
+                        yield showErrorDialog('端口被占用，请检查bproxy是否已启动');
+                    }
                     process.exit();
                 }
                 else {
