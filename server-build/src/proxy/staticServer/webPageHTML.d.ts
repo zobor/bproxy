@@ -1,0 +1,1 @@
+export declare const webPageHTML = "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Bproxy</title>\n</head>\n<body>\n<script>\nwindow.location.replace('/web');\n</script>\n</body>\n</html>\n\n";

@@ -1,0 +1,1 @@
+export declare function responseByRequest(req: any, res: any, requestOption: any, responseHeaders: {} | undefined, matcherResult: BproxyConfig.MatcherResult, config: BproxyConfig.Config, postBodyData: any): Promise<number>;

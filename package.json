@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "代理工具",
   "main": "./server-build/electron.js",
   "bin": {
@@ -97,7 +97,7 @@
     "npm": ">= 8.0.0"
   },
   "preferGlobal": true,
-  "homepage": "https://github.com/zobor/bproxy",
+  "homepage": "http://www.bproxy.cn",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",

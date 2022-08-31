@@ -1,0 +1,2 @@
+import{r as s,s as n,n as e}from"./index.c58bfb13.js";import{y as i}from"./bridge.8d86a4bb.js";const a=()=>{const[t,r]=s.exports.useState("");return s.exports.useEffect(()=>{setTimeout(()=>{i().then(o=>{r(o.split(/\n/).reverse().slice(0,200).join(`
+`))})},500)},[]),n("div",{className:"log-viewer",children:[e("h1",{children:"log viewer"}),e("div",{className:"logs",children:e("code",{children:e("pre",{children:t})})})]})};export{a as default};

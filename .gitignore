@@ -8,8 +8,6 @@ yarn.lock
 
 # 构建产物
 app-build/
-server-build/
-web-build/
 coverage/*
 
 # bproxy
