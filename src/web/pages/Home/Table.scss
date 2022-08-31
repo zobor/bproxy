@@ -1,0 +1,250 @@
+@import '../../theme.scss';
+@import '../../mixin.scss';
+
+/* 数据表格 */
+.table-box {
+  margin: 0 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.table {
+  width: 100%;
+  position: relative;
+  font-size: 16px;
+  @include noselect;
+
+  thead {
+    tr {
+      position: sticky;
+      top: 0;
+      background-color: $theadBackground;
+      font-size: 14px;
+    }
+    td {
+      font-weight: normal;
+      border-color: transparent;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      color: $theadTextColor;
+      &:first-child {
+        border-radius: 5px 0 0 0;
+      }
+      &:last-child {
+        border-radius: 0 5px 0 0;
+      }
+    }
+  }
+
+  td {
+    padding: 3px 0px;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    vertical-align: middle;
+    border-bottom: solid 1px $tableBorderColor;
+    &:nth-child(1) {
+      text-align: center;
+    }
+  }
+
+  tbody {
+    tr {
+      color: $trTextColor;
+      &:hover {
+        cursor: pointer;
+        box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+      }
+      &.matched {
+        color: $matchedTextColor;
+        border-color: transparent;
+      }
+      &.active {
+        background: $tableActiveColor;
+      }
+      &.error {
+        color: $errorTextColor;
+        :nth-child(1) {
+          color: $errorTextColor;
+        }
+        .contentType {
+          > span {
+            color: #fff;
+          }
+        }
+      }
+      &.highlight {
+        color: $highlightTextColor;
+      }
+    }
+  }
+
+  .status {
+    width: 40px;
+    text-align: center;
+    text-align: center;
+    &.s200,
+    &.s101 {
+      color: $httpStatus200;
+    }
+    &.s304 {
+      color: $httpStatus304;
+    }
+  }
+  .method {
+    width: 70px;
+    text-transform: lowercase;
+    overflow: hidden;
+    text-align: center;
+  }
+  .protocol {
+    width: 60px;
+    text-align: center;
+  }
+  .host {
+    width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .size {
+    width: 70px;
+  }
+  .contentType {
+      width: 110px;
+      font-size: 14px;
+      >* {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+      .html {
+        background-color: rgb(112, 184, 166);
+        color: #fff;
+      }
+      .javascript {
+        background-color: rgb(142, 68, 173);
+        color: #fff;
+      }
+      .css {
+        background-color: rgb(94, 159, 19);
+        color: #fff;
+      }
+      .json {
+        background-color: rgb(228, 119, 84);
+        color: #fff;
+      }
+      .jpeg,.jpg,.png,.gif,.webp {
+        background-color: rgb(72, 201, 176);
+        color: #fff;
+      }
+      .mpeg {
+        background-color: rgb(195, 155, 211);
+        color: #fff;
+      }
+  }
+  .speed {
+    width: 80px;
+    &.slow {
+      color: red;
+    }
+  }
+  .ip {
+    width: 150px;
+    &:hover {
+      color: $hoverColor;
+    }
+  }
+}
+
+.table-box .loading {
+  text-align: center;
+  color: #ccc;
+  height: 4px;
+  background-color: #222;
+  &.lock {
+    background-color: #000;
+  }
+}
+
+.empty-tip {
+  text-align: center;
+  font-size: 15px;
+  color: #999;
+  padding: 20px 0;
+  span {
+    color: rgb(241, 196, 15);
+    padding: 0 5px;
+  }
+}
+
+@media screen and (max-width: 1325px) {
+  .table {
+    td {
+      &:nth-last-child(1) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1170px) {
+  .table {
+    td {
+      &:nth-last-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+@media screen and (max-width: 1066px) {
+  .table {
+    td {
+      &:nth-last-child(3) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .table {
+    td {
+      &:nth-last-child(4) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .table {
+    td {
+      &:nth-child(3) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 775px) {
+  .table {
+    td {
+      &:nth-child(2) {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 690px) {
+  .table {
+    td {
+      &:nth-child(1) {
+        display: none;
+      }
+      &.host {
+        width: 40%;
+      }
+    }
+  }
+}

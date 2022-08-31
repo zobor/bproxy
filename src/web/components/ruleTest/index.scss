@@ -1,0 +1,28 @@
+.test-page {
+  width: 100%;
+
+  pre {
+    margin: 0;
+    margin-top: 5px;
+    width: 100%;
+    background: #333;
+    color: #fff;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre;
+    padding: 30px;
+    font-size: 16px;
+    white-space: 2;
+    border-radius: 7px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    &.matched {
+      background-color: #117A65;
+    }
+  }
+
+  input {
+    border-color: #117A65;
+  }
+}

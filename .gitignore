@@ -1,11 +1,19 @@
-npm-debug.log
+# base
+node_modules/
+.DS_Store
+package-lock.json
+yarn.lock
+.idea
+*.swp
+
+# 构建产物
+app-build/
+server-build/
+web-build/
+coverage/*
+
+# bproxy
 *.tar.gz
 *.log
-.DS_Store
-.idea
-package-lock.json
-*.swp
-bproxy.config*.js
-yarn.lock
 mock/
-node_modules/
+bproxy.config*.js

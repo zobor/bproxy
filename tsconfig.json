@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "outDir": "./server-build",
+    "declarationDir": "./server-build",
+    "sourceMap": false,
+    "noImplicitAny": false,
+    "strict": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "./src/types/",
+      "node_modules/@types/"
+    ],
+    "allowJs": true,
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "types": [
+      "node",
+      "jest"
+    ],
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "jsx": "react-jsx",
+  },
+  "exclude": [
+    "./app-build",
+    "./web-build",
+    "./server-build",
+    "./mock/",
+    "./chrome-dev-tools/",
+    "./test/",
+    "./node_modules/",
+    "./src/web",
+    "./bproxy.*.js",
+    "./*.config.js",
+    "./*.config.ts",
+    "./coverage"
+  ],
+}

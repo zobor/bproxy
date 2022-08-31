@@ -1,0 +1,171 @@
+@import './theme.scss';
+
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+html body {
+  background-color: $bodyBackgroundColor;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1;
+  --animate-duration: 0.8s;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: $normalColor;
+  }
+}
+
+pre {
+  tab-size: 2;
+}
+
+#root > * {
+  box-sizing: border-box;
+}
+
+#root, #app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scrollbar-style::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-style::-webkit-scrollbar-track {
+  border-radius: 3px;
+  background: $panelBackground;
+}
+.scrollbar-style::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: $scrollBarColor;
+  box-shadow: inset 0 0 10px $scrollBarColor;
+}
+
+:root {
+  --rainbow-gradient: linear-gradient(
+    -90deg,
+    #adfbda 0,
+    #35c3ff 30%,
+    #fda399 50%,
+    #76d880 70%,
+    #ebf38b 90%,
+    #adfbda 100%
+  );
+}
+
+.cube {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.cm-theme-dark {
+  // height: calc(100% - 30px);
+  height: 100%;
+
+  .ͼ1.cm-editor {
+    height: 100%;
+    font-size: 14px;
+
+    .ͼf,
+    .ͼk {
+      color: #f39c12;
+    }
+    .ͼb {
+      color: #1abc9c;
+    }
+    .ͼl {
+      color: #555;
+    }
+    .ͼa {
+      color: #c39bd3;
+    }
+    .ͼd {
+      color: #f4d03f;
+    }
+    .cm-scroller {
+      font-family: inherit;
+
+      .cm-content {
+        word-wrap: break-word;
+        word-break: break-all;
+        white-space: pre-wrap;
+      }
+
+      @include scrollbar();
+    }
+  }
+}
+
+.ant-modal-root {
+  .ant-modal {
+    .ant-modal-content {
+      border-radius: 10px;
+      background-color: $antModalBackground;
+
+      .ant-modal-body {
+        background-color: $antModalBodyBackground;
+      }
+
+      .ant-modal-header {
+        border-radius: 6px 6px 0 0;
+        border: none;
+        background-color: none;
+      }
+
+      .ant-modal-title {
+        text-align: center;
+        font-weight: bold;
+        color: $antModalTitleColor;
+      }
+
+      .ant-modal-close-x {
+        &:hover {
+          background-color: rgb(231, 76, 60);
+        }
+      }
+
+    }
+  }
+}
+
+.cards {
+  .ant-card {
+    background-color: rgb(46, 64, 83);
+    .ant-card-head {
+      background-color: rgb(211, 84, 0);
+    }
+  }
+}

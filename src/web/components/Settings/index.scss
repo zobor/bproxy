@@ -1,0 +1,13 @@
+.dialog-settings {
+  max-height: 60vh;
+  width: 400px;
+
+  .tools-tags {
+    .ant-tag {
+      cursor: pointer;
+      margin: 5px 5px 0 0;
+      padding: 5px 10px;
+      border-radius: 100px;
+    }
+  }
+}

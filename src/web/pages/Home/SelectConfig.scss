@@ -1,0 +1,46 @@
+.Select-config {
+  color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  .current {
+    padding: 20px 0;
+    text-align: center;
+    display: flex;
+    > span {
+      flex: 1;
+      background-color: rgb(248, 196, 113);
+      color: #000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cancelSelect {
+      margin-left: 10px;
+    }
+  }
+
+  .cards {
+    display: flex;
+    width: 800px;
+    margin: 0 auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .title {
+    font-size: 18px;
+    padding: 10px 0;
+  }
+
+  .ant-card {
+    margin: 0 10px 10px 0;
+    &:hover {
+      background-color: darkred;
+      cursor: pointer;
+    }
+  }
+
+  .ant-card-head {
+    border: none;
+  }
+}

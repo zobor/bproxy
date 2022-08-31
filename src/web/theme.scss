@@ -1,0 +1,77 @@
+$normalColor: #fff;
+$bodyBackgroundColor: #0D2E4C;
+$bodyBackgroundColor: #222;
+
+// custom state
+$boxColor: rgb(20, 20, 20);
+
+$cardColor: #211231;
+
+$iconColor: rgb(220, 118, 51);
+
+$hoverColor: #1ABC9C;
+
+$linkColor: #58D68D;
+
+$disabled: rgba(100, 100, 100, 0.9);
+
+// table
+$tableBorderColor: rgb(44, 62, 80, 0.4);
+$tableActiveColor: rgb(27, 79, 114);
+// thead
+$theadBackground: rgb(27, 79, 114);
+$theadColor: #AEB6BF;
+$theadTextColor: rgb(195, 155, 211);
+// tr
+$trHoverColor: rgb(27, 79, 114);
+$trTextColor: #8b949e;
+
+// highlight
+$highlightTextColor: rgb(212, 172, 13);
+$matchedTextColor: #58a6ff;
+
+// antd
+$modalBackground: #1B4F72;
+$panelBackground: #1d1f21;
+$panelFontColor: #fff;
+$panelBorderRadius: 5px;
+$maskBackground: rgba(66, 71, 164, 0.2);
+$labelKeyColor: #F4D03F;
+$labelValueColor: #139dcb;
+
+$appPadding: 0px;
+
+$httpStatus200: rgb(46, 204, 113);
+$httpStatus304: #7F8C8D;
+$scrollBarColor: rgb(165, 105, 189);
+$errorTextColor: rgb(231, 76, 60);
+
+$antModalBackground: #111;
+$antModalBodyBackground: #1f1f1f;
+$antModalTitleColor: rgb(165, 105, 189);
+
+// detail panel
+$detailContentBackground: rgb(23, 32, 42);
+$detailTabsBackground: rgb(39, 55, 70);
+
+@mixin scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 3px;
+    background: $panelBackground;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: $scrollBarColor;
+    box-shadow: inset 0 0 10px $scrollBarColor;
+  }
+}
+
+@mixin wordWrap {
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
