@@ -1,7 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const bproxy = require('./src/proxy').default;
 const { checkUpgrade } = require('./src/proxy/utils/request');
-const { showUpgradeDialog } = require('./src/proxy/electronApi');
+const { showUpgradeDialog } = require('./src/proxy/api/electronApi');
 const { updateDataSet } = require('./src/proxy/utils/dataset');
 
 updateDataSet('platform', 'app');

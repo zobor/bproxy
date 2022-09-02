@@ -3,6 +3,7 @@ import * as http from 'http';
 import { isEmpty } from 'lodash';
 import * as url from 'url';
 import * as packageJson from '../../package.json';
+import { showError, showUpgrade } from './api';
 import { appConfigFilePath, appDataPath, configModuleTemplate } from './config';
 import { updateConfigPathAndWatch } from './getUserConfig';
 import httpMiddleware from './httpMiddleware';
@@ -11,17 +12,10 @@ import logger from './logger';
 import { ioInit, wsApi, wss } from './socket/socket';
 import { staticServer } from './staticServer';
 import { configSystemProxy, setSystemProxyOff } from './systemProxy';
-import dataset from './utils/dataset';
+import dataset, { updateDataSet } from './utils/dataset';
 import { isLocalServerRequest } from './utils/is';
 import { checkUpgrade } from './utils/request';
 import { delay, utils } from './utils/utils';
-
-let showErrorDialog = (arg: any) => {};
-
-if (dataset.platform === 'app') {
-  const electronApi = require('./electronApi');
-  showErrorDialog = electronApi.showErrorDialog;
-}
 
 const pkg: any = packageJson;
 
@@ -44,17 +38,7 @@ export default class LocalServer {
 
   static async checkUpgrade() {
     checkUpgrade().then((data: any) => {
-      if (data && data.version) {
-        console.log('\n');
-        console.log('########################################');
-        console.log(`bproxy有新版本（${data.version}）可以升级，请尽快升级`);
-        console.log('更新内容如下：');
-        console.log(
-          data.changeLog.map((item: string) => `  ${item}`).join('\n')
-        );
-        console.log('########################################');
-        console.log('\n');
-      }
+      showUpgrade(data);
     });
   }
 
@@ -176,6 +160,12 @@ export default class LocalServer {
     logger.info(`✔ 操作面板地址：${`http://127.0.0.1:${config.port}`}`);
 
     this.errorCatch();
+
+    this.afterStart();
+  }
+
+  static afterStart() {
+    updateDataSet('ready', true);
   }
 
   static async enableBproxySystemProxy(port: number) {
@@ -192,7 +182,7 @@ export default class LocalServer {
       if (err?.message?.includes('address already in use')) {
         logger.error(`ERROR: 端口被占用，请检查bproxy是否已启动。`);
         if (dataset.platform === 'app') {
-          await showErrorDialog('端口被占用，请检查bproxy是否已启动');
+          await showError('端口被占用，请检查bproxy是否已启动');
         }
         process.exit();
       } else {

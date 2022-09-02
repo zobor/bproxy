@@ -3,8 +3,8 @@ import { cloneDeep, get } from 'lodash';
 import * as URL from 'url';
 import * as pkg from '../../package.json';
 import { IS_REG_URL } from '../utils/constant';
+import { previewTextFile, showBproxyHome, showSelectPath } from './api';
 import { appInfoLogFilePath } from './config';
-import { openAndPreviewTextFile, showHomePage, showSelectPathDialog } from './electronApi';
 import { updateConfigPathAndWatch } from './getUserConfig';
 import { matcher } from './matcher';
 import { channelManager } from './socket/socket';
@@ -116,16 +116,16 @@ export const getDebugTargets = () => {
 };
 
 // electron: 选择文件路径
-export const selectFilePath = () => showSelectPathDialog();
+export const selectFilePath = () => showSelectPath();
 
 // 打开日志
 export const openLogFile = () => {
-  openAndPreviewTextFile({ url: appInfoLogFilePath, width: 0, height: 0});
+  previewTextFile(appInfoLogFilePath);
 };
 
 // 打开页面，默认打开bproxy官网
 export const openWebPage = () => {
-  showHomePage();
+  showBproxyHome();
 };
 
 // 获取当前运行的平台

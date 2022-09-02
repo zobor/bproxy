@@ -85,7 +85,7 @@ export function openAndPreviewTextFile({ url, width, height }) {
 }
 
 // 显示升级提示弹窗
-export function showUpgradeDialog({ url, changeLog = [] }) {
+export function showUpgradeDialog({ url, changeLog = [] }: {url?: string; changeLog: string[]}) {
   showConfirmDialog(
     '可升级提示',
     `bproxy有新版本可以升级，请尽快升级, 更新内容如下: ${changeLog.join('。')}`,
@@ -123,5 +123,3 @@ export function showSelectPathDialog() {
       });
   });
 }
-
-export { dialog, BrowserWindow };

@@ -15,5 +15,6 @@ declare namespace Bproxy {
     currentConfigPath: string;
     config: BproxyConfig.Config;
     platform: 'bash' | 'app';
+    ready: boolean;
   }
 }
