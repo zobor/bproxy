@@ -5,7 +5,6 @@
 # bproxy
 
 bproxy 一款代理工具，为前端开发带来乐趣
------
 
 ## bproxy的核心功能
 - `抓包`：http、https、ws、wss

@@ -1,55 +1,89 @@
+import * as net from 'net';
 import * as forge from 'node-forge';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
-import {certificate} from './config';
+import { certificate } from './config';
 
 const { pki } = forge;
+const ONE_DAY = 1000 * 60 * 60 * 24;
 let keys;
 
 class Certificate {
   // 创建安装使用的本地证书
-  createCAForInstall(commonName: string): BproxyConfig.ProxyCertificateCreateResponse {
+  createCAForInstall(
+    commonName: string
+  ): BproxyConfig.ProxyCertificateCreateResponse {
     const cert: any = pki.createCertificate();
+    const currentDate = new Date();
     cert.publicKey = keys.publicKey;
-    cert.serialNumber = `${new Date().getTime()}`;
-    cert.validity.notBefore = new Date();
-    cert.validity.notBefore.setFullYear(cert.validity.notBefore.getFullYear() - 5);
-    cert.validity.notAfter = new Date();
-    // 证书有效期20年
-    cert.validity.notAfter.setFullYear(cert.validity.notAfter.getFullYear() + 20);
-    const attrs = [{
-      name: 'commonName',
-      value: commonName,
-    }, {
-      name: 'countryName',
-      value: certificate.countryName,
-    }, {
-      shortName: 'ST',
-      value: certificate.provinceName,
-    }, {
-      name: 'localityName',
-      value: certificate.localityName,
-    }, {
-      name: 'organizationName',
-      value: certificate.organizationName,
-    }, {
-      shortName: 'OU',
-      value: certificate.OU,
-    }];
+    cert.serialNumber = `${currentDate.getTime()}`;
+    cert.validity.notBefore = new Date(currentDate.getTime() - ONE_DAY * 20);
+    cert.validity.notAfter = currentDate;
+    // 证书有效期10年
+    cert.validity.notAfter.setFullYear(
+      cert.validity.notAfter.getFullYear() + 10
+    );
+    const attrs = [
+      {
+        name: 'commonName',
+        value: commonName,
+      },
+      {
+        name: 'countryName',
+        value: certificate.countryName,
+      },
+      {
+        shortName: 'ST',
+        value: certificate.provinceName,
+      },
+      {
+        name: 'localityName',
+        value: certificate.localityName,
+      },
+      {
+        name: 'organizationName',
+        value: certificate.organizationName,
+      },
+      {
+        shortName: 'OU',
+        value: certificate.OU,
+      },
+    ];
     cert.setSubject(attrs);
     cert.setIssuer(attrs);
-    cert.setExtensions([{
-      name: 'basicConstraints',
-      critical: true,
-      cA: true,
-    }, {
-      name: 'keyUsage',
-      critical: true,
-      keyCertSign: true,
-    }, {
-      name: 'subjectKeyIdentifier',
-    }]);
+    cert.setExtensions([
+      {
+        name: 'basicConstraints',
+        cA: true,
+      },
+      {
+        name: 'keyUsage',
+        keyCertSign: true,
+        digitalSignature: true,
+        nonRepudiation: true,
+        keyEncipherment: true,
+        dataEncipherment: true,
+      },
+      {
+        name: 'extKeyUsage',
+        serverAuth: true,
+        clientAuth: true,
+        codeSigning: true,
+        emailProtection: true,
+        timeStamping: true,
+      },
+      {
+        name: 'nsCertType',
+        client: true,
+        server: true,
+        email: true,
+        objsign: true,
+        sslCA: true,
+        emailCA: true,
+        objCA: true,
+      },
+    ]);
 
     cert.sign(keys.privateKey, forge.md.sha256.create());
 
@@ -98,10 +132,14 @@ class Certificate {
 
   // 启动bproxy，初始化证书
   init(): BproxyConfig.ProxyCertificateInstallResponse {
-    // 不影响启动速度，延迟创建keys
-    setTimeout(() => {
+    if (fs.existsSync(certificate.getDefaultCACertPath())) {
+      // 不影响启动速度，延迟创建keys
+      setTimeout(() => {
+        keys = pki.rsa.generateKeyPair(certificate.keySize);
+      }, 1000);
+    } else {
       keys = pki.rsa.generateKeyPair(certificate.keySize);
-    }, 1000);
+    }
     const basePath = certificate.getDefaultCABasePath();
     const caCertPath = path.resolve(basePath, certificate.filename);
     const caKeyPath = path.resolve(basePath, certificate.keyFileName);
@@ -133,82 +171,104 @@ class Certificate {
       fs.writeFileSync(caKeyPath, keyPem);
     }
     return res;
-
   }
 
   // 临时证书缓存
-  fakeCertifaceCache: Record<string, {key: string; cert: any}> = {};
+  fakeCertifaceCache: Record<string, { key: string; cert: any }> = {};
 
   // 创建https虚拟证书
-  createFakeCertificateByDomain(caCert, caKey, domain): BproxyConfig.ProxyCertificateCreateResponse {
+  createFakeCertificateByDomain(
+    caCert,
+    caKey,
+    domain
+  ): BproxyConfig.ProxyCertificateCreateResponse {
     if (this.fakeCertifaceCache[domain]) {
       return this.fakeCertifaceCache[domain];
     }
     const cert: any = pki.createCertificate();
     cert.publicKey = keys.publicKey;
+    const currentDate = new Date();
 
     cert.serialNumber = `${new Date().getTime()}`;
-    cert.validity.notBefore = new Date();
-    cert.validity.notBefore.setFullYear(cert.validity.notBefore.getFullYear() - 1);
+    cert.validity.notBefore = new Date(currentDate.getTime() - ONE_DAY * 20);
     cert.validity.notAfter = new Date();
     cert.validity.notAfter.setFullYear(cert.validity.notAfter.getFullYear() + 1);
-    const attrs = [{
-      name: 'commonName',
-      value: domain,
-    }, {
-      name: 'countryName',
-      value: certificate.countryName,
-    }, {
-      shortName: 'ST',
-      value: certificate.provinceName,
-    }, {
-      name: 'localityName',
-      value: certificate.localityName,
-    }, {
-      name: 'organizationName',
-      value: certificate.organizationName,
-    }, {
-      shortName: 'OU',
-      value: certificate.OU,
-    }];
+    const attrs = [
+      {
+        name: 'commonName',
+        value: domain,
+      },
+      {
+        name: 'countryName',
+        value: certificate.countryName,
+      },
+      {
+        shortName: 'ST',
+        value: certificate.provinceName,
+      },
+      {
+        name: 'localityName',
+        value: certificate.localityName,
+      },
+      {
+        name: 'organizationName',
+        value: certificate.organizationName,
+      },
+      {
+        shortName: 'OU',
+        value: certificate.OU,
+      },
+    ];
 
     cert.setIssuer(caCert.subject.attributes);
     cert.setSubject(attrs);
 
-    cert.setExtensions([{
-      name: 'basicConstraints',
-      critical: true,
-      cA: false,
-    }, {
-      name: 'keyUsage',
-      critical: true,
-      digitalSignature: true,
-      contentCommitment: true,
-      keyEncipherment: true,
-      dataEncipherment: true,
-      keyAgreement: true,
-      keyCertSign: true,
-      cRLSign: true,
-      encipherOnly: true,
-      decipherOnly: true,
-    }, {
-      name: 'subjectAltName',
-      altNames: [{
-        type: 2,
-        value: domain,
-      }],
-    }, {
-      name: 'subjectKeyIdentifier',
-    }, {
-      name: 'extKeyUsage',
-      serverAuth: true,
-      clientAuth: true,
-      codeSigning: true,
-      emailProtection: true,
-      timeStamping: true,
-    }, {
-      name: 'authorityKeyIdentifier',
-    }]);
+    cert.setExtensions([
+      {
+        name: 'basicConstraints',
+        cA: false,
+      },
+      {
+        name: 'keyUsage',
+        keyCertSign: true,
+        digitalSignature: true,
+        nonRepudiation: true,
+        keyEncipherment: true,
+        dataEncipherment: true,
+      },
+      {
+        name: 'subjectAltName',
+        altNames: [
+          net.isIP(domain)
+            ? {
+                type: 7,
+                value: domain,
+              }
+            : {
+                type: 2,
+                value: domain,
+              },
+        ],
+      },
+      {
+        name: 'extKeyUsage',
+        serverAuth: true,
+        clientAuth: true,
+        codeSigning: true,
+        emailProtection: true,
+        timeStamping: true,
+      },
+      {
+        name: 'nsCertType',
+        client: true,
+        server: true,
+        email: true,
+        objsign: true,
+        sslCA: true,
+        emailCA: true,
+        objCA: true,
+      },
+    ]);
     cert.sign(caKey, forge.md.sha256.create());
 
     this.fakeCertifaceCache[domain] = {

@@ -33,7 +33,7 @@ export default config;
 export const certificate = {
   filename: 'bproxy.ca.crt',
   keyFileName: 'bproxy.ca.key.pem',
-  name: `B Proxy CA(${getComputerName()})`,
+  name: `bproxy CA(${getComputerName()})`,
   organizationName: 'zoborzhang',
   OU: 'https://github.com/zobor/bproxy',
   countryName: 'CN',
