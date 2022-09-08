@@ -129,7 +129,7 @@ declare namespace BproxyConfig {
   }
 
   interface ProxyCertificateCreateResponse {
-    key: string;
-    cert: ProxyCertificate;
+    keyPem: any;
+    certPem: any;
   }
 }

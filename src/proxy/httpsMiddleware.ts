@@ -1,9 +1,7 @@
-import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import { isBoolean } from 'lodash';
 import * as net from 'net';
-import * as forge from 'node-forge';
 import * as tls from 'tls';
 import * as url from 'url';
 import Certificate from './certifica';
@@ -14,13 +12,7 @@ import { ioRequest } from './socket/socket';
 import dataset from './utils/dataset';
 import { createHttpHeader, isHttpsHostRegMatch, utils } from './utils/utils';
 
-const { pki } = forge;
 let certInstance;
-let cert;
-let certificatePem;
-let certificateKeyPem;
-let localCertificate;
-let localCertificateKey;
 
 const wsFrameFormat = `
 Frame format:
@@ -58,14 +50,10 @@ interface WebOthers {
 export default {
   beforeStart(): CertConfig {
     certInstance = new Certificate();
-    cert = certInstance.init();
-    certificatePem = fs.readFileSync(cert.caCertPath);
-    certificateKeyPem = fs.readFileSync(cert.caKeyPath);
-    localCertificate = pki.certificateFromPem(certificatePem);
-    localCertificateKey = pki.privateKeyFromPem(certificateKeyPem);
+    const { caCertPath } = certInstance.init();
 
     return {
-      certPath: cert.caCertPath,
+      certPath: caCertPath,
     };
   },
 
@@ -150,13 +138,9 @@ export default {
   }> {
     return new Promise((resolve) => {
       const isBproxyDev = ['bproxy.dev', 'bproxy.io'].includes(hostname);
-      const certificate = certInstance.createFakeCertificateByDomain(
-        localCertificate,
-        localCertificateKey,
+      const {certPem, keyPem} = certInstance.createFakeCertificateByDomain(
         hostname
       );
-      const certPem = pki.certificateToPem(certificate.cert);
-      const keyPem = pki.privateKeyToPem(certificate.key);
       const httpsServerConfig = {
         key: keyPem,
         cert: certPem,
