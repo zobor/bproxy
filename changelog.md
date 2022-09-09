@@ -1,6 +1,6 @@
 # bproxy change log
 
-## 5.2.7
+## 5.2.8
 - 修复chrome不能识别证书
 
 ## 5.2.6

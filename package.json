@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.2.7",
+  "version": "5.2.8",
   "description": "代理工具",
   "main": "./server-build/electron.js",
   "bin": {
