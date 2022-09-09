@@ -1,13 +1,14 @@
-import { defineConfig } from "vite";
-const { getThemeVariables } = require("antd/dist/theme");
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+const { getThemeVariables } = require('antd/dist/theme');
+import react from '@vitejs/plugin-react';
 import progress from 'vite-plugin-progress';
+import svgr from 'vite-plugin-svgr';
 
 const outDir = './web-build';
 
 // for build weinre
 const weinre = defineConfig({
-  root: "./",
+  root: './',
   base: '/web',
   build: {
     outDir: './src/web/libs',
@@ -17,14 +18,14 @@ const weinre = defineConfig({
       name: 'BproxyInspect',
       fileName: 'inspect',
       formats: ['umd'],
-    }
+    },
   },
 });
 
 // for build webpage
 const page = defineConfig({
-  root: "./",
-  base: "/web/",
+  root: './',
+  base: '/web/',
   build: {
     outDir,
     emptyOutDir: true,
@@ -43,8 +44,14 @@ const page = defineConfig({
   server: {
     port: 8889,
   },
-  plugins: [react(), progress()],
-})
+  plugins: [
+    react(),
+    progress(),
+    svgr({
+      exportAsDefault: true,
+    }),
+  ],
+});
 
 let config;
 switch (process.env.NODE_ENV) {

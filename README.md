@@ -7,6 +7,7 @@
 bproxy 一款代理工具，为前端开发带来乐趣
 
 ## bproxy的核心功能
+- `独立配置`: 配置文件可以跟着项目走，支持多人跨平台协同开发
 - `抓包`：http、https、ws、wss
 - `https过滤`：自定义需要抓包的https白名单
 - `代理webSocket`

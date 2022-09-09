@@ -63,3 +63,5 @@ declare module '*.json' {
 }
 
 declare module 'node-forge';
+
+declare module 'mkdirp';

@@ -23,7 +23,7 @@ const config: BproxyConfig.Config = {
   highPerformanceMode: false,
   rules: [
     {
-      url: 'https://google.com/bproxy',
+      url: 'https://qq.com/bproxy',
       target: 'hello bproxy\n',
     }
   ],

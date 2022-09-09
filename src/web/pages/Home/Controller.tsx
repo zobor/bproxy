@@ -56,7 +56,7 @@ const RuleTestModal = (props) => {
 
 const SettingsModal = (props) => {
   return (
-    <ControllerDialog title="个性化设置" width="1000" {...props} centered>
+    <ControllerDialog title="个性化设置" width={600} {...props}>
       <Suspense fallback={<Spin />}>
         <Settings />
       </Suspense>
@@ -66,7 +66,7 @@ const SettingsModal = (props) => {
 
 const WeinreModal = (props) => {
   return (
-    <ControllerDialog title="页面调试" width={600} centered {...props}>
+    <ControllerDialog title="页面调试" width={600} {...props}>
       <Suspense fallback={<Spin />}>
         <Weinre />
       </Suspense>

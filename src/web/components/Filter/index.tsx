@@ -1,6 +1,8 @@
-import { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Ctx } from '../../pages/ctx';
 import { Button, Form, Input, Radio } from '../UI';
+import Icon from '../Icon';
+import './index.scss';
 
 const typesList: string[] = ['url', 'host', 'path'];
 const requestMethods: string[] = ['all', 'get', 'post'];
@@ -43,13 +45,14 @@ function ContentType() {
     dispatch({ type: 'setFilterContentType', filterContentType: val });
 
   return (
-    <Form.Item label="数据类型">
+    <Form.Item label="数据类型" className="bp-filter-form-item-content-type">
       <Radio.Group
         value={filterContentType}
         onChange={(e) => setContentType(e.target.value)}
       >
         {contentType.map((type: string) => (
           <Radio.Button key={`filter-content-type-${type}`} value={type}>
+            <Icon type={type} />
             {type}
           </Radio.Button>
         ))}

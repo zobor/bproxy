@@ -83,7 +83,7 @@ const responseChromeDev = (req, res) => {
   res.writeHead(200, headers);
 };
 
-export const staticServer = (req, res, certConfig) => {
+export const staticServer = (req: any, res: any, certConfig: any) => {
   if (req.url.startsWith('/chrome-dev-tools')) {
     return responseChromeDev(req, res);
   }
