@@ -67,7 +67,7 @@ function JSONFormat ( json, indentType = '  ' ) {
   return out;
 };
 
-export default function(json, config){
+export default function(json: any, config?: any){
   config = config || configDefault;
   var indent = indentConfig[config.type];
 

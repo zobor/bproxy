@@ -9,7 +9,7 @@ module.exports = {
     watch_delay: 500,
     interpreter: "node",
     interpreter_args: [],
-    script: "./server-build/src/proxy/bash.js",
+    script: "./server-build/proxy/bash.js",
     args: "",
     exec_mode: "fork_mode",
     instances: 1,

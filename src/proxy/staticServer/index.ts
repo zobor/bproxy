@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { webRelativePath } from '../config';
 import { webPageHTML } from './webPageHTML';
 
 const webPublic = 'web-build';
@@ -21,10 +22,10 @@ const inspectResponse = (req, res) => {
     (req.url.startsWith(webBaseUrl) && calcCharRepeatCount(req.url, '/') === 2) ||
     req.url === webBaseUrl;
   const filepath = isTemplageRequest
-    ? path.resolve(__dirname, `../../../../${webPublic}/index.html`)
+    ? path.resolve(__dirname, `${webRelativePath}${webPublic}/index.html`)
     : path.resolve(
         __dirname,
-        req.url.replace(/^\/web\//, `../../../../${webPublic}/`)
+        req.url.replace(/^\/web\//, `${webRelativePath}${webPublic}/`)
       );
 
   try {

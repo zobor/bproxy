@@ -95,7 +95,7 @@ export const filterRequestItem = (
   if (filterContentType) {
     const contentType = get(request, 'responseHeaders["content-type"]');
     // ajax
-    if (filterContentType === 'xhr/fetch') {
+    if (filterContentType === 'xhr') {
       const requestHeaders = get(request, 'requestHeaders') || {};
       let match = false;
       Object.keys(requestHeaders).forEach((headerKey) => {

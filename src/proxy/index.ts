@@ -3,7 +3,7 @@ import * as http from 'http';
 import { isEmpty } from 'lodash';
 import * as url from 'url';
 import * as packageJson from '../../package.json';
-import { showError, showUpgrade } from './api';
+import { isApp, showError, showUpgrade } from './api';
 import { appConfigFilePath, appDataPath, configModuleTemplate } from './config';
 import { updateConfigPathAndWatch } from './getUserConfig';
 import httpMiddleware from './httpMiddleware';
@@ -51,7 +51,7 @@ export default class LocalServer {
   }
 
   static async checkPWDConfig() {
-    if (dataset.platform !== 'bash') {
+    if (isApp()) {
       return;
     }
     // bash 环境使用当面目录承载配置

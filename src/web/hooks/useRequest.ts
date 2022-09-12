@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { parseFormData, parseJsonData } from '../../proxy/utils/format';
-import { InvokeRequestParams } from '../../types/proxy';
-import { HttpRequestRequest } from '../../types/web';
 import { get, isEmpty } from '../modules/lodash';
 import { onRequest } from '../modules/socket';
 import {
@@ -10,14 +8,14 @@ import {
   parseRequest
 } from '../modules/util';
 
-const limit = 100;
+const limit = 300;
 
-function parseRequestData(req: InvokeRequestParams, history: any = {}) {
+function parseRequestData(req: any, history: any = {}) {
   const item = parseRequest(req);
   const contentType = get(req, 'requestHeaders["content-type"]') || '';
 
   // custom
-  const data: HttpRequestRequest = isEmpty(history)
+  const data: any = isEmpty(history)
     ? {
         matched: !!req.matched,
         requestStartTime: Date.now(),

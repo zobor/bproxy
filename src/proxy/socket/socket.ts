@@ -1,17 +1,10 @@
-/*
- * @Date: 2022-08-12 21:01:56
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-13 22:44:53
- * @FilePath: /bp/src/proxy/socket/socket.ts
- */
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import * as nativeApi from '../jsBridge';
 
 import { WebSocket } from 'ws';
 import ChannelManager from './ChannelManager';
 import logger from '../logger';
 
-export let wss;
+export let wss: any;
 export const channelManager = new ChannelManager();
 
 let instances: any[] = [];

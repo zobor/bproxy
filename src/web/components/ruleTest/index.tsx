@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import JSONFormat from '../../libs/jsonFormat';
+import JSONFormat from '../../../utils/jsonFormat';
 import { ruleTestInvoke } from '../../modules/bridge';
 import { getClipboardData, setInputValue } from '../../modules/interactive';
 import { isString } from '../../modules/lodash';

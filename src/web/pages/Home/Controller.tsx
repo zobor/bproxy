@@ -21,6 +21,8 @@ import RuleTest from '../../components/ruleTest';
 
 import './Controller.scss';
 import { useRuntimePlatform } from '../../hooks/useBridge';
+import Install from '../../components/Install';
+import { LOCAL_STORAGE_SHOE_INSTALL_CERT } from '../../../utils/constant';
 
 const Settings = lazy(() => import('../../components/Settings'));
 const Weinre = lazy(() => import('../../components/Weinre'));
@@ -82,6 +84,14 @@ const FilterModal = (props) => {
   );
 };
 
+const InstallModal = (props) => {
+  return (
+    <ControllerDialog title="安装 HTTPS 证书" width={800} centered {...props}>
+      <Install />
+    </ControllerDialog>
+  );
+};
+
 interface ControllerProps {
   connected?: boolean;
 }
@@ -99,6 +109,11 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowWeinre, toggle: toggleShowWeinre } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
+  const { state: isShowInstall, toggle: toggleShowInstall } = useBool(window.localStorage.getItem(LOCAL_STORAGE_SHOE_INSTALL_CERT) !== '1');
+  const onToggleInstall = () => {
+    toggleShowInstall();
+    window.localStorage.setItem(LOCAL_STORAGE_SHOE_INSTALL_CERT, '1');
+  };
   const {
     state: systemProxyStatus,
     toggle: toggleSystemProxyStatus,
@@ -224,6 +239,8 @@ const Controller = (props: ControllerProps) => {
       <FilterModal onCancel={toggleShowFilter} visible={isShowFilter} />
       {/* 规则检查 */}
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
+      {/* 安装证书 */}
+      <InstallModal onCancel={onToggleInstall} visible={isShowInstall} />
     </div>
   );
 };

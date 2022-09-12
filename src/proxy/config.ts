@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import * as path from 'path';
-import JSONFormat from '../web/libs/jsonFormat';
+import JSONFormat from '../utils/jsonFormat';
 import { getComputerName } from './macos/os';
 
 // 配置文件名
@@ -68,3 +68,5 @@ export const env = {
 };
 
 export const bproxyPrefixHeader = 'x-bproxy';
+
+export const webRelativePath = '../../../';

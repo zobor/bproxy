@@ -13,7 +13,7 @@ const contentType: string[] = [
   'json',
   'css',
   'image',
-  'xhr/fetch',
+  'xhr',
 ];
 
 function RequestMethod() {
@@ -89,7 +89,7 @@ function Highlight() {
   return (
     <Form.Item label="高亮">
       <Input
-        placeholder="高亮不会修改列表，但是可以标记出来匹配上的列表元素，高亮多个可以使用｜分隔"
+        placeholder="高亮不会修改列表，高亮多个可以使用｜分隔"
         allowClear
         value={highlight}
         onChange={onHighlighChange}

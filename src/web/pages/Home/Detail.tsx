@@ -9,7 +9,7 @@ import { Button, message, Modal, Tooltip } from '../../components/UI';
 import ViewAll from '../../components/ViewAll';
 import useBool from '../../hooks/useBool';
 import '../../libs/code-prettify.css';
-import JSONFormat from '../../libs/jsonFormat';
+import JSONFormat from '../../../utils/jsonFormat';
 import { buffer2string, textDecode } from '../../modules/buffer';
 import { copyText } from '../../modules/copy';
 import { openUrl } from '../../modules/interactive';

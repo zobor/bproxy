@@ -5,7 +5,7 @@ import { getConfigFilePath, getVersion, openHomePage, clearLogConent } from '../
 import { ControllerDialog } from '../../pages/Home/Controller';
 import ConfigEditor from '../ConfigEditor';
 import Install from '../Install';
-import { Form, Tag, WifiOutlined } from '../UI';
+import { Form, message, Tag, WifiOutlined } from '../UI';
 import './index.scss';
 
 const ConfigModal = (props) => {
@@ -51,6 +51,10 @@ export default () => {
   const openLogFile = () => {
     showLogFile();
   };
+  const onCleanLog = () => {
+    clearLogConent();
+    message.success('日志清理成功');
+  };
 
   useEffect(() => {
     getVersion().then((v: any) => setVersion(v));
@@ -78,7 +82,7 @@ export default () => {
           label="功能开关"
         >
           <Tag style={{cursor: 'pointer'}} onClick={openLogFile} color="#f50">查看日志</Tag>
-          <Tag style={{cursor: 'pointer'}} onClick={clearLogConent} color="#f50">清空日志</Tag>
+          <Tag style={{cursor: 'pointer'}} onClick={onCleanLog} color="#f50">清空日志</Tag>
         </Form.Item>
       </Form>
       {/* 配置文件 */}

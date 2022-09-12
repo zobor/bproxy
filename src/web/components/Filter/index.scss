@@ -1,4 +1,7 @@
 .bp-filter-form-item-content-type {
+  .ant-col-15 {
+    max-width: 100%;
+  }
   .ant-radio-button-wrapper {
     > span {
       &:nth-child(2) {
@@ -6,6 +9,18 @@
         align-items: center;
         .bp-icon {
           margin-right: 3px;
+          &.icon-javascript {
+            fill: yellow;
+          }
+          &.icon-json {
+            fill: rgb(0, 255, 68);
+          }
+          &.icon-html {
+            fill: pink;
+          }
+          &.icon-image {
+            fill: rgb(211, 84, 0);
+          }
         }
       }
     }

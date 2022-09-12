@@ -1,9 +1,3 @@
-/*
- * @Date: 2022-05-21 21:19:14
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-13 22:55:14
- * @FilePath: /bp/src/proxy/utils/dataset.ts
- */
 import path from 'path';
 import logger from '../logger';
 
@@ -16,13 +10,13 @@ const dataset: Bproxy.DataSet = {
 } as Bproxy.DataSet;
 
 const getDefaultRulesList = (port: number) => [
-  {
-    regx: 'https://bproxy.dev/socket.io.min.js',
-    file: `${path.resolve(__dirname, '../../web/libs/socket.io.min.js')}`,
-  },
+  // {
+  //   regx: 'https://bproxy.dev/socket.io.min.js',
+  //   file: `${path.resolve(__dirname, '../../web/libs/socket.io.min.js')}`,
+  // },
   {
     regx: 'https://bproxy.dev/inspect.js',
-    file: `${path.resolve(__dirname, '../../web/libs/inspect.umd.js')}`,
+    file: `${path.resolve(__dirname, '../../utils/inspect.umd.js')}`,
   },
   {
     regx: /https?:\/\/bproxy\.io/,
