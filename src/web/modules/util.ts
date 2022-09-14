@@ -170,6 +170,7 @@ export const showResponseType = (type) => {
   if (!type) return '-';
   const txt = type
     .replace(/^\w+\//, '')
+    .replace(/x-javascript/, 'javascript')
     .replace(/(;\s?[\s\S]+)+/g, '');
 
   return txt;

@@ -131,7 +131,7 @@ class Certificate {
         create: true,
       };
     } catch (e) {
-      const caObj = this.createCAForInstall(certificate.filename);
+      const caObj = this.createCAForInstall(certificate.name);
 
       const caCert = caObj.cert;
       const cakey = caObj.key;
