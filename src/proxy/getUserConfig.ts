@@ -30,6 +30,7 @@ const loadUserConfigOrCreate = async (
       userConfig = { ...settings, ...newConfig };
       updateDataSet('config', preload(userConfig));
     } catch (err: any) {
+      console.error(err)
       logger.error(err.message);
     }
   };
@@ -50,12 +51,14 @@ export const updateConfigPathAndWatch = async (params: {
 }): Promise<void> => {
   const { configPath } = params;
   logger.info('{updateConfigPathAndWatch}:', configPath);
+  // 参数异常，配置文件路劲没有
   if (!configPath) {
     logger.error('updateConfigPathAndWatch(configPath), configPath is empty');
     throw new Error(
       'updateConfigPathAndWatch(configPath), configPath is empty'
     );
   }
+  // 配置文件目录不存在
   if (fs.existsSync(configPath)) {
     updateDataSet('currentConfigPath', configPath);
     const fullFilePath = path.resolve(configPath, appConfigFileName);
