@@ -6,7 +6,7 @@ import { fromPairs, get, isArray, omit, toPairs } from 'lodash';
 import { isInspectContentType } from '../utils/is';
 import { hookConsoleLog } from '../utils/utils';
 import { responseText } from './text';
-import dataset from '../utils/dataset';
+import dataset from '../dataset';
 
 export async function responseByRequest(
   req,

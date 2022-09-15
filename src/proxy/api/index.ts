@@ -1,5 +1,5 @@
 import logger from '../logger';
-import dataset from '../utils/dataset';
+import dataset from '../dataset';
 
 let electronApi: any = null;
 export const getElectronApi = () => {

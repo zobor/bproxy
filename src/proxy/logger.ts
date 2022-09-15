@@ -1,6 +1,6 @@
 import log4js from 'log4js';
 import { appErrorLogFilePath, appInfoLogFilePath } from './config';
-import dataset from './utils/dataset';
+import dataset from './dataset';
 
 log4js.configure({
   appenders: {

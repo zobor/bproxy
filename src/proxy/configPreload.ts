@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { isFunction, isNumber, isString, omit } from 'lodash';
 import { checkStringIsFileOrPath } from './utils/file';
-import dataset from './utils/dataset';
+import dataset from './dataset';
 import { appConfigFileName } from './config';
 
 const REG_IP = /^(\d{1,3}\.){3}\d{1,3}$/;

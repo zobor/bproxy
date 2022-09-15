@@ -1,17 +1,17 @@
 import fs from 'fs';
 import { cloneDeep, get } from 'lodash';
 import * as URL from 'url';
-import * as pkg from '../../package.json';
-import { IS_REG_URL } from '../utils/constant';
-import { previewTextFile, showBproxyHome, showSelectPath } from './api';
-import { appInfoLogFilePath } from './config';
-import { updateConfigPathAndWatch } from './getUserConfig';
-import { matcher } from './matcher';
-import { channelManager } from './socket/socket';
-import dataset from './utils/dataset';
-import { getLocalIpAddress } from './utils/ip';
-export * from './macos/os';
-export * from './systemProxy';
+import * as pkg from '../../../package.json';
+import { IS_REG_URL } from '../../utils/constant';
+import { previewTextFile, showBproxyHome, showSelectPath } from '../api';
+import { appInfoLogFilePath } from '../config';
+import { updateConfigPathAndWatch } from '../getUserConfig';
+import { matcher } from '../matcher';
+import { channelManager } from './socket';
+import dataset from '../dataset';
+import { getLocalIpAddress } from '../utils/ip';
+export * from '../system/os';
+export * from '../system/configProxy';
 
 // 规则检测
 export const test = async (url: string) => {

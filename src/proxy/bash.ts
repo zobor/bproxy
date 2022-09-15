@@ -1,6 +1,6 @@
 import bproxy from '.';
 import * as packageJson from '../../package.json';
-import { updateDataSet } from './utils/dataset';
+import { updateDataSet } from './dataset';
 
 updateDataSet('platform', 'bash');
 

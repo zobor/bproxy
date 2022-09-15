@@ -8,7 +8,7 @@ import { responseByRedirect } from './handleResponse/redirect';
 import { responseByRequest } from './handleResponse/request';
 import { responseByString } from './handleResponse/string';
 import { matcher } from './matcher';
-import dataset from './utils/dataset';
+import dataset from './dataset';
 import { getDalay, getPostBody } from './utils/request';
 import { delay } from './utils/utils';
 

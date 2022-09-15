@@ -1,7 +1,7 @@
 import { omit } from 'lodash';
 import * as path from 'path';
 import JSONFormat from '../utils/jsonFormat';
-import { getComputerName } from './macos/os';
+import { getComputerName } from './system/os';
 
 // 配置文件名
 export const appConfigFileName = 'bproxy.config.js';

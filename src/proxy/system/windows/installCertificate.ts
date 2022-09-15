@@ -1,13 +1,7 @@
-/*
- * @Date: 2022-08-12 21:01:56
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-13 22:42:57
- * @FilePath: /bp/src/proxy/windows/winShells.ts
- */
 import iconv from 'iconv-lite';
 import { exec } from 'child_process';
-import {certificate} from '../config';
-import logger from '../logger';
+import {certificate} from '../../config';
+import logger from '../../logger';
 
 export function installCertificate() {
   const filepath = certificate.getDefaultCACertPath();

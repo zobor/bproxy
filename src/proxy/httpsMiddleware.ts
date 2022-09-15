@@ -9,7 +9,7 @@ import httpMiddleware from './httpMiddleware';
 import logger from './logger';
 import { matcher } from './matcher';
 import { ioRequest } from './socket/socket';
-import dataset from './utils/dataset';
+import dataset from './dataset';
 import { createHttpHeader, isHttpsHostRegMatch, utils } from './utils/utils';
 
 let certInstance;

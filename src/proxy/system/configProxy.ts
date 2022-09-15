@@ -1,5 +1,4 @@
-import config from './config';
-import { getOsName, installMacCertificate } from './jsBridge';
+import config from '../config';
 import {
   getActiveNetworkProxyInfo,
   setActiveNetworkProxy,
@@ -11,14 +10,9 @@ import {
   getSystemProxyStatus,
   setSystemProxy,
 } from './windows/proxy';
-import { installCertificate } from './windows/winShells';
-
-// 是否是mac系统
-export function isMac() {
-  const osName = getOsName();
-
-  return osName === 'darwin';
-}
+import { installCertificate } from './windows/installCertificate';
+import { isMac } from './os';
+import { installMacCertificate } from './macos/installCertificate';
 
 // 开启系统代理
 export function setSystemProxyOn() {

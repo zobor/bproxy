@@ -1,4 +1,4 @@
-import * as nativeApi from '../jsBridge';
+import * as nativeApi from './bridge';
 
 import { WebSocket } from 'ws';
 import ChannelManager from './ChannelManager';

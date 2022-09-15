@@ -3,9 +3,9 @@ import { isBoolean, isEmpty, isUndefined } from 'lodash';
 import path from 'path';
 import settings, { appConfigFileName, configModuleTemplate } from './config';
 import logger from './logger';
-import preload from './preloadService';
+import preload from './configPreload';
 import { onConfigFileChange } from './socket/socket';
-import { updateDataSet } from './utils/dataset';
+import { updateDataSet } from './dataset';
 
 let watcher: any;
 

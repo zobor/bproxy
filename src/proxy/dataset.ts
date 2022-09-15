@@ -1,5 +1,5 @@
 import path from 'path';
-import logger from '../logger';
+import logger from './logger';
 
 // 临时数据结构
 const dataset: Bproxy.DataSet = {
@@ -16,7 +16,7 @@ const getDefaultRulesList = (port: number) => [
   // },
   {
     regx: 'https://bproxy.dev/inspect.js',
-    file: `${path.resolve(__dirname, '../../utils/inspect.umd.js')}`,
+    file: `${path.resolve(__dirname, '../utils/inspect.umd.js')}`,
   },
   {
     regx: /https?:\/\/bproxy\.io/,
