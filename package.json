@@ -20,8 +20,8 @@
     "build:server": "rimraf ./server-build && swc src/proxy src/utils -d server-build",
     "build:server:tsc": "rimraf ./server-build && tsc -p . && npm run cp",
     "build:web": "vite build",
-    "build:weinre": "cross-env NODE_ENV=weinre vite build --mode development",
-    "build": "npm run build:weinre && npm run build:web && npm run build:server",
+    "build:weinre": "cross-env NODE_ENV=weinre vite build --mode development && && npm run cp",
+    "build": "npm run build:weinre && npm run build:web && npm run build:server && npm run cp",
     "pkg:mac": "electron-packager . bproxy --platform=darwin --arch=x64 --icon=./icon.ico --out=./app-build --overwrite",
     "pkg:m1": "electron-packager . bproxy --platform=darwin --arch=arm64 --icon=./icon.ico --out=./app-build --overwrite",
     "pkg:windows": "electron-packager . bproxy --platform=win32 --arch=x64 --icon=./icon.ico --out=./app-build --overwrite"
