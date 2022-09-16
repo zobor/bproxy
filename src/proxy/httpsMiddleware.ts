@@ -86,11 +86,12 @@ export default {
 
     this.startLocalHttpsServer(
       urlParsed.hostname,
+      urlParsed.host,
+      urlParsed.port,
       config,
       req,
       socket,
       head,
-      urlParsed.port
     ).then(({ port: localHttpsPort, fakeServer }) => {
       this.web(socket, head, '127.0.0.1', localHttpsPort, req, {
         originHost: urlParsed.hostname || '',
@@ -127,11 +128,12 @@ export default {
 
   startLocalHttpsServer(
     hostname,
+    host,
+    port,
     config: BproxyConfig.Config,
     req,
     socket,
     head,
-    port
   ): Promise<{
     port: number;
     fakeServer: any;
@@ -154,6 +156,8 @@ export default {
           );
         },
       };
+      // TODO
+      // 判断是否用HTTPS不严谨
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
       const localServer = useHttps
         ? new https.Server(httpsServerConfig)
@@ -198,8 +202,9 @@ export default {
           proxyReq.headers.origin.indexOf('https:') === 0 || port === '443'
             ? 'wss://'
             : 'ws://';
-        const upgradeURL = `${upgradeProtocol}${hostname}${proxyReq.url}`;
+        const upgradeURL = `${upgradeProtocol}${port === 443 ? hostname : host}${proxyReq.url}`;
         const matchResult = matcher(config.rules, upgradeURL);
+        console.log('upgradeURL', upgradeURL, matchResult);
         const options = {
           host: hostname,
           hostname,

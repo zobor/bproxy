@@ -15,7 +15,7 @@ function checkResponseType(target: any, currentConfigPath: string) {
   // 响应字符串
   if (isString(target)) {
     // 响应的是URL
-    if (/https?:\/\//.test(target)) {
+    if (/(https?|wss?):\/\//.test(target)) {
       return 'redirect';
     }
     // 响应IP

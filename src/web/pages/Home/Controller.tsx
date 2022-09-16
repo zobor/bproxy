@@ -109,7 +109,7 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowWeinre, toggle: toggleShowWeinre } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
-  const { state: isShowInstall, toggle: toggleShowInstall } = useBool(window.localStorage.getItem(LOCAL_STORAGE_SHOE_INSTALL_CERT) !== '1');
+  const { state: isShowInstall, toggle: toggleShowInstall } = useBool(false);
   const onToggleInstall = () => {
     toggleShowInstall();
     window.localStorage.setItem(LOCAL_STORAGE_SHOE_INSTALL_CERT, '1');
@@ -184,6 +184,14 @@ const Controller = (props: ControllerProps) => {
       document.body.removeEventListener('keydown', watchHotKey);
     };
   }, [onClean]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (window.localStorage.getItem(LOCAL_STORAGE_SHOE_INSTALL_CERT) !== '1') {
+        toggleShowInstall();
+      }
+    }, 3000);
+  }, []);
 
   return (
     <div className="controller">
