@@ -50,6 +50,7 @@ export default () => {
           {href ? <div>
             <Button type="primary" onClick={autoInstall} shape="round">一键安装</Button>
           </div> : null}
+          <div className="installTips">自动安装证书，需要管理员权限</div>
         </Card>
       </Col>
       <Col span={8}>

@@ -204,7 +204,9 @@ export default {
             : 'ws://';
         const upgradeURL = `${upgradeProtocol}${port === 443 ? hostname : host}${proxyReq.url}`;
         const matchResult = matcher(config.rules, upgradeURL);
+        console.log('###############');
         console.log('upgradeURL', upgradeURL, matchResult);
+        console.log('###############');
         const options = {
           host: hostname,
           hostname,

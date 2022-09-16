@@ -1,5 +1,8 @@
 # bproxy change log
 
+## 5.2.9
+- fix: 修复ws不能代理上的问题
+
 ## 5.2.8
 - 修复chrome不能识别证书
 

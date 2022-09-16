@@ -9,7 +9,7 @@ const outDir = './web-build';
 // for build weinre
 const weinre = defineConfig({
   root: './',
-  base: '/web',
+  base: '/web/',
   build: {
     outDir: './src/web/libs',
     emptyOutDir: false,

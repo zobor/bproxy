@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import defaultIcon from '../../assets/icon-image.svg';
+import useWerine from '../../hooks/useWeinre';
 import { getDebugTargets } from '../../modules/bridge';
 import { onDebuggerClientChange, onDebuggerClientChangeUnmount } from '../../modules/socket';
 import { highlight } from '../../modules/util';
@@ -37,28 +38,12 @@ const IconImage = ({ src }) => {
 };
 
 export default () => {
-  const [clients, setClients] = useState<any>({});
-  const openNewPage = (id) => {
+  const { clients } = useWerine();
+  const openNewPage = (id: string) => {
     const url = `http://localhost:8888/chrome-dev-tools/?ws=127.0.0.1:8888/client/inspect?target=${id}`;
     window.open(url);
   };
-  useEffect(() => {
-    const getClients = () => {
-      getDebugTargets().then((rs: any) => {
-        if (rs && Object.keys(rs).length) {
-          setClients(rs);
-        } else {
-          setClients({});
-        }
-      });
-    };
-    onDebuggerClientChange(getClients);
-    getClients();
 
-    return () => {
-      onDebuggerClientChangeUnmount(getClients);
-    }
-  }, []);
 
   return <div className="dialog-page-debug">
     {Object.keys(clients).length === 0 ? <EmptyTips /> : null}

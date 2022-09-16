@@ -9,7 +9,7 @@ export const webPageHTML = `
 </head>
 <body>
 <script>
-window.location.replace('/web');
+window.location.replace('/web/');
 </script>
 </body>
 </html>

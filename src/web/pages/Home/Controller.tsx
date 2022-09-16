@@ -11,6 +11,7 @@ import {
   PlayCircleOutlined,
   SettingOutlined,
   Spin,
+  WifiOutlined,
 } from '../../components/UI';
 import useBool from '../../hooks/useBool';
 import { activeProxy, checkProxy, disActiveProxy } from '../../modules/bridge';
@@ -23,6 +24,8 @@ import './Controller.scss';
 import { useRuntimePlatform } from '../../hooks/useBridge';
 import Install from '../../components/Install';
 import { LOCAL_STORAGE_SHOE_INSTALL_CERT } from '../../../utils/constant';
+import useWerine from '../../hooks/useWeinre';
+import { isEmpty } from 'lodash';
 
 const Settings = lazy(() => import('../../components/Settings'));
 const Weinre = lazy(() => import('../../components/Weinre'));
@@ -86,7 +89,7 @@ const FilterModal = (props) => {
 
 const InstallModal = (props) => {
   return (
-    <ControllerDialog title="安装 HTTPS 证书" width={800} centered {...props}>
+    <ControllerDialog title="安装 HTTPS 证书" width={800} {...props}>
       <Install />
     </ControllerDialog>
   );
@@ -110,6 +113,8 @@ const Controller = (props: ControllerProps) => {
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } = useBool(false);
+  const { clients } = useWerine();
+
   const onToggleInstall = () => {
     toggleShowInstall();
     window.localStorage.setItem(LOCAL_STORAGE_SHOE_INSTALL_CERT, '1');
@@ -216,9 +221,11 @@ const Controller = (props: ControllerProps) => {
         onClick={onClickSystemProxy}
       >
         <MacCommandOutlined />
-        <span>系统代理</span>
+        <span>{systemProxyStatus ? '已开系统代理': '系统代理'}</span>
       </div>
-      <div onClick={toggleShowFilter}>
+      <div className={classNames({
+          ['warn']: isShowFilter,
+        })} onClick={toggleShowFilter}>
         <FilterOutlined />
         <span>过滤规则</span>
       </div>
@@ -226,15 +233,27 @@ const Controller = (props: ControllerProps) => {
         <ApiOutlined />
         <span>切换配置</span>
       </div> : null}
-      <div onClick={toggleShowWeinre}>
+      <div className={classNames({
+          ['warn']: isShowWeinre || !isEmpty(clients),
+        })} onClick={toggleShowWeinre}>
         <BugOutlined />
         <span>页面调试</span>
       </div>
-      <div onClick={toggleShowRuleTest}>
+      <div className={classNames({
+          ['warn']: isShowRuleTest,
+        })} onClick={toggleShowRuleTest}>
         <BugOutlined />
         <span>规则检测</span>
       </div>
-      <div onClick={toggleShowSettings}>
+      <div className={classNames({
+          ['warn']: isShowInstall,
+        })} onClick={onToggleInstall}>
+        <WifiOutlined />
+        <span>安装证书</span>
+      </div>
+      <div className={classNames({
+          ['warn']: isShowSettings,
+        })} onClick={toggleShowSettings}>
         <SettingOutlined />
         <span>设置</span>
       </div>
