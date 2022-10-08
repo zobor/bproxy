@@ -23,7 +23,7 @@ http://www.bproxy.cn
 ## 安装
 ### 命令行工具
 ```
-npm i bproxy -g
+npm i -g bproxy
 ```
 
 ### app
