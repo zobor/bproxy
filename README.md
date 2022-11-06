@@ -4,6 +4,9 @@
 
 # bproxy
 
+## 仓库已迁移到gitee
+https://gitee.com/bproxy/bproxy
+
 bproxy 一款代理工具，为前端开发带来乐趣
 
 ## bproxy的核心功能
