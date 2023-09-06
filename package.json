@@ -58,7 +58,7 @@
     "classnames": "2.3.1",
     "copy-to-clipboard": "3.3.1",
     "cross-env": "7.0.3",
-    "electron": "^20.1.4",
+    "electron": "^22.3.21",
     "electron-packager": "^16.0.0",
     "eslint": "^6.6.0",
     "husky": "^8.0.1",
