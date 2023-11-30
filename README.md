@@ -40,7 +40,7 @@ npm i bproxy -g
 npm i bproxy@latest -g
 ```
 
-### app
+### App Support
 
 支持 Windows & MacOS
 
