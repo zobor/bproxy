@@ -4,13 +4,13 @@ $bodyBackgroundColor: #222;
 // custom state
 $boxColor: rgb(20, 20, 20);
 
-$cardColor: #211231;
+$cardColor: rgb(23, 32, 42);
 
-$iconColor: rgb(165, 105, 189);
+$iconColor: rgb(142, 68, 173);
 
-$hoverColor: #1ABC9C;
+$hoverColor: #1abc9c;
 
-$linkColor: #58D68D;
+$linkColor: #58d68d;
 
 $disabled: rgba(100, 100, 100, 0.9);
 
@@ -18,30 +18,30 @@ $disabled: rgba(100, 100, 100, 0.9);
 $tableBorderColor: rgb(44, 62, 80, 0.4);
 $tableActiveColor: rgb(27, 79, 114);
 // thead
-$theadBackground: rgb(23, 32, 42);
-$theadColor: #AEB6BF;
+$theadBackground: rgb(40, 55, 71);
+$theadColor: #aeb6bf;
 $theadTextColor: rgb(195, 155, 211);
 // tr
 $trHoverColor: rgb(27, 79, 114);
-$trTextColor: #8b949e;
+$trTextColor: #666;
 
 // highlight
 $highlightTextColor: rgb(212, 172, 13);
 $matchedTextColor: #58a6ff;
 
 // antd
-$modalBackground: #1B4F72;
+$modalBackground: #1b4f72;
 $panelBackground: #1d1f21;
 $panelFontColor: #fff;
 $panelBorderRadius: 5px;
 $maskBackground: rgba(66, 71, 164, 0.2);
-$labelKeyColor: #F4D03F;
+$labelKeyColor: #f4d03f;
 $labelValueColor: #139dcb;
 
 $appPadding: 0px;
 
 $httpStatus200: rgb(46, 204, 113);
-$httpStatus304: #7F8C8D;
+$httpStatus304: #7f8c8d;
 $scrollBarColor: rgb(165, 105, 189);
 $errorTextColor: rgb(231, 76, 60);
 
@@ -67,10 +67,4 @@ $detailTabsBackground: rgb(39, 55, 70);
     background: $scrollBarColor;
     box-shadow: inset 0 0 10px $scrollBarColor;
   }
-}
-
-@mixin wordWrap {
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: pre-wrap;
 }

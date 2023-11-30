@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./assets/icon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,minimal-ui"
+    />
+    <title>bproxy</title>
+    <link rel="stylesheet" href="__BASE_ORIGIN__/static/oss/css/antd.dark.min.css" />
+    <script src="__BASE_ORIGIN__/static/oss/js/react.development.js"></script>
+    <script src="__BASE_ORIGIN__/static/oss/js/react-dom.development.js"></script>
+    <script src="__BASE_ORIGIN__/static/oss/js/antd.min.js"></script>
+    <script src="__BASE_ORIGIN__/static/oss/js/qrcode.min.js"></script>
+    <style>
+      body {
+        background-color: #222;
+      }
+      .appFirstStartLogin {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: yellow;
+        font-size: 18px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="appFirstStartLogin">启动中...</div>
+    </div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

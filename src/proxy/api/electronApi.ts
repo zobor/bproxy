@@ -28,12 +28,7 @@ export async function showErrorDialog(text: string) {
 }
 
 // 显示confirm 弹窗
-export function showConfirmDialog(
-  title: string,
-  text: string,
-  buttons: string[],
-  callbacks: Function[]
-) {
+export function showConfirmDialog(title: string, text: string, buttons: string[], callbacks: any) {
   return dialog
     .showMessageBox({
       message: title,
@@ -49,15 +44,7 @@ export function showConfirmDialog(
 }
 
 // 新窗口打开URL
-export function openNewWindow({
-  url,
-  width,
-  height,
-}: {
-  url: string;
-  width?: number;
-  height?: number;
-}) {
+export function openNewWindow({ url, width, height }: { url: string; width?: number; height?: number }) {
   if (!url) {
     return;
   }
@@ -85,25 +72,25 @@ export function openAndPreviewTextFile({ url, width, height }) {
 }
 
 // 显示升级提示弹窗
-export function showUpgradeDialog({ url, changeLog = [] }: {url?: string; changeLog: string[]}) {
+export function showUpgradeDialog({ url, changeLog = [] }: { url?: string; changeLog: string[] }) {
   showConfirmDialog(
     '可升级提示',
     `bproxy有新版本可以升级，请尽快升级, 更新内容如下: ${changeLog.join('。')}`,
     ['立即升级', '暂不升级'],
     [
       () => {
-        openNewWindow({ url: url || 'http://www.bproxy.cn' });
+        openNewWindow({ url: url || 'https://www.duelpeak.com/pages/bproxy/' });
       },
       () => {
         console.log('showUpgradeDialog', '用户取消了升级');
       },
-    ]
+    ],
   );
 }
 
 // 打开bproxy官网
 export function showHomePage(url?: string) {
-  openNewWindow({ url: url || 'http://www.bproxy.cn' });
+  openNewWindow({ url: url || 'https://www.duelpeak.com/pages/bproxy/' });
 }
 
 // 显示选择目录的弹窗

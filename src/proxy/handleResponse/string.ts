@@ -1,19 +1,11 @@
 import { bproxyPrefixHeader } from './../config';
 import { ioRequest } from '../socket/socket';
-import { isLikeJson } from '../utils/check';
-import { delay } from '../utils/utils';
+import { isLikeJson } from '../../utils/check';
 import { responseText } from './text';
+import { delay } from '../../utils/utils';
 
 export async function responseByString(params: Bproxy.HandleResponseParams) {
-  const {
-    req,
-    res,
-    postBodyData,
-    delayTime,
-    matcherResult,
-    responseHeaders: respHeaders,
-    requestHeaders
-  } = params;
+  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders: respHeaders, requestHeaders } = params;
   const url = req.httpsURL || req.requestOriginUrl || req.url;
   ioRequest({
     matched: true,
@@ -27,10 +19,8 @@ export async function responseByString(params: Bproxy.HandleResponseParams) {
     await delay(delayTime);
   }
   const responseHeaders = {
+    'content-type': isLikeJson(matcherResult.rule.response) ? 'application/json' : 'text/html',
     ...respHeaders,
-    'content-type': isLikeJson(matcherResult.rule.response)
-      ? 'application/json'
-      : 'text/html',
     [`${bproxyPrefixHeader}-string`]: true,
   };
   ioRequest({

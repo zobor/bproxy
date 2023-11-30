@@ -14,7 +14,7 @@ let ROOT_KEY: any;
 let ROOT_CRT: any;
 let keys: any;
 
-var curIndex = 0;
+let curIndex = 0;
 function getIndex() {
   ++curIndex;
   if (curIndex < 10) {
@@ -32,18 +32,15 @@ function getSN(hostname: string) {
     crypto
       .createHash('sha1')
       .update(hostname + RANDOM_SERIAL, 'binary' as any)
-      .digest('hex') +
-    getIndex();
+      .digest('hex') + getIndex();
 
   return serialNumber;
 }
 
 class Certificate {
   // 创建安装使用的本地证书
-  createCAForInstall(
-    commonName: string
-  ): any {
-    const cert = this.createCert(keys.publicKey)
+  createCAForInstall(commonName: string): any {
+    const cert = this.createCert(keys.publicKey);
     const attrs = [
       {
         name: 'commonName',
@@ -224,17 +221,13 @@ class Certificate {
     if (this.fakeCertifaceCache[domain]) {
       return this.fakeCertifaceCache[domain];
     }
-    const cert = this.createCert(
-      pki.setRsaPublicKey(ROOT_KEY.n, ROOT_KEY.e),
-      getSN(domain),
-      true,
-    );
+    const cert = this.createCert(pki.setRsaPublicKey(ROOT_KEY.n, ROOT_KEY.e), getSN(domain), true);
 
     cert.setSubject([
       {
         name: 'commonName',
         value: domain,
-      }
+      },
     ]);
     cert.setIssuer(ROOT_CRT.subject.attributes);
     cert.setExtensions([
@@ -243,15 +236,15 @@ class Certificate {
         altNames: [
           net.isIP(domain)
             ? {
-              type: 7,
-              ip: domain
-            }
+                type: 7,
+                ip: domain,
+              }
             : {
-              type: 2,
-              value: domain
-            }
-        ]
-      }
+                type: 2,
+                value: domain,
+              },
+        ],
+      },
     ]);
     cert.sign(ROOT_KEY, forge.md.sha256.create());
 

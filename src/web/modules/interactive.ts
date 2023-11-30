@@ -3,7 +3,7 @@ const win: any = window;
 export const getClipboardData = () => {
   return new Promise((resolve, reject) => {
     navigator.clipboard
-      .readText()
+      ?.readText()
       .then((text) => {
         resolve(text);
       })
@@ -14,7 +14,7 @@ export const getClipboardData = () => {
 };
 
 export const setInputValue = (el, value) => {
-  (Object as any).getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(el, value);
+  (Object as any).getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, value);
   el.dispatchEvent(new Event('input', { bubbles: true }));
 };
 

@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name: "bproxy",
     watch: ["server-build"],
-    ignore_watch: ["node_modules", "src/web"],
+    ignore_watch: ["node_modules", "src/"],
     watch_options: {
       followSymlinks: false,
     },

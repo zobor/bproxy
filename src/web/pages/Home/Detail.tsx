@@ -2,24 +2,23 @@ import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import { get, isArray, isEmpty, isObject, isString } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { isLikeJson } from '../../../proxy/utils/check';
-import { isDetailViewAble } from '../../../proxy/utils/is';
-import SImage from '../../components/SImage';
-import { Button, message, Modal, Tooltip } from '../../components/UI';
+import ReactJson from 'react-json-view';
+import { isLikeJson } from '../../../utils/check';
+import { isDetailViewable } from '../../../utils/is';
+import Icon from '../../components/Icon';
+import { Button, Modal, Tooltip, message } from '../../components/UI';
 import ViewAll from '../../components/ViewAll';
 import useBool from '../../hooks/useBool';
-import '../../libs/code-prettify.css';
-import JSONFormat from '../../../utils/jsonFormat';
 import { buffer2string, textDecode } from '../../modules/buffer';
 import { copyText } from '../../modules/copy';
 import { openUrl } from '../../modules/interactive';
-import {
-  findLinkFromString, formatObjectKeyRender, formatWsSymbol,
-  highlight
-} from '../../modules/util';
+import { formatObjectKeyRender } from '../../modules/util';
 import { Ctx } from '../ctx';
 import './Detail.scss';
 import { tabList } from './settings';
+import pageConfig from '../../pageConfig';
+import jsonFormat from '../../../utils/jsonFormat';
+import { parseJSON } from '../../../utils/utils';
 
 // 提示304解决办法
 const remove304 = (path: string) => {
@@ -27,36 +26,28 @@ const remove304 = (path: string) => {
   return `没有数据可以预览${tips}`;
 };
 
-
 // 显示格式化json
 const showFormatJson = (jsonText) => {
   Modal.success({
-    // title: 'JSON 格式化',
     width: '50vw',
     content: (
       <pre className="prettyprint lang-json" style={{ maxWidth: '80vw' }}>
-        <code>{JSONFormat(JSON.parse(jsonText))}</code>
+        <code>{jsonText}</code>
       </pre>
     ),
   });
-  setTimeout(() => {
-    highlight();
-  }, 300);
 };
 
 // 复制curl
 const copyCurl = (e, detail) => {
   const txt = [`curl -X ${detail?.custom.method} `];
   const type = get(detail, 'requestHeaders["content-type"]');
-  // const isJson = type?.includes('json');
   const isForm = type?.includes('form');
   const { postData } = detail;
   Object.keys(detail.requestHeaders || {})
     .filter((key) => key.toLowerCase() !== 'accept-encoding')
     .forEach((key: string) => {
-      txt.push(
-        ` -H "${key}: ${detail.requestHeaders[key].replace(/"/g, "'")}" `
-      );
+      txt.push(` -H "${key}: ${detail.requestHeaders[key].replace(/"/g, "'")}" `);
     });
   if (!isEmpty(postData)) {
     if (isForm) {
@@ -65,29 +56,27 @@ const copyCurl = (e, detail) => {
           Object.keys(postData)
             .map((key: string) => `${key}=${postData[key]}`)
             .join('&') +
-          '"'
+          '"',
       );
     }
   }
 
   txt.push(` ${detail?.custom?.url} `);
 
-  const text = txt.join('');
+  const text = txt.join('').replace(/\s{2,}/g, ' ');
   copy(text);
   message.success('已复制');
 };
 
 // cookie表格视图
-const CookiesView = (props: {
-  cookies: string[];
-}): React.ReactElement<any, any> | null => {
+const CookiesView = (props: { cookies: string[] }): React.ReactElement<any, any> | null => {
   const { cookies } = props;
   if (!(cookies && cookies.length)) {
     return null;
   }
   return (
     <table className="data-table">
-      <caption>Cookies</caption>
+      {/* <caption>Cookies</caption> */}
       <thead>
         <tr>
           <td style={{ width: '20%' }}>key</td>
@@ -105,7 +94,7 @@ const CookiesView = (props: {
             <tr key={`${arr[0]}-${arr[1]}-${index}`}>
               <td>{arr[0]}</td>
               <td onClick={(e) => copyText(e, text)}>
-                <ViewAll limit={70}>{text}</ViewAll>
+                <ViewAll limit={200}>{text}</ViewAll>
               </td>
             </tr>
           ) : null;
@@ -120,25 +109,18 @@ const keyValueTable = (objects) => {
   return (
     <table className="kv-table">
       <tbody>
-      {Object.keys(objects)
-        .map((key) => {
+        {Object.keys(objects).map((key) => {
           let dataValue = objects[key];
           if (
-            [
-              'if-modified-since',
-              'expires',
-              'last-modified',
-              'date',
-              'x-swift-savetime',
-            ].includes(key.toLocaleLowerCase())
+            ['if-modified-since', 'expires', 'last-modified', 'date', 'x-swift-savetime'].includes(
+              key.toLocaleLowerCase(),
+            )
           ) {
             try {
               dataValue = `${dataValue}`;
             } catch (err) {}
           }
-          const text = isObject(dataValue)
-            ? JSON.stringify(dataValue)
-            : dataValue;
+          const text = isObject(dataValue) ? JSON.stringify(dataValue) : dataValue;
 
           return (
             <tr key={key}>
@@ -155,14 +137,11 @@ const keyValueTable = (objects) => {
               <td>
                 <span className="max-text-limit2">
                   <span onClick={(e) => copyText(e, text)}>
-                    <ViewAll limit={50}>{formatObjectKeyRender(text)}</ViewAll>
+                    <ViewAll limit={200}>{formatObjectKeyRender(text)}</ViewAll>
                   </span>
                   {isLikeJson(text) ? (
                     <Tooltip title="格式化">
-                      <span
-                        onClick={showFormatJson.bind(null, text)}
-                        className="format-btn"
-                      >
+                      <span onClick={showFormatJson.bind(null, text)} className="format-btn">
                         ...
                       </span>
                     </Tooltip>
@@ -178,20 +157,15 @@ const keyValueTable = (objects) => {
 };
 
 // 内容详情多场景预览
-const viewContent = ({
-  isJson,
-  content,
-  statusCode,
-  urlPath,
-  isImage,
-  isMp4,
-}) => {
-  // return <h1>haha</h1>;
+const viewContent = ({ isJson, content, statusCode, urlPath, isImage, isMp4 }) => {
   // 图片预览
-  if (isImage) {
+  if (isImage && isString(content)) {
     return (
       <div className="image-preview-box">
-        <SImage classNames="image-preview" src={content} />
+        {/* <SImage classNames="image-preview" src={content} /> */}
+        <a href={content} target="_blank">
+          {content}
+        </a>
       </div>
     );
   }
@@ -203,16 +177,24 @@ const viewContent = ({
       </div>
     );
   }
+  if (isJson && content.length / (300 * 1024) > 1) {
+    return <div className="not-support">JSON超过 300K 不支持预览</div>;
+  }
+  if (isString(content) && content.length / (1024 * 1024) > 1) {
+    return <div className="not-support">文本超过1M不支持预览</div>;
+  }
   // json 预览
   if (isJson) {
-    return (
-      <pre
-        dangerouslySetInnerHTML={{
-          __html: findLinkFromString(content),
-        }}
-        className="prettyprint lang-json"
-      />
-    );
+    let json = {};
+    let jsonstr;
+    try {
+      json = isString(content) ? parseJSON(content) : content;
+      jsonstr = isString(content) ? content : JSON.stringify(content);
+    } catch (err) {}
+    if (jsonstr && jsonstr.length > 1000) {
+      return <pre>{jsonFormat(json)}</pre>;
+    }
+    return <ReactJson src={json} {...(pageConfig as any)} />;
   }
   // 304缓存提示
   if (statusCode === 304) {
@@ -220,10 +202,6 @@ const viewContent = ({
   }
   // 字符预览
   if (isString(content)) {
-    const filesize = content.length / (1024 * 1024);
-    if (filesize > 1) {
-      return <div className="not-support">文件超过1M不支持预览</div>;
-    }
     return content;
   }
   // web socket预览
@@ -231,10 +209,9 @@ const viewContent = ({
     return (
       <ol className="ws-list">
         {content.map((item, idx) => {
-          const formatContent = formatWsSymbol(item);
           return (
-            <li key={`ws-list-li-${idx}`}>
-              <div className={formatContent.dir}>{formatContent.message}</div>
+            <li key={`ws-list-li-${idx}`} data-time={item.time}>
+              {item.data}
             </li>
           );
         })}
@@ -288,12 +265,13 @@ const TabList = (props) => {
 
 // url详情查看
 const URLViewer = (props) => {
-  const { custom } = props;
+  const { custom, onClose } = props;
 
   return (
-    <div onClick={openUrl.bind(null, custom.url)}>
+    <div className="detailTop">
+      <Icon type="close" onClick={onClose} />
       {custom ? (
-        <div title="点击打开此链接" className="url">
+        <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
           {custom.statusCode || 'Pendding'} {custom.method} {custom.origin}
           {custom.path}
         </div>
@@ -305,11 +283,11 @@ const URLViewer = (props) => {
 };
 
 // kv
-const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
+const KeyValueViewer = ({ detail, detailActiveTab }) => {
   const data = detail[detailActiveTab];
   if (Array.isArray(data)) {
     return (
-      <div className="form scrollbar-style body-panel">
+      <div className="form scrollbar-style">
         <table className="data-table">
           {data.map((item) => (
             <tr key={item[0]}>
@@ -321,6 +299,9 @@ const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
       </div>
     );
   }
+  if (isString(data)) {
+    return <pre>{data}</pre>;
+  }
   return (
     <div
       className={classNames({
@@ -328,84 +309,86 @@ const KeyValueViewer = ({ detail, detailActiveTab, cookies }) => {
         empty: isEmpty(data),
       })}
     >
-      {!isEmpty(data)
-        ? keyValueTable(data)
-        : null}
-      {detailActiveTab === 'requestHeaders' ? (
-        <CookiesView cookies={cookies} />
-      ) : null}
+      {!isEmpty(data) ? keyValueTable(data) : null}
     </div>
   );
 };
 
 // params
-const ParamsView = ({detail}) => {
-  return <div className="params-view body-panel">
-    <div className='title'>URL参数</div>
-    {isEmpty(detail.requestParams) ? <div className="emptyText">无</div> : <KeyValueViewer detail={detail} detailActiveTab="requestParams" cookies={[]} />}
-    <div className='title'>POST参数</div>
-    {isEmpty(detail.postData) ? <div className="emptyText">无</div> : <KeyValueViewer detail={detail} detailActiveTab="postData" cookies={[]} />}
-  </div>
+const ParamsView = ({ detail, cookies }) => {
+  return (
+    <>
+      <div className="params-view scrollbar-style body-panel">
+        <div className="title">概览</div>
+        <KeyValueViewer detail={detail} detailActiveTab="custom" />
+        <div className="title">URL参数</div>
+        {isEmpty(detail.requestParams) ? (
+          <div className="emptyText">无</div>
+        ) : (
+          <KeyValueViewer detail={detail} detailActiveTab="requestParams" />
+        )}
+        <div className="title">POST参数</div>
+        {isEmpty(detail.postData) ? (
+          <div className="emptyText">无</div>
+        ) : (
+          <KeyValueViewer detail={detail} detailActiveTab="postData" />
+        )}
+        <div className="title">请求头</div>
+        {isEmpty(detail.requestHeaders) ? (
+          <div className="emptyText">无</div>
+        ) : (
+          <KeyValueViewer detail={detail} detailActiveTab="requestHeaders" />
+        )}
+        <div className="title">Cookies</div>
+        <CookiesView cookies={cookies} />
+      </div>
+    </>
+  );
 };
 
 // raw
-const RawViewer = ({detail, isJSON}) => {
+const RawViewer = ({ detail, isJSON }) => {
   if (isEmpty(detail)) {
     return null;
   }
   let body = '';
-  const {postData: pData} = detail;
+  const { postData: pData } = detail;
   let postData = '';
   try {
     if (Array.isArray(pData)) {
-      postData = pData.map(item => `${item[0]}=${item[1]}`).join('&');
+      postData = pData.map((item) => `${item[0]}=${item[1]}`).join('&');
     } else {
       postData = JSON.stringify(pData);
     }
-  } catch(err){}
+  } catch (err) {}
   try {
     if (isJSON) {
-      body = JSON.stringify(JSON.parse(detail.responseBody));
+      body = JSON.stringify(parseJSON(detail.responseBody));
     }
-  } catch(err){}
+  } catch (err) {}
   return (
     <div className="raw-body scrollbar-style">
       <div className="title">URL Query</div>
-      <div style={{color:'rgb(229, 152, 102)'}}>{isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}</div>
-      <div  className="title">POST Data</div>
-      <div style={{color: 'rgb(229, 152, 102)'}}>{isEmpty(postData) ? "无" : postData}</div>
+      <div style={{ color: 'rgb(229, 152, 102)' }}>
+        {isEmpty(detail.requestParams) ? '无' : JSON.stringify(detail.requestParams)}
+      </div>
+      <div className="title">POST Data</div>
+      <div style={{ color: 'rgb(229, 152, 102)' }}>{isEmpty(postData) ? '无' : postData}</div>
       <div className="title">Request Headers</div>
-      <div style={{color: '#999', fontSize: 12 }}>
-        <ViewAll limit={100}>
-          {JSON.stringify(detail.requestHeaders)}
-        </ViewAll>
+      <div style={{ color: 'rgb(229, 152, 102)', fontSize: 12 }}>
+        <ViewAll limit={200}>{JSON.stringify(detail.requestHeaders)}</ViewAll>
       </div>
       <div className="title">Response</div>
-      <div style={{ fontSize: 13 }}>{isJSON ? body : null} </div>
+      <div style={{ fontSize: 13, color: 'rgb(229, 152, 102)' }}>{isJSON ? body : null} </div>
     </div>
   );
 };
 
 // body
-const BodyViewer = ({
-  isJSON,
-  isHTML,
-  detail,
-  showBody,
-  canView,
-  custom,
-  isImage,
-  isMp4,
-}) => {
+const BodyViewer = ({ isJSON, isHTML, detail, showBody, canView, custom, isImage, isMp4 }) => {
   return (
     <div className="body-panel scrollbar-style">
-      <AutoMock
-        visible={true}
-        isJSON={isJSON}
-        isHTML={isHTML}
-        detail={detail}
-        body={showBody}
-      />
+      <AutoMock visible={true} isJSON={isJSON} isHTML={isHTML} detail={detail} />
       {canView ? (
         <div className="response-viewer">
           {viewContent({
@@ -426,30 +409,22 @@ const BodyViewer = ({
 
 const Detail = (props: any): React.ReactElement<any, any> | null => {
   const { state, dispatch } = useContext(Ctx);
-    useBool(false);
+  useBool(false);
   const [visible, setVisible] = useState<boolean>(false);
-  const [showBody, setShowBody] = useState<
-    string | React.ReactElement<any, any>
-  >('');
+  const [showBody, setShowBody] = useState<string | React.ReactElement<any, any>>('');
   const { detail = {} } = props;
   const { showDetail, detailActiveTab } = state;
   const { custom = {} } = detail || {};
-  const contentType = (
-    get(detail, 'responseHeaders["content-type"]') || ''
-  ).toLowerCase();
+  const contentType = (get(detail, 'responseHeaders["content-type"]') || '').toLowerCase();
   const $isJson = useRef(contentType?.includes('/json'));
   const isImage = contentType?.includes('image/');
   const isMp4 = contentType?.includes('/mp4');
   const isHTML = contentType?.includes('/html');
   const isUtf8 = contentType?.includes('/utf-8');
   const isEncoding = get(detail, 'responseHeaders["content-encoding"]');
-  const isChunked =
-    get(detail, 'responseHeaders[transfer-encoding]') === 'chunked';
-  const cookies = (get(detail, 'requestHeaders.cookie') || '')
-    .split('; ')
-    .filter((item) => !!item);
-  const canView =
-    isDetailViewAble(get(detail, 'responseHeaders')) || isImage || isMp4;
+  const isChunked = get(detail, 'responseHeaders[transfer-encoding]') === 'chunked';
+  const cookies = (get(detail, 'requestHeaders.cookie') || '').split('; ').filter((item) => !!item);
+  const canView = isDetailViewable(get(detail, 'responseHeaders')) || isImage || isMp4;
 
   // body解析
   useEffect(() => {
@@ -462,10 +437,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
     } else {
       let body;
 
-      if (
-        isString(detail?.responseBody) ||
-        ['wss', 'ws'].includes(detail?.custom?.method)
-      ) {
+      if (isString(detail?.responseBody) || ['wss', 'ws'].includes(detail?.custom?.method)) {
         // 字符串
         body = detail?.responseBody;
       } else if (isChunked && !isEncoding) {
@@ -477,15 +449,14 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       // json 格式化加工
       if (body && isString(body) && ($isJson.current || isLikeJson(body))) {
         try {
-          body = JSON.parse(body);
-          body = JSONFormat(body);
+          body = parseJSON(body);
           $isJson.current = true;
         } catch (err) {}
       }
 
       setShowBody(body);
     }
-  }, [detailActiveTab, detail, showDetail]);
+  }, [detailActiveTab, detail, showDetail, detail?.requestEndTime]);
 
   // 关闭之后 清空body
   useEffect(() => {
@@ -501,15 +472,6 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   const onTabChange = (tabValue: string): void => {
     dispatch({ type: 'setDetailActiveTab', detailActiveTab: tabValue });
   };
-
-  // json 代码高亮
-  useEffect(() => {
-    if ($isJson.current && showBody && detailActiveTab === 'responseBody') {
-      setTimeout(() => {
-        highlight();
-      }, 0);
-    }
-  }, [showBody, detailActiveTab]);
 
   // 快捷键
   useEffect(() => {
@@ -536,12 +498,10 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
   useEffect(() => {
     setTimeout(() => {
       setVisible(true);
-      // toggleCssAnimate();
     }, 100);
 
     return () => {
       setVisible(false);
-      // disableCssAnimate();
     };
   }, []);
 
@@ -554,29 +514,19 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
       className={classNames({
         detail: true,
         open: visible,
-        // 'animate__animated animate__fadeInDownBig': cssAnimate,
-        // 'animate__animated animate__fadeOutDownBig': cssAnimateHide,
+        vertical: window.innerHeight > window.innerWidth,
       })}
     >
-      <div className="mask" onClick={onClose} />
       <div className="content">
         {/* URL */}
-        <URLViewer custom={custom} />
+        <URLViewer custom={custom} onClose={onClose} />
         {/* Tabs */}
         <TabList onClick={onTabChange} detailActiveTab={detailActiveTab} />
         {/* Body / keyValue viewer */}
-        {detailActiveTab === 'raw' ? (
-          <RawViewer
-            detail={detail}
-            isJSON={$isJson.current}
-          />
-        ) : detailActiveTab === 'params' ? <ParamsView detail={detail} /> : detailActiveTab !== 'responseBody' ? (
-          <KeyValueViewer
-            detail={detail}
-            detailActiveTab={detailActiveTab}
-            cookies={cookies}
-          />
-        ) : (
+
+        {detailActiveTab === 'requestHeaders' && <ParamsView detail={detail} cookies={cookies} />}
+        {detailActiveTab === 'responseHeaders' && <KeyValueViewer detail={detail} detailActiveTab={detailActiveTab} />}
+        {detailActiveTab == 'responseBody' && (
           <BodyViewer
             isJSON={$isJson.current}
             isHTML={isHTML}
@@ -588,6 +538,7 @@ const Detail = (props: any): React.ReactElement<any, any> | null => {
             isMp4={isMp4}
           />
         )}
+        {detailActiveTab === 'raw' && <RawViewer detail={detail} isJSON={$isJson.current} />}
       </div>
     </div>
   );

@@ -1,0 +1,4 @@
+MacOS 安装指引：
+1. 拖动 bproxy 到 <应用目录> (/Applications)
+2. 打开命令行，执行以下命令：
+sudo xattr -d com.apple.quarantine /Applications/bproxy.app

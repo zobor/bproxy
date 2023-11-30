@@ -4,8 +4,8 @@ import dataset from './dataset';
 
 log4js.configure({
   appenders: {
-    bproxyError: { type: 'file',encoding: 'utf-8', filename: appErrorLogFilePath },
-    bproxyInfo: { type: 'file', encoding: 'utf-8',filename: appInfoLogFilePath },
+    bproxyError: { type: 'file', encoding: 'utf-8', filename: appErrorLogFilePath },
+    bproxyInfo: { type: 'file', encoding: 'utf-8', filename: appInfoLogFilePath },
   },
   categories: { default: { appenders: ['bproxyInfo'], level: 'info' } },
 });

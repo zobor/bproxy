@@ -5,11 +5,13 @@ import { getRandStr } from './util';
 import WS from './ws';
 
 const port = location.port === '8889' ? '8888' : location.port;
-const url = `ws://127.0.0.1:${port}/data`;
-export const ws = new WS({ url });
+const url = `ws://${location.hostname}:${port}/data`;
+
+export const ws = new WS({ url, autoConnect: location.pathname === '/web/' });
 
 const cache: any = {};
 
+// 监听请求回调
 export function onRequest(callback) {
   if (cache.onRequest) {
     cache.onRequest.unsubscribe();
@@ -18,12 +20,16 @@ export function onRequest(callback) {
     callback(payload);
   });
 }
+
+// 监听配置文件变化
 export function onConfigFileChange(callback) {
   if (cache.onConfigFileChange) {
     cache.onConfigFileChange.unsubscribe();
   }
   cache.onConfigFileChange = ws.on('onConfigFileChange', callback);
 }
+
+// 监听weinre对象变化
 export function onDebuggerClientChange(callback) {
   if (cache.onDebuggerClientChange) {
     cache.onDebuggerClientChange.unsubscribe();
@@ -32,16 +38,18 @@ export function onDebuggerClientChange(callback) {
 
   return cache.onDebuggerClientChange;
 }
-export function onDebuggerClientChangeUnmount(callback) {
-  if (cache.onDebuggerClientChangeUnmount) {
-    cache.onDebuggerClientChangeUnmount.unsubscribe();
+
+// 监听配置文件的错误
+export function onConfigFileRuntimeError(callback: any) {
+  if (cache.onConfigFileRuntimeError) {
+    cache.onConfigFileRuntimeError.unsubscribe();
   }
-  if (cache.onDebuggerClientChange) {
-    cache.onDebuggerClientChange.unsubscribe();
-  }
-  // cache.onDebuggerClientChangeUnmount = ws.on('onDebuggerClientChangeUnmount', callback);
+  cache.onConfigFileRuntimeError = ws.on('onConfigFileRuntimeError', callback);
+
+  return cache.onConfigFileRuntimeError;
 }
 
+// 调用桥接
 const bridgeCallback = {};
 function bridgeInvokeCallback(rs) {
   const { uuid, payload } = rs || {};
@@ -55,7 +63,7 @@ export function bridgeInvoke({ api, params = {} }) {
     type: 'bridge',
     method: api,
     uuid,
-    payload: params
+    payload: params,
   };
   ws.send(data);
   ws.once('bridge', bridgeInvokeCallback);

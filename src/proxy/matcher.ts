@@ -1,12 +1,7 @@
-/*
- * @Date: 2022-07-10 21:36:48
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-14 22:19:56
- * @FilePath: /bp/src/proxy/matcher.ts
- */
 import { cloneDeep, isFunction, isRegExp, isString } from 'lodash';
+import * as URL from 'url';
 import { bproxyPrefixHeader } from './config';
-import { isNeedTransformString2RegExp, url2regx } from './utils/utils';
+import { isNeedTransformString2RegExp, url2regx, getRegxLastMatchGroup } from '../utils/utils';
 
 export function matcher(rules: BproxyConfig.Rule[], url: string): BproxyConfig.MatcherResult {
   const options: BproxyConfig.MatcherResult = {
@@ -14,11 +9,26 @@ export function matcher(rules: BproxyConfig.Rule[], url: string): BproxyConfig.M
     matched: false,
     responseHeaders: {},
   };
+  if (URL.parse(url)?.query?.includes('bproxy=1')) {
+    options.matched = true;
+    options.rule = {
+      regx: url,
+      debug: true,
+    };
+  }
+  if (URL.parse(url)?.query?.includes('bproxy=2')) {
+    options.matched = true;
+    options.rule = {
+      regx: url,
+      debug: 'vconsole',
+    };
+  }
   cloneDeep(rules).forEach((rule: BproxyConfig.Rule) => {
     if (options.matched) return;
     if (!rule.regx) {
       return;
     }
+    const getRegExp$N = rule.getRegExp$N || getRegxLastMatchGroup;
     // string with *、.、()、*、$
     if (isString(rule.regx) && isNeedTransformString2RegExp(rule.regx)) {
       rule.regx = url2regx(rule.regx);
@@ -26,15 +36,12 @@ export function matcher(rules: BproxyConfig.Rule[], url: string): BproxyConfig.M
     // RegExp
     if (isRegExp(rule.regx)) {
       options.matched = rule.regx.test(url);
-      if (RegExp.$1) {
+      const matchedPath = getRegExp$N();
+      if (matchedPath) {
         if (rule.redirect) {
-          rule.redirectTarget = `${rule.redirect}${
-            rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1
-          }`;
+          rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(matchedPath) : matchedPath}`;
         } else if (rule.path) {
-          rule.filepath = `${
-            rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1
-          }`;
+          rule.filepath = `${rule.rewrite ? rule.rewrite(matchedPath) : matchedPath}`;
         }
       }
     } else if (isString(rule.regx)) {
@@ -43,15 +50,12 @@ export function matcher(rules: BproxyConfig.Rule[], url: string): BproxyConfig.M
     } else if (isFunction(rule.regx)) {
       // function method return matcher result
       options.matched = rule.regx(url);
-      if (options.matched && RegExp.$1) {
+      const matchedPath = getRegExp$N();
+      if (options.matched && matchedPath) {
         if (rule.redirect) {
-          rule.redirectTarget = `${rule.redirect}${
-            rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1
-          }`;
+          rule.redirectTarget = `${rule.redirect}${rule.rewrite ? rule.rewrite(matchedPath) : matchedPath}`;
         } else if (rule.path) {
-          rule.filepath = `${
-            rule.rewrite ? rule.rewrite(RegExp.$1) : RegExp.$1
-          }`;
+          rule.filepath = `${rule.rewrite ? rule.rewrite(matchedPath) : matchedPath}`;
         }
       }
     }

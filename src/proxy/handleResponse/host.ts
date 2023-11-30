@@ -1,17 +1,9 @@
+import { delay } from '../../utils/utils';
 import { bproxyPrefixHeader } from './../config';
-import { delay } from '../utils/utils';
 import { responseByRequest } from './request';
 
 export async function responseByHost(params: Bproxy.HandleResponseParams) {
-  const {
-    req,
-    res,
-    postBodyData,
-    delayTime,
-    matcherResult,
-    responseHeaders,
-    config,
-  } = params;
+  const { req, res, postBodyData, postBodyString, delayTime, matcherResult, responseHeaders, config } = params;
 
   if (delayTime) {
     await delay(delayTime);
@@ -29,6 +21,7 @@ export async function responseByHost(params: Bproxy.HandleResponseParams) {
     responseHeaders,
     matcherResult,
     config,
-    postBodyData
+    postBodyData,
+    postBodyString,
   );
 }

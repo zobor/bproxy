@@ -1,14 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { webRelativePath } from '../config';
-import { webPageHTML } from './webPageHTML';
+import url from 'url';
+import { getResponseContentType } from '../../utils/check';
+import { rootPath, webRelativePath } from '../config';
 
 const webPublic = 'web-build';
 const webBaseUrl = '/web';
+const webPageHTML = "<script>window.location.replace('/web/');</script>";
 
 function calcCharRepeatCount(str: string, c: string) {
   let count = 0;
-  str.split('').map(item => {
+  str.split('').map((item) => {
     if (item === c) {
       count += 1;
     }
@@ -19,14 +21,10 @@ function calcCharRepeatCount(str: string, c: string) {
 
 const inspectResponse = (req, res) => {
   const isTemplageRequest =
-    (req.url.startsWith(webBaseUrl) && calcCharRepeatCount(req.url, '/') === 2) ||
-    req.url === webBaseUrl;
+    (req.url.startsWith(webBaseUrl) && calcCharRepeatCount(req.url, '/') === 2) || req.url === webBaseUrl;
   const filepath = isTemplageRequest
     ? path.resolve(__dirname, `${webRelativePath}${webPublic}/index.html`)
-    : path.resolve(
-        __dirname,
-        req.url.replace(/^\/web\//, `${webRelativePath}${webPublic}/`)
-      );
+    : path.resolve(__dirname, req.url.replace(/^\/web\//, `${webRelativePath}${webPublic}/`));
 
   try {
     if (!fs.existsSync(filepath)) {
@@ -51,42 +49,43 @@ const inspectResponse = (req, res) => {
   }
 };
 
-const responseChromeDev = (req, res) => {
+function httpServer(req, res) {
   const headers = {};
-  let { url } = req;
-  url = url.replace(/\?\S+/, '');
-  let chromeRoot = path.resolve(__dirname, '../../../chrome-dev-tools/');
-  if (!fs.existsSync(chromeRoot)) {
-    chromeRoot = path.resolve(__dirname, '../../../../chrome-dev-tools/');
-    if (!fs.existsSync(chromeRoot)) {
-      process.exit(0);
-    }
-  }
-  if (url === '/chrome-dev-tools/') {
-    const file = fs.createReadStream(
-      path.resolve(chromeRoot, 'devtools_app.html')
-    );
-    file.pipe(res);
-    headers['content-type'] = 'text/html; charset=utf-8';
-    res.writeHead(200, headers);
+  const { pathname = '' } = url.parse(req.url);
+  const $404 = () => {
+    res.writeHead(404, headers);
+    res.end('404');
+  };
+  if (!pathname) {
+    $404();
     return;
   }
-  const filename = url.replace('/chrome-dev-tools/', '');
-  if (filename.includes('.js')) {
-    headers['content-type'] = 'text/javascript; charset=utf-8';
-  } else if (filename.includes('.css')) {
-    headers['content-type'] = 'text/css; charset=utf-8';
-  } else if (filename.includes('.svg')) {
-    headers['content-type'] = 'image/svg+xml';
+  let localFile = path.resolve(rootPath, pathname.slice(1));
+  // 目录，查找html入口文件
+  if (pathname.endsWith('/')) {
+    localFile = path.resolve(localFile, 'index.html');
+    if (!fs.existsSync(localFile)) {
+      $404();
+      return;
+    }
   }
-  const file = fs.createReadStream(path.resolve(chromeRoot, filename));
-  file.pipe(res);
-  res.writeHead(200, headers);
-};
+
+  if (fs.existsSync(localFile)) {
+    const fileSuffix = localFile.slice(localFile.lastIndexOf('.') + 1);
+    const contentType = getResponseContentType(fileSuffix);
+    if (contentType) {
+      headers['content-type'] = contentType;
+    }
+    res.writeHead(200, headers);
+    fs.createReadStream(localFile).pipe(res);
+  } else {
+    $404();
+  }
+}
 
 export const staticServer = (req: any, res: any, certConfig: any) => {
-  if (req.url.startsWith('/chrome-dev-tools')) {
-    return responseChromeDev(req, res);
+  if (req.url.startsWith('/static/')) {
+    return httpServer(req, res);
   }
   switch (req.url) {
     case '/':

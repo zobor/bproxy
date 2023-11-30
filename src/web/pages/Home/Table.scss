@@ -11,7 +11,7 @@
   width: 100%;
   position: relative;
   font-size: 16px;
-  @include noselect;
+  @include noselect();
 
   thead {
     tr {
@@ -48,21 +48,39 @@
   }
 
   tbody {
+    &.empty {
+      &::before {
+        position: absolute;
+        content: '暂无数据，开启系统代理再试试';
+        top: 100px;
+        left: 50%;
+        color: rgb(131, 145, 146);
+        font-size: 24px;
+        transform: translateX(-50%);
+      }
+    }
     tr {
       color: $trTextColor;
       &:hover {
         cursor: pointer;
-        box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+        outline: solid 1px #888;
       }
       &.matched {
         color: $matchedTextColor;
         border-color: transparent;
+        font-weight: bold;
+        * {
+          color: $matchedTextColor !important;
+        }
       }
       &.active {
         background: $tableActiveColor;
       }
       &.error {
         color: $errorTextColor;
+        * {
+          color: $errorTextColor !important;
+        }
         :nth-child(1) {
           color: $errorTextColor;
         }
@@ -74,6 +92,10 @@
       }
       &.highlight {
         color: $highlightTextColor;
+        font-weight: bold;
+        .host {
+          color: $highlightTextColor;
+        }
       }
     }
   }
@@ -95,6 +117,13 @@
     text-transform: lowercase;
     overflow: hidden;
     text-align: center;
+    font-weight: bold;
+    color: #999;
+    &.GET,
+    &.get {
+      font-weight: normal;
+      color: #666;
+    }
   }
   .protocol {
     width: 60px;
@@ -104,44 +133,83 @@
     width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-style: italic;
+    font-weight: bold;
+    color: #999;
+  }
+  .path {
+    .textLimit {
+      span {
+        &:nth-child(2) {
+          font-weight: bold;
+        }
+      }
+    }
   }
   .size {
     width: 70px;
   }
   .contentType {
-      width: 110px;
-      font-size: 14px;
-      >* {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2px 4px;
-        border-radius: 3px;
-      }
-      .html {
-        background-color: rgb(112, 184, 166);
-        color: #fff;
-      }
-      .javascript {
-        background-color: rgb(142, 68, 173);
-        color: #fff;
-      }
-      .css {
-        background-color: rgb(94, 159, 19);
-        color: #fff;
-      }
-      .json {
-        background-color: rgb(228, 119, 84);
-        color: #fff;
-      }
-      .jpeg,.jpg,.png,.gif,.webp {
-        background-color: rgb(72, 201, 176);
-        color: #fff;
-      }
-      .mpeg {
-        background-color: rgb(195, 155, 211);
-        color: #fff;
-      }
+    width: 110px;
+    font-size: 14px;
+    > * {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .html,
+    .xml {
+      background-color: #0276ff;
+      color: #fff;
+    }
+    .javascript {
+      background-color: #fff000;
+      color: #000;
+    }
+    .css {
+      background-color: #ea4c89;
+      color: #fff;
+    }
+    .json {
+      background-image: linear-gradient(-180deg, #00d775, #00bd68);
+      color: #fff;
+    }
+    .jpeg,
+    .jpg,
+    .png,
+    .gif,
+    .icon,
+    .svg,
+    .webp {
+      background-color: rgb(72, 201, 176);
+      background-color: rgb(17, 120, 100);
+      background-color: #fa6400;
+      color: #fff;
+    }
+    .stream {
+      background-color: rgb(195, 155, 211);
+      color: #fff;
+    }
+    .bproxy {
+      background-image: linear-gradient(#464d55, #25292e);
+      color: #fff;
+      box-shadow: rgb(0 1 0 / 20%) 0 2px 8px;
+      opacity: 0.85;
+    }
+    .plain,
+    .flv,
+    .p2p {
+      background-color: #f8f9fa;
+      color: #3c4043;
+    }
+    .font,
+    .woff,
+    .woff2 {
+      background-color: #fbeee0;
+      color: #422800;
+    }
   }
   .speed {
     width: 80px;

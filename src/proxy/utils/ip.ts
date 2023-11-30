@@ -20,3 +20,16 @@ export const getLocalIpAddress = () => {
   }
   return Ips;
 };
+
+export function isIp(str) {
+  return /^((([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){3}([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]))$/.test(str);
+}
+
+export function isHttpsWithIp(str) {
+  if (!str) return false;
+  const [ip, port] = str.split(':');
+  if (ip && port === '443') {
+    return isIp(ip);
+  }
+  return false;
+}

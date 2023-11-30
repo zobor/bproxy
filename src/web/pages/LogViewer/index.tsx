@@ -3,7 +3,7 @@ import { getLogContent } from '../../modules/bridge';
 import './index.scss';
 
 export default () => {
-  const [ logString, setLog ] = useState<string>('');
+  const [logString, setLog] = useState<string>('');
   useEffect(() => {
     setTimeout(() => {
       getLogContent().then((rs: any) => {
@@ -11,14 +11,14 @@ export default () => {
       });
     }, 500);
   }, []);
-  return <div className="log-viewer">
-    <h1>log viewer</h1>
-    <div className="logs">
-      <code>
-        <pre>
-          {logString}
-        </pre>
-      </code>
+  return (
+    <div className="log-viewer">
+      <h1>log viewer</h1>
+      <div className="logs">
+        <code>
+          <pre>{logString}</pre>
+        </code>
+      </div>
     </div>
-  </div>;
-}
+  );
+};

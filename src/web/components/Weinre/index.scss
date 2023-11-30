@@ -1,8 +1,10 @@
 @import '../../mixin.scss';
+@import '../../theme.scss';
 
 .dialog-page-debug {
   width: 100%;
-  ul, li {
+  ul,
+  li {
     margin: 0;
     padding: 0;
   }
@@ -22,7 +24,7 @@
       height: 64px;
       padding: 15px;
     }
-    .content{
+    .content {
       flex: 1;
       padding-left: 20px;
 
@@ -32,8 +34,8 @@
       &Url {
         color: rgb(243, 156, 18);
         overflow: hidden;
-        display:-webkit-box;
-        text-overflow:ellipsis;
+        display: -webkit-box;
+        text-overflow: ellipsis;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         word-break: break-all;
@@ -56,9 +58,41 @@
   .empty-sockets {
     .title {
       font-weight: bold;
-      color: #ccc;
+      color: #666;
       text-align: center;
       font-size: 13px;
     }
+    .subTitle {
+      color: #666;
+      font-size: 12px;
+      padding: 5px 0;
+    }
+  }
+
+  .prettyprint {
+    background-color: #333;
+    padding: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 18px;
+    .L2 {
+      background-color: #555;
+    }
+  }
+
+  .helpTips {
+    margin-bottom: 20px;
+    a,
+    .bp-icon {
+      color: $iconColor;
+      fill: $iconColor;
+    }
+  }
+
+  .copyHTML {
+    cursor: pointer;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
   }
 }

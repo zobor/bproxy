@@ -1,6 +1,7 @@
+@import '../../theme.scss';
+
 .dialog-settings {
   max-height: 60vh;
-  width: 400px;
 
   .tools-tags {
     .ant-tag {
@@ -9,5 +10,24 @@
       padding: 5px 10px;
       border-radius: 100px;
     }
+  }
+
+  .helpTips {
+    a,
+    .bp-icon {
+      color: $iconColor;
+      fill: $iconColor;
+    }
+  }
+
+  .configFilePath {
+    color: #1abc9c;
+    &Value {
+      font-style: italic;
+    }
+  }
+
+  .version {
+    font-size: 18px;
   }
 }

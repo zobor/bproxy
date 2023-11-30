@@ -1,0 +1,39 @@
+$bgColor: #2b3467;
+$svgColor: #eb455f;
+
+.HomeSideBar {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 16px;
+  background-color: $bgColor;
+  border-radius: 10px 0 0 10px;
+  overflow: hidden;
+
+  .sidebar-item {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-bottom: solid 1px #555;
+    cursor: pointer;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #ffebb7;
+    }
+
+    &.actived {
+      background-color: #ffebb7;
+    }
+
+    .bp-icon,
+    .bp-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: $svgColor;
+    }
+  }
+}

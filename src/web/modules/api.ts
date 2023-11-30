@@ -10,5 +10,5 @@ export function showLogFile() {
     } else {
       window.open('/web/LogViewer');
     }
-  })
+  });
 }

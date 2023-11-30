@@ -9,47 +9,53 @@
   http://www.opensource.org/licenses/mit-license.php
 */
 /* @ts-ignore */
-var p:any = [],
+var p: any = [],
   indentConfig = {
     tab: { char: '\t', size: 1 },
-    space: { char: ' ', size: 4 }
+    space: { char: ' ', size: 4 },
   },
   configDefault = {
-    type: 'tab'
+    type: 'tab',
   },
-  push = function( m: any ) { return '\\' + p.push( m ) + '\\'; },
-  pop = function( m, i ) { return p[i-1] },
-  tabs = function( count, indentType) { return new Array( count + 1 ).join( indentType ); };
+  push = function (m: any) {
+    return '\\' + p.push(m) + '\\';
+  },
+  pop = function (m, i) {
+    return p[i - 1];
+  },
+  tabs = function (count, indentType) {
+    return new Array(count + 1).join(indentType);
+  };
 
-function JSONFormat ( json, indentType = '  ' ) {
+function JSONFormat(json, indentType = '  ') {
   p = [];
-  var out = "",
-      indent = 0;
+  var out = '',
+    indent = 0;
 
   // Extract backslashes and strings
   json = json
-    .replace( /\\./g, push )
-    .replace( /(".*?"|'.*?')/g, push )
-    .replace( /\s+/, '' );
+    .replace(/\\./g, push)
+    .replace(/(".*?"|'.*?')/g, push)
+    .replace(/\s+/, '');
 
   // Indent and insert newlines
-  for( var i = 0; i < json.length; i++ ) {
+  for (var i = 0; i < json.length; i++) {
     var c = json.charAt(i);
 
-    switch(c) {
+    switch (c) {
       case '{':
       case '[':
-        out += c + "\n" + tabs(++indent, indentType);
+        out += c + '\n' + tabs(++indent, indentType);
         break;
       case '}':
       case ']':
-        out += "\n" + tabs(--indent, indentType) + c;
+        out += '\n' + tabs(--indent, indentType) + c;
         break;
       case ',':
-        out += ",\n" + tabs(indent, indentType);
+        out += ',\n' + tabs(indent, indentType);
         break;
       case ':':
-        out += ": ";
+        out += ': ';
         break;
       default:
         out += c;
@@ -60,18 +66,20 @@ function JSONFormat ( json, indentType = '  ' ) {
   // Strip whitespace from numeric arrays and put backslashes
   // and strings back in
   out = out
-    .replace( /\[[\d,\s]+?\]/g, function(m){ return m.replace(/\s/g,''); } )
-    .replace( /\\(\d+)\\/g, pop ) // strings
-    .replace( /\\(\d+)\\/g, pop ); // backslashes in strings
+    .replace(/\[[\d,\s]+?\]/g, function (m) {
+      return m.replace(/\s/g, '');
+    })
+    .replace(/\\(\d+)\\/g, pop) // strings
+    .replace(/\\(\d+)\\/g, pop); // backslashes in strings
 
   return out;
-};
+}
 
-export default function(json: any, config?: any){
+export default function jsonFormat(json: any, config?: any) {
   config = config || configDefault;
   var indent = indentConfig[config.type];
 
-  if ( indent == null ) {
+  if (indent == null) {
     throw new Error('Unrecognized indent type: "' + config.type + '"');
   }
   var indentType = new Array((config.size || indent.size) + 1).join(indent.char);

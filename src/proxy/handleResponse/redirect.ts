@@ -1,12 +1,10 @@
 import * as url from 'url';
+import { delay } from '../../utils/utils';
 import { bproxyPrefixHeader } from '../config';
-import { delay } from '../utils/utils';
 import { responseByRequest } from './request';
 
-
 export async function responseByRedirect(params: Bproxy.HandleResponseParams) {
-  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, config } =
-    params;
+  const { req, res, postBodyData, postBodyString, delayTime, matcherResult, responseHeaders, config } = params;
 
   req.requestOriginUrl = req.url;
   req.url = matcherResult.rule.redirectTarget || matcherResult.rule.redirect;
@@ -33,6 +31,7 @@ export async function responseByRedirect(params: Bproxy.HandleResponseParams) {
     responseHeaders,
     matcherResult,
     config,
-    postBodyData
+    postBodyData,
+    postBodyString,
   );
 }

@@ -1,15 +1,8 @@
-/*
- * @Date: 2022-06-24 21:36:22
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-13 18:04:33
- * @FilePath: /bp/src/proxy/handleResponse/code.ts
- */
+import { delay } from '../../utils/utils';
 import { ioRequest } from '../socket/socket';
-import { delay } from '../utils/utils';
 
 export async function responseByCode(params: Bproxy.HandleResponseParams) {
-  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } =
-    params;
+  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } = params;
   const url = req.httpsURL || req.requestOriginUrl || req.url;
 
   ioRequest({

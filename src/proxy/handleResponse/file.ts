@@ -1,17 +1,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { getFileTypeFromSuffix, getResponseContentType } from '../../utils/check';
+import { delay, encodeUnicode, safeDecodeUrl } from '../../utils/utils';
 import { ioRequest } from '../socket/socket';
-import { getFileTypeFromSuffix, getResponseContentType } from '../utils/file';
-import { delay, safeDecodeUrl } from '../utils/utils';
+import { insertScriptsToHTML } from '../utils/utils';
 import { bproxyPrefixHeader } from './../config';
 import { responseText } from './text';
 
 function responseByLocalFile(
   filepath: string,
   res: any,
-  responseHeaders: any = {},
-  req: any
+  $responseHeaders: any = {},
+  req: any,
+  matcherResult: any,
 ): void {
+  const responseHeaders = { ...$responseHeaders };
+  responseHeaders[`${bproxyPrefixHeader}-file`] = filepath.replace(/[^\x00-\xff]/g, (a) => {
+    return encodeUnicode(a);
+  });
   try {
     fs.accessSync(filepath, fs.constants.R_OK);
     const readStream = fs.createReadStream(filepath);
@@ -27,28 +33,38 @@ function responseByLocalFile(
       responseBody = fs.readFileSync(filepath, 'utf-8');
     }
 
+    if (matcherResult?.rule?.debug) {
+      responseBody = insertScriptsToHTML(responseBody, matcherResult.rule.debug);
+    }
+
     ioRequest({
       method: req.method,
       requestId: req.$requestId,
       responseHeaders: {
         ...responseHeaders,
-        [`${bproxyPrefixHeader}-file`]: filepath,
       },
       statusCode: 200,
       responseBody,
       url: req.httpsURL || req.requestOriginUrl || req.url,
     });
 
-    readStream.pipe(res);
+    if (matcherResult?.rule?.debug) {
+      responseText(responseBody, res);
+    } else {
+      readStream.pipe(res);
+    }
   } catch (err) {
     console.log(err);
     res.writeHead(404, {
-      'content-type': 'text/html; charset=utf-8;'
+      'content-type': 'text/html; charset=utf-8;',
     });
-    responseText(`<div style="color:red;">404: Not Found or Not Access:
+    responseText(
+      `<div style="color:red;">404: Not Found or Not Access:
       (${filepath}).
       <br>Error: ${JSON.stringify(err)}
-    </div>`, res);
+    </div>`,
+      res,
+    );
     ioRequest({
       method: req.method,
       requestId: req.$requestId,
@@ -60,8 +76,7 @@ function responseByLocalFile(
 }
 
 export async function responseLocalFile(params: Bproxy.HandleResponseParams) {
-  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } =
-    params;
+  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } = params;
 
   ioRequest({
     matched: true,
@@ -75,17 +90,11 @@ export async function responseLocalFile(params: Bproxy.HandleResponseParams) {
     await delay(delayTime);
   }
   const filepath = path.resolve(matcherResult.rule.file);
-  responseByLocalFile(
-    safeDecodeUrl(filepath),
-    res,
-    responseHeaders,
-    req
-  );
+  responseByLocalFile(safeDecodeUrl(filepath), res, responseHeaders, req, matcherResult);
 }
 
 export async function responseLocalPath(params) {
-  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } =
-    params;
+  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } = params;
   ioRequest({
     matched: true,
     requestId: req.$requestId,
@@ -99,10 +108,5 @@ export async function responseLocalPath(params) {
     await delay(delayTime);
   }
   const filepath = path.resolve(matcherResult.rule.path, matcherResult.rule.filepath || '');
-  responseByLocalFile(
-    safeDecodeUrl(filepath),
-    res,
-    responseHeaders,
-    req
-  );
+  responseByLocalFile(safeDecodeUrl(filepath), res, responseHeaders, req, matcherResult);
 }

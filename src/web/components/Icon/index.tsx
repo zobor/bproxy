@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import './index.scss';
 
 const assetpath = './assets/';
-const Icons = import.meta.globEager('./assets/*.svg');
+const Icons = (import.meta as any).importGlob('./assets/*.svg', { eager: true });
 
 export const iconTypeList = Object.keys(Icons).map((path: string) => path.replace(/\.\/assets\/(\S+)\.svg/, '$1'));
 

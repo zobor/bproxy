@@ -1,47 +1,31 @@
 import classNames from 'classnames';
-import React, { lazy, Suspense, useCallback, useContext, useEffect } from 'react';
-import {
-  ApiOutlined,
-  BugOutlined,
-  ClearOutlined,
-  FilterOutlined,
-  MacCommandOutlined,
-  message,
-  Modal,
-  PlayCircleOutlined,
-  SettingOutlined,
-  Spin,
-  WifiOutlined,
-} from '../../components/UI';
-import useBool from '../../hooks/useBool';
-import { activeProxy, checkProxy, disActiveProxy } from '../../modules/bridge';
-import { ws } from '../../modules/socket';
-import { Ctx } from '../ctx';
-import Filter from '../../components/Filter';
-import RuleTest from '../../components/ruleTest';
-
-import './Controller.scss';
-import { useRuntimePlatform } from '../../hooks/useBridge';
-import Install from '../../components/Install';
-import { LOCAL_STORAGE_SHOE_INSTALL_CERT } from '../../../utils/constant';
-import useWerine from '../../hooks/useWeinre';
 import { isEmpty } from 'lodash';
+import React, { lazy, Suspense, useCallback, useContext, useEffect } from 'react';
+import { LOCAL_STORAGE_SHOE_INSTALL_CERT, USER_TOOLS } from '../../../utils/constant';
+import Filter from '../../components/Filter';
+import Icon from '../../components/Icon';
+import Install from '../../components/Install';
+import RuleTest from '../../components/ruleTest';
+import ConfigModal from '../../components/Settings/ConfigModal';
+import { message, Modal, Spin } from '../../components/UI';
+import useBool from '../../hooks/useBool';
+import { useRuntimePlatform } from '../../hooks/useBridge';
+import useWerine from '../../hooks/useWeinre';
+import useSystemProxyOpen from '../../hooks/useWs';
+import { activeProxy, checkProxy, disActiveProxy } from '../../modules/bridge';
+import { isMac } from '../../modules/util';
+import { Ctx } from '../ctx';
+import './Controller.scss';
 
 const Settings = lazy(() => import('../../components/Settings'));
 const Weinre = lazy(() => import('../../components/Weinre'));
 
-export const ControllerDialog = ({ title, children, visible, ...others }) => {
+export const ControllerDialog = ({ title, children, visible, className, ...others }) => {
   if (!visible) {
     return null;
   }
   return (
-    <Modal
-      title={title}
-      visible={visible}
-      footer={null}
-      width={1000}
-      {...others}
-    >
+    <Modal className={className} title={title} open={visible} footer={null} width={1000} {...others}>
       {children}
     </Modal>
   );
@@ -49,11 +33,7 @@ export const ControllerDialog = ({ title, children, visible, ...others }) => {
 
 const RuleTestModal = (props) => {
   return (
-    <ControllerDialog
-      title="检测目标URL是否跟你的rule匹配"
-      width={800}
-      {...props}
-    >
+    <ControllerDialog title="检测目标URL是否跟你的rule匹配" width={800} {...props}>
       <RuleTest />
     </ControllerDialog>
   );
@@ -89,42 +69,42 @@ const FilterModal = (props) => {
 
 const InstallModal = (props) => {
   return (
-    <ControllerDialog title="安装 HTTPS 证书" width={800} {...props}>
+    <ControllerDialog title="安装 HTTPS 证书" width={720} {...props}>
       <Install />
     </ControllerDialog>
   );
 };
 
 interface ControllerProps {
-  connected?: boolean;
+  connected?: boolean | number;
 }
 
-const Disconnected = () => (
-  <div className="disconnected">bproxy 已经停止工作，等待连接中...</div>
-);
+const Disconnected = () => <div className="disconnected">bproxy 已经停止工作，等待连接中...</div>;
 
 const Controller = (props: ControllerProps) => {
   const { connected } = props;
   const { state, dispatch } = useContext(Ctx);
-  const { proxySwitch, clean } = state;
+  const { proxySwitch, clean, textSearch } = state;
 
   const { state: isShowSettings, toggle: toggleShowSettings } = useBool(false);
   const { state: isShowWeinre, toggle: toggleShowWeinre } = useBool(false);
   const { state: isShowFilter, toggle: toggleShowFilter } = useBool(false);
   const { state: isShowRuleTest, toggle: toggleShowRuleTest } = useBool(false);
   const { state: isShowInstall, toggle: toggleShowInstall } = useBool(false);
-  const { clients } = useWerine();
+  const { state: isShowConfig, toggle: toggleShowConfig } = useBool(false);
+  const { clients } = useWerine(isShowWeinre);
+  const { state: isSystemProxyOpen } = useSystemProxyOpen();
+  const isDialogShow =
+    isShowSettings || isShowWeinre || isShowFilter || isShowRuleTest || isShowInstall || isShowConfig;
 
+  const onClickSearch = () => {
+    dispatch({ type: 'setShowTextSearch', showTextSearch: true });
+  };
   const onToggleInstall = () => {
     toggleShowInstall();
     window.localStorage.setItem(LOCAL_STORAGE_SHOE_INSTALL_CERT, '1');
   };
-  const {
-    state: systemProxyStatus,
-    toggle: toggleSystemProxyStatus,
-    ok: setProxyOn,
-    no: setProxyOff,
-  } = useBool(false);
+  const { state: systemProxyStatus, toggle: toggleSystemProxyStatus, ok: setProxyOn, no: setProxyOff } = useBool(false);
   const { platform } = useRuntimePlatform();
 
   const toggleSwitch = useCallback(() => {
@@ -147,14 +127,11 @@ const Controller = (props: ControllerProps) => {
   const showSelectConfig = () => {
     dispatch({ type: 'setShowSelectConfig', showSelectConfig: true });
   };
+
   useEffect(() => {
-    const open$ = ws.on('open', () => {
-      checkProxy().then((isOpen) => {
-        if (isOpen) {
-          setProxyOn();
-        }
-      });
-    });
+    if (isSystemProxyOpen) {
+      setProxyOn();
+    }
 
     const autoCheck = () => {
       checkProxy().then((isOpen) => {
@@ -168,19 +145,24 @@ const Controller = (props: ControllerProps) => {
 
     const timer = setInterval(() => {
       autoCheck();
-    }, 60 * 1000);
+    }, 10 * 1000);
 
     return () => {
-      open$.unsubscribe();
       clearInterval(timer);
     };
-  }, []);
+  }, [isSystemProxyOpen]);
 
   useEffect(() => {
     const watchHotKey = (e) => {
       const { altKey, keyCode } = e;
+      // option + x
       if (altKey && keyCode === 88) {
         onClean();
+      } else if (keyCode === 191) {
+        !isDialogShow &&
+          setTimeout(() => {
+            dispatch({ type: 'setShowTextSearch', showTextSearch: true });
+          }, 10);
       }
     };
     document.body.addEventListener('keydown', watchHotKey);
@@ -188,7 +170,7 @@ const Controller = (props: ControllerProps) => {
     return () => {
       document.body.removeEventListener('keydown', watchHotKey);
     };
-  }, [onClean]);
+  }, [onClean, isDialogShow]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -200,19 +182,52 @@ const Controller = (props: ControllerProps) => {
 
   return (
     <div className="controller">
-      {!connected ? <Disconnected /> : null}
+      {connected === false ? <Disconnected /> : null}
       <div
         onClick={toggleSwitch}
         className={classNames({
           disabled: !proxySwitch,
         })}
       >
-        <PlayCircleOutlined />
+        <Icon type="switch" />
         <span>日志开关</span>
       </div>
       <div onClick={onClean}>
-        <ClearOutlined />
+        <Icon type="clear" />
         <span>清理日志</span>
+      </div>
+      <div
+        className={classNames({
+          ['warn']: isShowWeinre || !isEmpty(clients),
+        })}
+        onClick={toggleShowWeinre}
+      >
+        <Icon type="debug" />
+        <span>页面调试</span>
+      </div>
+      <div
+        className={classNames({
+          ['warn']: textSearch && textSearch.length,
+        })}
+        onClick={onClickSearch}
+      >
+        <Icon type="search" />
+        <span>内容搜索</span>
+      </div>
+      {platform === 'app' ? (
+        <div onClick={showSelectConfig}>
+          <Icon type="exchange" />
+          <span>切换配置</span>
+        </div>
+      ) : null}
+      <div
+        className={classNames({
+          ['warn']: isShowConfig,
+        })}
+        onClick={toggleShowConfig}
+      >
+        <Icon type="editor" />
+        <span>编辑配置</span>
       </div>
       <div
         className={classNames({
@@ -220,41 +235,51 @@ const Controller = (props: ControllerProps) => {
         })}
         onClick={onClickSystemProxy}
       >
-        <MacCommandOutlined />
-        <span>{systemProxyStatus ? '已开系统代理': '系统代理'}</span>
+        <Icon type={isMac ? 'mac' : 'windows'} />
+        <span>系统代理</span>
       </div>
-      <div className={classNames({
+      <div
+        className={classNames({
           ['warn']: isShowFilter,
-        })} onClick={toggleShowFilter}>
-        <FilterOutlined />
+        })}
+        onClick={toggleShowFilter}
+      >
+        <Icon type="filter" />
         <span>过滤规则</span>
       </div>
-      {platform === 'app' ? <div onClick={showSelectConfig}>
-        <ApiOutlined />
-        <span>切换配置</span>
-      </div> : null}
-      <div className={classNames({
-          ['warn']: isShowWeinre || !isEmpty(clients),
-        })} onClick={toggleShowWeinre}>
-        <BugOutlined />
-        <span>页面调试</span>
-      </div>
-      <div className={classNames({
+      <div
+        className={classNames({
           ['warn']: isShowRuleTest,
-        })} onClick={toggleShowRuleTest}>
-        <BugOutlined />
+        })}
+        onClick={toggleShowRuleTest}
+      >
+        <Icon type="matched" />
         <span>规则检测</span>
       </div>
-      <div className={classNames({
+      <div
+        className={classNames({
           ['warn']: isShowInstall,
-        })} onClick={onToggleInstall}>
-        <WifiOutlined />
+        })}
+        onClick={onToggleInstall}
+      >
+        <Icon type="chrome" />
         <span>安装证书</span>
       </div>
-      <div className={classNames({
+      <div
+        onClick={() => {
+          window.open(USER_TOOLS);
+        }}
+      >
+        <Icon type="tools" />
+        <span>开发工具</span>
+      </div>
+      <div
+        className={classNames({
           ['warn']: isShowSettings,
-        })} onClick={toggleShowSettings}>
-        <SettingOutlined />
+        })}
+        onClick={toggleShowSettings}
+      >
+        <Icon type="setting" />
         <span>设置</span>
       </div>
 
@@ -268,6 +293,8 @@ const Controller = (props: ControllerProps) => {
       <RuleTestModal onCancel={toggleShowRuleTest} visible={isShowRuleTest} />
       {/* 安装证书 */}
       <InstallModal onCancel={onToggleInstall} visible={isShowInstall} />
+      {/* 配置文件 */}
+      <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
     </div>
   );
 };
