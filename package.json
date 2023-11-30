@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.2.33",
+  "version": "5.2.34",
   "description": "代理工具",
   "main": "./bin/electron.js",
   "bin": {
@@ -90,7 +90,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/bproxy/bproxy"
+    "url": "https://github.com/zobor/bproxy"
   },
   "keywords": [
     "代理工具"
@@ -101,14 +101,14 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://gitee.com/bproxy/bproxy/issues"
+    "url": "https://github.com/zobor/bproxy/issues"
   },
   "engines": {
     "node": ">= 16.0.0",
     "npm": ">= 8.0.0"
   },
   "preferGlobal": true,
-  "homepage": "http://www.bproxy.cn",
+  "homepage": "https://www.duelpeak.com/pages/bproxy",
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
@@ -127,7 +127,7 @@
   "build": {
     "appId": "com.apple.bproxy",
     "productName": "bproxy",
-    "copyright": "www.bproxy.cn",
+    "copyright": "www.duelpeak.com",
     "compression": "store",
     "directories": {
       "output": "./release"
