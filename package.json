@@ -60,7 +60,11 @@
     "classnames": "2.3.1",
     "copy-to-clipboard": "3.3.1",
     "cross-env": "7.0.3",
+<<<<<<< HEAD
+    "electron": "^22.3.25",
+=======
     "electron": "^24.3.0",
+>>>>>>> master
     "electron-packager": "^16.0.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
