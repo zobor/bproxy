@@ -1,0 +1,34 @@
+.shortcut-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  li {
+    width: 200px;
+    height: 100px;
+    background-color: #453c67;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-left: 20px;
+    margin-top: 20px;
+    > div {
+      height: 50%;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+      color: #f2f7a1;
+      &:first-child {
+        font-size: 20px;
+        background-color: #6d67e4;
+      }
+      &:last-child {
+        font-size: 20px;
+        background-color: #46c2cb;
+      }
+    }
+  }
+}

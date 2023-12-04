@@ -1,17 +1,11 @@
 import classNames from 'classnames';
-import React, { useContext, useEffect, useRef } from 'react';
-import { formatSeconds } from '../../../proxy/utils/format';
-import { HttpRequestRequest } from '../../../types/web';
-import isElementVisible from '../../modules/isElementVisible';
-import { debounce, get } from '../../modules/lodash';
-import {
-  decodeURL,
-  filterValueIncludes,
-  formatFileSize,
-  showResponseType
-} from '../../modules/util';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { get } from '../../modules/lodash';
+import { formatSeconds, formatUrlPathOfFileName } from '../../../utils/format';
+import { decodeURL, filterValueIncludes, formatFileSize, showResponseType } from '../../modules/util';
 import { Ctx } from '../ctx';
 import './Table.scss';
+import TextSearch from './TextSearch';
 
 const Thead = () => (
   <thead>
@@ -24,26 +18,34 @@ const Thead = () => (
       <td>类型</td>
       <td>大小</td>
       <td>耗时</td>
-      <td>HOST</td>
+      <td>Server</td>
     </tr>
   </thead>
 );
 
 const Table = (props: any) => {
   const { list } = props;
+  const [searchList, setSearchList] = useState([]);
   const { state, dispatch } = useContext(Ctx);
-  const { requestId, highlight, fixedToTableBottom } = state;
+  const { requestId, highlight, fixedToTableBottom, showDetail, textSearch } = state;
   const $table = useRef<HTMLTableElement>(null);
-  const $loading = useRef<HTMLDivElement>(null);
-  const onClick = (req: any) => {
-    dispatch({ type: 'setShowDetail', showDetail: true });
-    if (req.custom.requestId) {
-      dispatch({ type: 'setRequestId', requestId: req.custom.requestId });
-    }
-  };
+  const onClick = useCallback(
+    (req: any) => {
+      if (requestId === req.custom.requestId && showDetail) {
+        dispatch({ type: 'setShowDetail', showDetail: false });
+      } else {
+        dispatch({ type: 'setShowDetail', showDetail: true });
+        if (req.custom.requestId) {
+          dispatch({ type: 'setRequestId', requestId: req.custom.requestId });
+        }
+      }
+    },
+    [requestId, showDetail],
+  );
 
   useEffect(() => {
     const onPressESC = (e) => {
+      // esc close detail
       if (e.keyCode === 27) {
         dispatch({ type: 'setShowDetail', showDetail: false });
       }
@@ -56,33 +58,32 @@ const Table = (props: any) => {
   }, []);
 
   useEffect(() => {
-    const onScroll = debounce(() => {
-      if (isElementVisible($loading.current)) {
-        dispatch({ type: 'setFixedToTableBottom', fixedToTableBottom: true });
-      } else {
-        dispatch({ type: 'setFixedToTableBottom', fixedToTableBottom: false });
-      }
-    }, 50);
-
-    window.addEventListener('wheel', onScroll);
-
-    return () => {
-      window.removeEventListener('wheel', onScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (fixedToTableBottom && $table.current) {
+    if ($table.current && fixedToTableBottom) {
       $table.current.scrollTop = 1000 * 100;
     }
   }, [list.length, fixedToTableBottom]);
 
+  useEffect(() => {
+    if (textSearch.length && list.length) {
+      setSearchList(
+        list.filter((item) => {
+          return item && typeof item.responseBody === 'string' && item.responseBody.includes(textSearch);
+        }),
+      );
+    }
+  }, [textSearch, list]);
+
+  const tableList = useMemo(() => {
+    return textSearch.length ? searchList : list;
+  }, [textSearch, searchList, list]);
+
   return (
     <div className="table-box scrollbar-style" ref={$table}>
-      {list.length ? <table className="table">
+      <TextSearch />
+      <table className="table">
         <Thead />
-        <tbody>
-          {list.map((req: HttpRequestRequest) => {
+        <tbody className={classNames({ empty: tableList.length === 0 })}>
+          {tableList.map((req: any) => {
             const statusCode = `${req?.custom?.statusCode}`;
             let filesize = get(req, 'responseHeaders["content-length"]');
             const contentType = get(req, 'responseHeaders["content-type"]');
@@ -97,13 +98,9 @@ const Table = (props: any) => {
                 key={req?.custom?.requestId}
                 className={classNames({
                   active: requestId === req?.custom?.requestId,
-                  error:
-                    statusCode.indexOf('4') === 0 ||
-                    statusCode.indexOf('5') === 0,
+                  error: statusCode.indexOf('4') === 0 || statusCode.indexOf('5') === 0,
                   matched: req.matched,
-                  highlight:
-                    highlight &&
-                    filterValueIncludes(req?.custom?.url || '', highlight),
+                  highlight: highlight && filterValueIncludes(req?.custom?.url || '', highlight),
                 })}
                 onClick={onClick.bind(null, req)}
               >
@@ -117,7 +114,14 @@ const Table = (props: any) => {
                   {req?.custom?.statusCode}
                 </td>
                 {/* method */}
-                <td className="method">{req?.custom?.method}</td>
+                <td
+                  className={classNames({
+                    method: true,
+                    [req?.custom?.method]: true,
+                  })}
+                >
+                  {req?.custom?.method}
+                </td>
                 {/* protocal */}
                 <td className="protocol">{req?.custom?.protocol}</td>
                 {/* host */}
@@ -127,7 +131,9 @@ const Table = (props: any) => {
                 {/* path */}
                 <td className="path">
                   <span className="textLimit">
-                    {decodeURL(req?.custom?.path)}
+                    {formatUrlPathOfFileName(decodeURL(req?.custom?.path)).map((str) => (
+                      <span key={`td-${req?.custom?.requestId}-${str}`}>{str}</span>
+                    ))}
                   </span>
                 </td>
                 {/* contentType */}
@@ -138,9 +144,7 @@ const Table = (props: any) => {
                       textLimit: true,
                     })}
                   >
-                    <span className="textLimit">
-                      {showResponseType(contentType)}
-                    </span>
+                    <span className="textLimit">{showResponseType(contentType)}</span>
                   </span>
                 </td>
                 {/* size */}
@@ -150,16 +154,12 @@ const Table = (props: any) => {
                   className={classNames({
                     speed: true,
                     slow:
-                      req.requestStartTime &&
-                      req.requestEndTime &&
-                      req.requestEndTime - req.requestStartTime > 2000,
+                      req.requestStartTime && req.requestEndTime && req.requestEndTime - req.requestStartTime > 2000,
                   })}
                 >
                   <span className="textLimit">
                     {req.requestStartTime && req.requestEndTime
-                      ? `${formatSeconds(
-                          req.requestEndTime - req.requestStartTime
-                        )}`
+                      ? `${formatSeconds(req.requestEndTime - req.requestStartTime)}`
                       : '-'}
                   </span>
                 </td>
@@ -171,13 +171,7 @@ const Table = (props: any) => {
             );
           })}
         </tbody>
-      </table> : <div className="empty-tip">
-        暂无数据，您可以尝试开启<span>系统代理</span>再试试。
-      </div>}
-      <div className={classNames({
-        loading: true,
-        lock: list.length > 20 && fixedToTableBottom,
-      })} ref={$loading} />
+      </table>
     </div>
   );
 };

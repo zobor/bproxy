@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { isFunction, isNumber, isString, omit } from 'lodash';
+import * as url from 'url';
+import request from 'request';
+import { isFunction, isNumber, isString, uniq } from 'lodash';
 import { checkStringIsFileOrPath } from './utils/file';
 import dataset from './dataset';
 import { appConfigFileName } from './config';
@@ -15,7 +17,7 @@ function checkResponseType(target: any, currentConfigPath: string) {
   // 响应字符串
   if (isString(target)) {
     // 响应的是URL
-    if (/(https?|wss?):\/\//.test(target)) {
+    if (/^(https?|wss?):\/\//.test(target)) {
       return 'redirect';
     }
     // 响应IP
@@ -23,7 +25,7 @@ function checkResponseType(target: any, currentConfigPath: string) {
       return 'host';
     }
     // 响应的是文件或者目录
-    if (target.indexOf('file://') === 0 || target.indexOf('/') === 0) {
+    if (target.startsWith('file://') || target.startsWith('/')) {
       try {
         fs.accessSync(`${target}`, fs.constants.R_OK);
         return 'path';
@@ -56,8 +58,7 @@ function checkSingleRule(rule: BproxyConfig.Rule): BproxyConfig.Rule {
     delete rule.url;
   }
 
-  const currentConfigPath =
-    dataset.currentConfigPath?.replace(appConfigFileName, '') || __dirname;
+  const currentConfigPath = dataset.currentConfigPath?.replace(appConfigFileName, '') || __dirname;
 
   if (rule.target) {
     const ruleKey = checkResponseType(rule.target, currentConfigPath);
@@ -85,8 +86,7 @@ function checkSingleRule(rule: BproxyConfig.Rule): BproxyConfig.Rule {
         'Access-Control-Allow-Credentials': true,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
-        'Access-Control-Allow-Headers':
-          'Content-Type,Accept,X-Requested-With',
+        'Access-Control-Allow-Headers': 'Content-Type,Accept,X-Requested-With',
       },
     };
 
@@ -95,16 +95,53 @@ function checkSingleRule(rule: BproxyConfig.Rule): BproxyConfig.Rule {
   return rule;
 }
 
-export default function preload(params: BproxyConfig.Config): BproxyConfig.Config {
+function fetch(url) {
+  return new Promise((resolve) => {
+    request.get(url, (err, response, body) => {
+      resolve(body);
+    });
+  });
+}
+
+async function yapiPreload(params) {
+  for (const yapi of params?.yapi || []) {
+    try {
+      const listURL = `http://yapi.dz11.com/api/interface/list?page=1&limit=100&project_id=${yapi.id}&token=${yapi.token}`;
+      const rs = (await fetch(listURL)) as string;
+      const json = JSON.parse(rs);
+      const urlList = (json?.data?.list || []).filter((item) => item.status === 'done');
+      urlList.forEach((item: any) => {
+        if (!item.path) return;
+        params.rules.push({
+          url: item.path,
+          yapi: yapi.id,
+        });
+      });
+    } catch (err) {}
+  }
+}
+
+export default async function preload(params: BproxyConfig.Config): Promise<BproxyConfig.Config> {
+  await yapiPreload(params);
   // 遍历所有的规则
-  params.rules = params.rules.map((rule: BproxyConfig.Rule) =>
-    checkSingleRule(rule)
-  );
+  params.rules = params.rules.map((rule: BproxyConfig.Rule) => checkSingleRule(rule));
 
   // 兼容老版本
   if (params.sslAll === true) {
     params.https = true;
     delete params.sslAll;
+  }
+
+  if (Array.isArray(params.https)) {
+    params.rules.forEach((rule) => {
+      const { regx } = rule;
+      if (isString(regx) && regx.startsWith('https://')) {
+        const { port, hostname } = url.parse(regx);
+        const httpsScheme = `${hostname}:${port || 443}`;
+        (params.https as any).push(httpsScheme);
+      }
+    });
+    params.https = uniq(params.https);
   }
 
   return params;

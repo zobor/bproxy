@@ -14,7 +14,7 @@ namespace BproxyHTTP {
 
   interface WebInvokeParams {
     type: string;
-    params: {[key: string]: any};
+    params: { [key: string]: any };
     id: string;
   }
 

@@ -1,6 +1,10 @@
+$cardBgColor: rgb(74, 35, 90);
+$titleColor: rgb(72, 201, 176);
+$charColor: rgb(231, 76, 60);
+
 .Select-config {
   color: #fff;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   .current {
     padding: 20px 0;
@@ -9,38 +13,94 @@
     > span {
       flex: 1;
       background-color: rgb(248, 196, 113);
-      color: #000;
+      color: #333;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      font-size: 22px;
     }
     .cancelSelect {
       margin-left: 10px;
     }
   }
 
+  .select-usage {
+    background-color: #333;
+    border-radius: 5px;
+    color: #888;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
   .cards {
     display: flex;
-    width: 800px;
     margin: 0 auto;
     flex-direction: row;
     flex-wrap: wrap;
+    .firstChar {
+      width: 32px;
+      height: 32px;
+      background-color: $charColor;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      border-radius: 4px;
+      font-size: 26px;
+      text-transform: uppercase;
+    }
   }
 
   .title {
     font-size: 18px;
     padding: 10px 0;
+    padding-top: 20px;
   }
 
   .ant-card {
-    margin: 0 10px 10px 0;
-    &:hover {
+    margin: 0 15px 15px 0;
+    background-color: $cardBgColor;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &.currentCard {
       background-color: darkred;
-      cursor: pointer;
     }
   }
 
   .ant-card-head {
     border: none;
+    min-height: auto;
+    padding: 0;
+    color: $titleColor;
+  }
+  .ant-card-head-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    font-size: 20px;
+  }
+
+  .ant-card-body {
+    padding: 6px 10px;
+    color: rgb(241, 196, 15);
+    font-weight: bold;
+  }
+
+  .icon-remove {
+    fill: rgb(236, 240, 241);
+    margin: 5px;
+    > svg {
+      width: 100%;
+      height: 100%;
+    }
+    &:hover {
+      fill: rgb(163, 228, 215);
+      background-color: #333;
+    }
   }
 }

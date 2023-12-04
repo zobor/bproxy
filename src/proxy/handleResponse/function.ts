@@ -1,14 +1,13 @@
 import { bproxyPrefixHeader } from './../config';
 import { isString, isUndefined } from 'lodash';
-import { isObject } from './../utils/is';
+import { isObject } from '../../utils/is';
 import { ioRequest } from '../socket/socket';
 import request from 'request';
-import { delay } from '../utils/utils';
-import { isPromise } from '../utils/is';
+import { isPromise } from '../../utils/is';
+import { delay } from '../../utils/utils';
 
 export async function responseByFunction(params: Bproxy.HandleResponseParams) {
-  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } =
-    params;
+  const { req, res, postBodyData, delayTime, matcherResult, responseHeaders, requestHeaders } = params;
 
   const requestUrl = req.httpsURL || req.requestOriginUrl || req.url;
 
@@ -24,9 +23,10 @@ export async function responseByFunction(params: Bproxy.HandleResponseParams) {
     await delay(delayTime);
   }
   const rs = matcherResult.rule.response({
+    req,
     response: res,
     fetch: request,
-    request,
+    request: req,
     rules: matcherResult?.rule,
     body: postBodyData,
   });
@@ -50,18 +50,20 @@ export async function responseByFunction(params: Bproxy.HandleResponseParams) {
     });
     return;
   }
-  const resDestructObject = isObject(resData) ? resData : {
-    data: isString(resData) ? resData : JSON.stringify(resData),
-    headers: {},
-    statusCode: 200,
-  };
+  const resDestructObject = isObject(resData)
+    ? resData
+    : {
+        data: isString(resData) ? resData : JSON.stringify(resData),
+        headers: {},
+        statusCode: 200,
+      };
   const { data, headers, statusCode = 200 } = resDestructObject;
   const respHeaders = {
-      ...(headers || {
-        'content-type': 'bproxy/log',
-      }),
-      ...responseHeaders,
-    };
+    ...(headers || {
+      'content-type': 'bproxy/log',
+    }),
+    ...responseHeaders,
+  };
   ioRequest({
     requestId: req.$requestId,
     url: requestUrl,

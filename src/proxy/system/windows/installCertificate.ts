@@ -1,13 +1,13 @@
 import iconv from 'iconv-lite';
 import { exec } from 'child_process';
-import {certificate} from '../../config';
+import { certificate } from '../../config';
 import logger from '../../logger';
 
 export function installCertificate() {
   const filepath = certificate.getDefaultCACertPath();
 
   return new Promise((resolve) => {
-    exec(`CERTUTIL -addstore -enterprise -f -v root "${filepath}"`, {encoding: 'buffer'}, (error, stdoutStream) => {
+    exec(`CERTUTIL -addstore -enterprise -f -v root "${filepath}"`, { encoding: 'buffer' }, (error, stdoutStream) => {
       const stdout = iconv.decode(stdoutStream, 'cp936');
       if (error) {
         logger.error(error);
@@ -35,5 +35,5 @@ export function installCertificate() {
         }
       }
     });
-  })
+  });
 }

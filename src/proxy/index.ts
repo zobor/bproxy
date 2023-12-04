@@ -1,25 +1,38 @@
+import chalk from 'chalk';
+import * as dns from 'dns';
 import * as fs from 'fs';
-import * as http from 'http';
 import { isEmpty } from 'lodash';
-import * as url from 'url';
-import * as packageJson from '../../package.json';
-import { isApp, showError, showUpgrade } from './api';
+import { delay } from '../utils/utils';
+import { showError, showUpgrade } from './api';
 import { appConfigFilePath, appDataPath, configModuleTemplate } from './config';
+import dataset, { isApp, updateDataSet } from './dataset';
 import { updateConfigPathAndWatch } from './getUserConfig';
-import httpMiddleware from './httpMiddleware';
 import httpsMiddleware from './httpsMiddleware';
 import logger from './logger';
-import { ioInit, wsApi, wss } from './socket/socket';
-import { staticServer } from './staticServer';
-import { configSystemProxy, setSystemProxyOff } from './system/configProxy';
-import dataset, { updateDataSet } from './dataset';
-import { isLocalServerRequest } from './utils/is';
+import { afterLocalServerStartSuccess, startLocalServer } from './proxyServer';
+import { ioInit } from './socket/socket';
+import { configSystemProxy, getNetWorkProxyStatus, getNetworkProxyInfo, setSystemProxyOff } from './system/configProxy';
 import { checkUpgrade } from './utils/request';
-import { delay, utils } from './utils/utils';
+import storage, { STORAGE_KEYS, storageReady } from './storage';
 
-const pkg: any = packageJson;
+(dns as any).setDefaultResultOrder && (dns as any).setDefaultResultOrder('ipv4first');
 
 export default class LocalServer {
+  static closeSystemProxyAfterShutdown = false;
+  static proxySettingsBeforeStart = {
+    deviceName: '',
+    proxyStatus: 'off',
+    http: {
+      status: 'off',
+      server: '127.0.0.1',
+      port: 0,
+    },
+    https: {
+      status: 'off',
+      server: '127.0.0.1',
+      port: 0,
+    },
+  };
   // 启动前的检查
   static async beforeStart() {
     logger.info('当前运行环境', dataset.platform);
@@ -34,8 +47,51 @@ export default class LocalServer {
 
     // 检查是否最新版本
     this.checkUpgrade();
+
+    // 检查启动前的系统代理配置
+    await this.checkProxyStatus();
+
+    // storage ready
+    await storageReady();
   }
 
+  // 启动前先检查一遍系统代理情况，以便关闭bpoxy之后恢复系统代理的配置
+  static async checkProxyStatus() {
+    const currentNetworkProxyStatus = await getNetWorkProxyStatus();
+    if (isEmpty(currentNetworkProxyStatus)) {
+      return;
+    }
+    this.proxySettingsBeforeStart.deviceName = Object.keys(currentNetworkProxyStatus)[0];
+    this.proxySettingsBeforeStart.proxyStatus = currentNetworkProxyStatus[this.proxySettingsBeforeStart.deviceName]
+      ? 'on'
+      : 'off';
+
+    if (this.proxySettingsBeforeStart.proxyStatus === 'off') {
+      return;
+    }
+
+    const proxyDetail = await getNetworkProxyInfo();
+    const currentDetail = proxyDetail[this.proxySettingsBeforeStart.deviceName];
+    if (isEmpty(currentDetail) || isEmpty(currentDetail.http) || isEmpty(currentDetail.https)) {
+      this.proxySettingsBeforeStart.proxyStatus = 'off';
+      return;
+    }
+
+    if (+currentDetail.http.Port === 8888 || +currentDetail.https.Port === 8888) {
+      this.proxySettingsBeforeStart.proxyStatus = 'off';
+      return;
+    }
+
+    this.proxySettingsBeforeStart.http.status = currentDetail.http.Enabled === 'Yes' ? 'on' : 'off';
+    this.proxySettingsBeforeStart.http.server = currentDetail.http.Server;
+    this.proxySettingsBeforeStart.http.port = currentDetail.http.Port;
+
+    this.proxySettingsBeforeStart.https.status = currentDetail.https.Enabled === 'Yes' ? 'on' : 'off';
+    this.proxySettingsBeforeStart.https.server = currentDetail.https.Server;
+    this.proxySettingsBeforeStart.https.port = currentDetail.https.Port;
+  }
+
+  // 检查版本更新
   static async checkUpgrade() {
     checkUpgrade().then((data: any) => {
       showUpgrade(data);
@@ -50,132 +106,50 @@ export default class LocalServer {
     return true;
   }
 
+  // 检查当面目录下的bproxy配置
   static async checkPWDConfig() {
     if (isApp()) {
       return;
     }
     // bash 环境使用当面目录承载配置
     updateConfigPathAndWatch({
-      configPath: process.cwd(),
+      configPath: process.env.BP_CONFIG || process.cwd(),
     });
   }
 
+  // 检查app上一次使用的配置文件目录
   static async checkAppLastTimeConfig() {
     if (dataset.platform !== 'app') {
       return;
     }
     const { prevConfigPath } = dataset;
 
-    if (prevConfigPath) {
-      // 使用上一次使用的配置文件路径
-      updateConfigPathAndWatch({
-        configPath: prevConfigPath,
-      });
-    } else {
-      // 没有历史记录，使用上一次的
-      updateConfigPathAndWatch({
-        configPath: appDataPath,
-      });
-    }
-  }
-
-  static async start(): Promise<void> {
-    await this.beforeStart();
-
-    const { config } = dataset;
-    if (isEmpty(config)) {
-      logger.error('启动失败，找不到配置');
-      await delay(1000);
-      process.exit(0);
-    }
-
-    // 启动立即开启系统代理
-    this.enableBproxySystemProxy(config.port || 8888);
-    const server = new http.Server();
-    const certConfig = httpsMiddleware.beforeStart();
-    // websocket server
-    ioInit(server);
-
-    server.listen(config.port, () => {
-      // http
-      server.on('request', (req, res) => {
-        if (isLocalServerRequest(req.url || '')) {
-          if (req.url?.includes('/socket.io/')) {
-            return;
-          }
-          staticServer(req, res, certConfig);
-          return;
-        }
-        const $req: any = req;
-        if (!$req.$requestId) {
-          $req.$requestId = utils.guid();
-        }
-        httpMiddleware.proxy($req, res);
-      });
-      // https
-      server.on('connect', (req, socket, head) => {
-        // 重置URL到本地服务
-        if (req.url === 'bproxy.io:80') {
-          req.url = `localhost:${dataset.config.port}`;
-        }
-        const $req: any = req;
-        if (!$req.$requestId) {
-          $req.$requestId = utils.guid();
-        }
-        httpsMiddleware.proxy($req, socket, head);
-      });
-      // ws
-      server.on('upgrade', (req, socket, head) => {
-        const urlObj: any = url.parse(req.url, true);
-        const pathname = urlObj.pathname.split('/');
-
-        const type = pathname[1];
-        const id = pathname[2];
-
-        if (type === 'target' || type === 'client') {
-          wss.handleUpgrade(req, socket, head, (ws: any) => {
-            ws.type = type;
-            ws.id = id;
-            const q: any = urlObj.query;
-            if (type === 'target') {
-              ws.pageURL = q.url;
-              ws.title = q.title;
-              ws.favicon = q.favicon;
-              ws.ua = q.ua;
-            } else {
-              ws.target = q.target;
-            }
-            wss.emit('connection', ws, req);
-          });
-        } else if (type === 'data') {
-          wss.handleUpgrade(req, socket, head, (ws: any) => {
-            wsApi(ws);
-          });
-        } else {
-          socket.destroy();
-        }
-      });
+    updateConfigPathAndWatch({
+      configPath: prevConfigPath || appDataPath,
     });
-    logger.info(`✔ bproxy[${pkg.version}] 启动成功✨`);
-    logger.info(`✔ 操作面板地址：${`http://127.0.0.1:${config.port}`}`);
-
-    this.errorCatch();
-
-    this.afterStart();
   }
 
-  static afterStart() {
-    updateDataSet('ready', true);
-  }
-
+  // 开启系统代理
   static async enableBproxySystemProxy(port: number) {
     return configSystemProxy({ host: '127.0.0.1' });
   }
 
+  // 关闭系统代理
   static async disableBproxySystemProxy() {
-    return setSystemProxyOff();
+    if (this.proxySettingsBeforeStart.proxyStatus === 'off') {
+      return setSystemProxyOff();
+    } else {
+      const server = this.proxySettingsBeforeStart.http.server || this.proxySettingsBeforeStart.https.server;
+      const port = this.proxySettingsBeforeStart.http.port || this.proxySettingsBeforeStart.https.port;
+      console.log(`系统代理已恢复至：Server: ${chalk.magenta(server)},Port: ${chalk.magenta(port)}`);
+      if (server && port) {
+        return configSystemProxy({ host: server, port: `${port}` });
+      }
+      return setSystemProxyOff();
+    }
   }
 
+  // 捕获全局错误
   static async errorCatch() {
     process.on('uncaughtException', async (err) => {
       // 端口被占用，停止启动
@@ -195,10 +169,49 @@ export default class LocalServer {
     process.on('SIGINT', this.afterCloseNodeJsProcess);
   }
 
+  // 监控关闭node进程
   static async afterCloseNodeJsProcess() {
     logger.info('close bproxy');
-    await LocalServer.disableBproxySystemProxy();
+    if (this.closeSystemProxyAfterShutdown) {
+      await LocalServer.disableBproxySystemProxy();
+    }
     await delay(100);
     process.exit(0);
+  }
+
+  // 当bproxy启动完成
+  static afterStart() {
+    updateDataSet('ready', true);
+  }
+
+  // 启动bproxy
+  static async start(): Promise<void> {
+    await this.beforeStart();
+
+    const { config } = dataset;
+    if (isEmpty(config)) {
+      logger.error('启动失败，找不到配置');
+      await delay(1000);
+      process.exit(0);
+    }
+
+    if ((await storage.getItem(STORAGE_KEYS.SYSTEM_PROXY)) === '1') {
+      // 启动立即开启系统代理
+      logger.info(`${chalk.gray('✔ 检查系统代理：已开启')}`);
+      this.enableBproxySystemProxy(config.port || 8888);
+      this.closeSystemProxyAfterShutdown = true;
+    } else {
+      logger.info(`${chalk.gray('✔ 检查系统代理：未开启')}`);
+      this.closeSystemProxyAfterShutdown = false;
+    }
+
+    const certConfig = httpsMiddleware.beforeStart();
+    const server = startLocalServer(certConfig, config);
+    // websocket server
+    ioInit(server);
+    afterLocalServerStartSuccess();
+
+    this.errorCatch();
+    this.afterStart();
   }
 }

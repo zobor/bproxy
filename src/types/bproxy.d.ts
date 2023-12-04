@@ -7,6 +7,7 @@ declare namespace Bproxy {
     delayTime?: number;
     matcherResult: any;
     postBodyData: Buffer | undefined;
+    postBodyString: string;
     config: BproxyConfig.Config;
   }
 

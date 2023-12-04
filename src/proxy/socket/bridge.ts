@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { cloneDeep, get } from 'lodash';
+import { cloneDeep, get, isFunction } from 'lodash';
 import * as URL from 'url';
 import * as pkg from '../../../package.json';
 import { IS_REG_URL } from '../../utils/constant';
@@ -10,6 +10,7 @@ import { matcher } from '../matcher';
 import { channelManager } from './socket';
 import dataset from '../dataset';
 import { getLocalIpAddress } from '../utils/ip';
+import logger from '../logger';
 export * from '../system/os';
 export * from '../system/configProxy';
 
@@ -28,11 +29,7 @@ export const test = async (url: string) => {
       const urlParsed = URL.parse(url);
       const { protocol, host, port } = urlParsed;
       const hostname = `${host}:${port || 443}`;
-      if (
-        protocol === 'https:' &&
-        Array.isArray(config.https) &&
-        !config.https?.includes(hostname)
-      ) {
+      if (protocol === 'https:' && Array.isArray(config.https) && !config.https?.includes(hostname)) {
         return {
           error: `您开启了https白名单，当前url域名(${hostname})不在白名单`,
           help: `请将 ${hostname} 添加到bproxy.config.js的https字段配置中`,
@@ -45,6 +42,9 @@ export const test = async (url: string) => {
         for (const k in matchResult.rule) {
           if (k === 'regx' && get(matchResult, 'rule.regx')) {
             matchResult.rule[k] = get(matchResult, 'rule.regx').toString();
+            if (isFunction(get(matchResult, 'rule.response'))) {
+              matchResult.rule.response = 'function';
+            }
           }
         }
       }
@@ -134,7 +134,7 @@ export const getRuntimePlatform = () => {
 };
 
 // 切换配置路径
-export const setConfigFilePath = ({ filepath }: {filepath: string}) => {
+export const setConfigFilePath = ({ filepath }: { filepath: string }) => {
   updateConfigPathAndWatch({ configPath: filepath });
 };
 
@@ -143,6 +143,24 @@ export const getLogContent = () => {
   return fs.readFileSync(appInfoLogFilePath, 'utf-8');
 };
 
+// 清空日志
 export const clearLogConent = () => {
   return fs.writeFileSync(appInfoLogFilePath, '');
+};
+
+// 查看配置
+export const showConfigOnTerminal = () => {
+  if (dataset.platform === 'app') {
+    logger.info('配置文件地址:', dataset.currentConfigPath);
+    logger.info('配置详情:\n', dataset.config);
+  } else {
+    console.log('配置文件地址:', dataset.currentConfigPath);
+    console.log('配置详情:\n', dataset.config);
+  }
+};
+
+// 关闭APP
+export const shutdown = () => {
+  console.log('bproxy 已关闭');
+  process.exit();
 };

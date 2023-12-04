@@ -19,11 +19,10 @@
   }
 }
 
-
 .textLimit {
   overflow: hidden;
-  display:-webkit-box;
-  text-overflow:ellipsis;
+  display: -webkit-box;
+  text-overflow: ellipsis;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   padding: 2px 0;

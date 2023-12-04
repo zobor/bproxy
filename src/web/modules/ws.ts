@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
+import { parseJSON } from '../../utils/utils';
 
 interface WsConfig {
   url?: string;
@@ -13,9 +14,10 @@ class WS {
   public socket: any = {};
   private $stream = {};
   private reconnectCount = 0;
+  public connected = false;
 
   constructor(config: WsConfig = {}) {
-    this.config = {...this.config, ...config};
+    this.config = { ...this.config, ...config };
     const { autoConnect, url } = this.config;
     if (autoConnect && url) {
       this.connect();
@@ -27,16 +29,18 @@ class WS {
     }
     this.socket = new WebSocket(this.config.url);
     this.socket.onopen = () => {
+      this.connected = true;
       this.emit('open');
     };
     this.socket.onclose = () => {
+      this.connected = false;
       this.emit('close');
       if (this.config.autoReconnect) {
         this.reconnect();
       }
     };
     this.socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
+      const data = parseJSON(e.data);
       const { type, method, payload, uuid } = data;
       this.emit(type, { method, payload, uuid });
     };

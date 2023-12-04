@@ -3,23 +3,21 @@ const each = require('licia/each');
 const some = require('licia/some');
 const remove = require('licia/remove');
 
-module.exports = class Channel extends (
-  Emitter
-) {
+module.exports = class Channel extends Emitter {
   constructor(ws) {
     super();
     this._ws = ws;
     this._connections = [];
     this.send = (message) => {
       ws.send(message.toString());
-    }
+    };
 
     ws.on('close', (...args) => {
       this.emit('close', ...args);
       this.destroy();
     });
     ws.on('message', (...args) => {
-      each(this._connections, connection => {
+      each(this._connections, (connection) => {
         connection.send(...args);
       });
       this.emit('message', ...args);
@@ -29,7 +27,7 @@ module.exports = class Channel extends (
     this._ws.send(message);
   }
   destroy() {
-    each(this._connections, connection => {
+    each(this._connections, (connection) => {
       connection.off('message', connection);
     });
     this._connections = [];
@@ -42,7 +40,7 @@ module.exports = class Channel extends (
     return false;
   }
   hasConnection(connection) {
-    return some(this._connections, item => item === connection);
+    return some(this._connections, (item) => item === connection);
   }
   connect(connection) {
     if (this.isConnected(connection)) return;
@@ -55,7 +53,7 @@ module.exports = class Channel extends (
     if (!this.isConnected(connection)) return;
 
     if (this.hasConnection(connection)) {
-      remove(this._connections, item => item === connection);
+      remove(this._connections, (item) => item === connection);
       connection.off('message', this.send);
     } else {
       connection.disconnect(this);

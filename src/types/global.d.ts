@@ -66,7 +66,10 @@ declare module 'node-forge';
 
 declare module 'mkdirp';
 
-
 declare module 'pako';
 
 declare module 'request';
+
+declare module 'antd';
+
+declare const BUILD_VERSION: string;

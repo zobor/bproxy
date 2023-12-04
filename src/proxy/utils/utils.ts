@@ -1,101 +1,39 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { spawn } from "child_process";
-import { getLocalIpAddress } from "./ip";
+import { spawn } from 'child_process';
 
-
-export const utils = {
-  guid: (len = 36) => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.slice(0, len).replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  },
-  uuid: (len = 12) => {
-    return Buffer.from(utils.guid())
-      .toString('base64')
-      .replace(/[/=+]/g, '').slice(0, len);
-  },
+const getErrorScripts = `
+const BP = window.BP = {
+  errors: [],
 };
+window.addEventListener('error', (err) => {
+  BP.errors.push({
+    messasge: err.messasge,
+    stack: err.stack,
+  });
+  console.error(err);
+});
 
-export const createHttpHeader = (line, headers) => {
-  return (
-    Object.keys(headers)
-      .reduce(
-        function (head, key) {
-          const value = headers[key];
+window.addEventListener('unhandledrejection', (err) => {
+  BP.errors.push({
+    message: err && err.reason && err.reason.message ? err.reason.message : '',
+    stack: err && err.reason && err.reason.stack ? err.reason.stack : '',
+  });
+  console.error(err);
+});
+`;
+import { getLocalIpAddress } from './ip';
 
-          if (!Array.isArray(value)) {
-            head.push(key + ": " + value);
-            return head;
-          }
-
-          for (let i = 0; i < value.length; i++) {
-            head.push(key + ": " + value[i]);
-          }
-          return head;
-        },
-        [line]
-      )
-      .join("\r\n") + "\r\n\r\n"
-  );
-};
-
-export const isNeedTransformString2RegExp = (str: string) => {
-  if (!str) return false;
-  return /[.*^$()/]/.test(str);
-};
-
-export const url2regx = (url: string): RegExp => {
-  const newUrl = url
-    .replace(/\./g, '\\.')
-    .replace(/\//g, '\/')
-    .replace(/\*{2,}/g, '(\\S+)')
-    .replace(/\*/g, '([^\\/]+)');
-  return new RegExp(newUrl);
-};
-
-export const isHttpsHostRegMatch = (httpsList, hostname): boolean => {
-  let rs;
-  for (let i = 0, len = httpsList.length; i < len; i++) {
-    if (rs) {
-      break;
-    }
-    const httpsItem = httpsList[i];
-    if (typeof httpsItem === 'string') {
-      rs = httpsItem === hostname;
-    } else {
-      rs = httpsItem.test(hostname.replace(':443'));
-    }
-  }
-  return rs;
-};
-
-export const versionString2Number = (version): number => version.split('.').reduce((pre, cur, index) => {
-  return pre + Number(cur) * (100 ** (3 - index));
-}, 0);
-
-export const compareVersion = (v1: string, v2: string): number => {
-  const n1 = versionString2Number(v1);
-  const n2 = versionString2Number(v2);
-
-  return n1 === n2 ? 0 : n1 > n2 ? 1 : 0
-};
-
-export function stringToBytes(str: string): Int8Array {
-  const out = new Int8Array(str.length);
-  for (let i = 0; i < str.length; ++i) out[i] = str.charCodeAt(i);
-
-  return out;
-}
-
-export function hookConsoleLog(html: string, debug: boolean | string) {
+// 在HTML里面插入 weinre\vconsole\自定义的脚本
+export function insertScriptsToHTML(html: string, debug: boolean | string) {
   if (!html) {
     return html;
   }
   let replacement = '';
   const [ip] = getLocalIpAddress();
+  const bpScript = `<script>window.BPROXY_SERVER_IP='${ip}';${getErrorScripts}</script>`;
   if (debug === 'vconsole') {
     replacement = `
+      ${bpScript}
       <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.1/vconsole.min.js"></script>
       <script type="text/javascript">
       try{
@@ -103,16 +41,23 @@ export function hookConsoleLog(html: string, debug: boolean | string) {
       }catch(err){}
       </script>
     `;
-  } else if (debug) {
+  } else if (debug === true) {
     replacement = `
-      <script>window.BPROXY_SERVER_IP='${ip}';</script>
-      <script defer="defer" type="text/javascript" src="https://bproxy.dev/inspect.js"></script>
+      ${bpScript}
+      <script defer="defer" type="text/javascript" src="https://www.bproxy.dev/static/dist/inspect.iife.js"></script>
+    `;
+  } else {
+    replacement = `
+      ${bpScript}
+      <script type="text/javascript">
+        ${debug}
+      </script>
     `;
   }
 
   const res = html
-    .replace(/<meta[^"]*http-equiv="Content-Security-Policy"[^\>]*>/i, "")
-    .replace("</head>", `${replacement}</head>`);
+    .replace(/<meta[^"]*http-equiv="Content-Security-Policy"[^\>]*>/i, '')
+    .replace('<head>', `<head>${replacement}`);
 
   return res;
 }
@@ -129,21 +74,5 @@ export function runShellCode(shell, callback?, onerror = (error) => {}, onend = 
     sh.stdout.on('data', callback);
     sh.stderr.on('data', onerror);
     sh.on('close', onend);
-  }
-}
-
-export function delay(time: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-        resolve(true);
-    }, time);
-  })
-}
-
-export function safeDecodeUrl(url: string) {
-  try {
-    return decodeURIComponent(url);
-  } catch(err) {
-    return url;
   }
 }

@@ -1,21 +1,22 @@
 import config from '../config';
 import {
   getActiveNetworkProxyInfo,
+  getActiveNetworkProxyStatus,
   setActiveNetworkProxy,
   setActiveNetworkProxyStatus,
 } from './macos/proxy';
-import {
-  disableSystemProxy,
-  enableSystemProxy,
-  getSystemProxyStatus,
-  setSystemProxy,
-} from './windows/proxy';
+import { disableSystemProxy, enableSystemProxy, getSystemProxyStatus, setSystemProxy } from './windows/proxy';
 import { installCertificate } from './windows/installCertificate';
 import { isMac } from './os';
 import { installMacCertificate } from './macos/installCertificate';
+import storage, { STORAGE_KEYS } from '../storage';
+import logger from '../logger';
+import chalk from 'chalk';
 
 // 开启系统代理
-export function setSystemProxyOn() {
+export async function setSystemProxyOn() {
+  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '1');
+  logger.info(`${chalk.gray('✔ 系统代理开关：已开启')}`);
   if (isMac()) {
     setActiveNetworkProxyStatus('on');
   } else {
@@ -24,7 +25,9 @@ export function setSystemProxyOn() {
 }
 
 // 关闭系统代理
-export function setSystemProxyOff() {
+export async function setSystemProxyOff() {
+  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '0');
+  logger.info(`${chalk.gray('✔ 系统代理开关：未开启')}`);
   if (isMac()) {
     return setActiveNetworkProxyStatus('off');
   } else {
@@ -33,13 +36,15 @@ export function setSystemProxyOff() {
 }
 
 // 配置系统代理
-export function configSystemProxy({
+export async function configSystemProxy({
   host = '127.0.0.1',
   port = `${config.port}`,
 }: {
   host?: string;
   port?: string;
 }) {
+  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '1');
+  logger.info(`${chalk.gray('✔ 系统代理开关：已开启')}`);
   if (isMac()) {
     setActiveNetworkProxy({ host, port });
   } else {
@@ -83,4 +88,17 @@ export async function autoInstallCertificate() {
     return installMacCertificate();
   }
   return installCertificate();
+}
+
+export async function getNetWorkProxyStatus() {
+  if (isMac()) {
+    return getActiveNetworkProxyStatus();
+  }
+  return {};
+}
+
+export async function getNetworkProxyInfo() {
+  if (isMac()) {
+    return getActiveNetworkProxyInfo();
+  }
 }

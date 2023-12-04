@@ -1,23 +1,9 @@
-/*
- * @Date: 2022-07-10 21:36:48
- * @LastEditors: 张恒 nodejs.js@gmail.com
- * @LastEditTime: 2022-08-13 22:50:17
- * @FilePath: /bp/src/proxy/handleResponse/proxy.ts
- */
+import { delay } from '../../utils/utils';
 import { bproxyPrefixHeader } from '../config';
-import { delay } from '../utils/utils';
 import { responseByRequest } from './request';
 
 export async function responseByProxy(params: Bproxy.HandleResponseParams) {
-  const {
-    req,
-    res,
-    postBodyData,
-    delayTime,
-    matcherResult,
-    responseHeaders,
-    config,
-  } = params;
+  const { req, res, postBodyData, postBodyString, delayTime, matcherResult, responseHeaders, config } = params;
   if (delayTime) {
     await delay(delayTime);
   }
@@ -34,6 +20,7 @@ export async function responseByProxy(params: Bproxy.HandleResponseParams) {
     responseHeaders,
     matcherResult,
     config,
-    postBodyData
+    postBodyData,
+    postBodyString,
   );
 }

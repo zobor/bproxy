@@ -1,0 +1,13 @@
+{
+  "dependencies": ["common", "platform"],
+  "scripts": [],
+  "modules": [
+    "host.js",
+    "host-legacy.js",
+    "InspectorFrontendHostAPI.js",
+    "InspectorFrontendHost.js",
+    "Platform.js",
+    "ResourceLoader.js",
+    "UserMetrics.js"
+  ]
+}

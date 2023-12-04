@@ -1,5 +1,4 @@
-
-@mixin noselect() {
+@mixin noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -8,8 +7,25 @@
   user-select: none;
 }
 
-@mixin textLimit() {
+@mixin textLimit {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@mixin wordWrap {
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+@mixin center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexCenter {
+  @include center();
+  justify-content: flex-start;
 }

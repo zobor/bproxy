@@ -1,9 +1,7 @@
-const Channel = require('./Channel');
+const Channel = require('./channel');
 const Emitter = require('licia/Emitter');
 
-export default class ChannelManager extends (
-  Emitter
-) {
+export default class ChannelManager extends Emitter {
   constructor() {
     super();
 
@@ -58,5 +56,4 @@ export default class ChannelManager extends (
   getClients() {
     return this._clients;
   }
-};
-
+}

@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import useBool from '../../hooks/useBool';
+import { GUIDE_CHANGELOG, GUIDE_HOME, GUIDE_HOME_TIPS } from '../../../utils/constant';
 import { showLogFile } from '../../modules/api';
-import { getConfigFilePath, getVersion, openHomePage, clearLogConent } from '../../modules/bridge';
-import { ControllerDialog } from '../../pages/Home/Controller';
-import ConfigEditor from '../ConfigEditor';
-import { Form, message, Tag, WifiOutlined } from '../UI';
+import { getVersion, openHomePage, clearLogConent, closeApp, showConfigOnTerminal } from '../../modules/bridge';
+import { version_build } from '../../pages/version';
+import Icon from '../Icon';
+import { Form, message, Tag } from '../UI';
 import './index.scss';
-
-const ConfigModal = (props) => {
-  return (
-    <ControllerDialog title="编辑配置文件" width={window.innerWidth * 0.8} centered {...props}>
-      <ConfigEditor onCancel={props.onCancel} />
-    </ControllerDialog>
-  );
-};
 
 const formItemLayout = {
   labelCol: {
@@ -28,15 +20,6 @@ const formItemLayout = {
 
 export default () => {
   const [version, setVersion] = useState<string>('');
-  const { state: isShowConfig, toggle: toggleShowConfig } = useBool(false);
-  useBool(false);
-  const [configFilePath, setConfigFilePath] = useState<string>('');
-
-  const getConfigPath = () => {
-    getConfigFilePath().then((rs) => {
-      setConfigFilePath(rs as string);
-    });
-  };
 
   const openLogFile = () => {
     showLogFile();
@@ -45,33 +28,55 @@ export default () => {
     clearLogConent();
     message.success('日志清理成功');
   };
+  const onShowConfigOnTerminal = () => {
+    showConfigOnTerminal();
+    message.success('请在控制台查看日志');
+  };
 
   useEffect(() => {
     getVersion().then((v: any) => setVersion(v));
-    getConfigPath();
   }, []);
   return (
     <div className="dialog-settings">
       <Form name="time_related_controls" {...formItemLayout}>
-        <Form.Item
-          label="版本号"
-        >
-          <div><Tag style={{ cursor: 'pointer' }} onClick={openHomePage} color="volcano">{version}</Tag></div>
+        <Form.Item label="版本号">
+          <div>
+            <Tag className="version" style={{ cursor: 'pointer' }} onClick={openHomePage} color="rgb(165, 105, 189)">
+              {version}
+            </Tag>
+            <Tag className="version" style={{ cursor: 'pointer' }} onClick={openHomePage} color="rgb(165, 105, 189)">
+              最近更新于：{version_build}
+            </Tag>
+          </div>
         </Form.Item>
-        <Form.Item
-          label="编辑配置"
-        >
-          <div>{configFilePath}<Tag style={{cursor: 'pointer', marginLeft: 5}} onClick={toggleShowConfig} color="volcano">编辑</Tag></div>
+        <Form.Item label={GUIDE_HOME_TIPS}>
+          <div className="flexCenter helpTips">
+            <Icon type="help" />
+            <a href={GUIDE_HOME} target="_blank;">
+              查看 bproxy 使用文档
+            </a>
+          </div>
         </Form.Item>
-        <Form.Item
-          label="功能开关"
-        >
-          <Tag style={{cursor: 'pointer'}} onClick={openLogFile} color="#f50">查看日志</Tag>
-          <Tag style={{cursor: 'pointer'}} onClick={onCleanLog} color="#f50">清空日志</Tag>
+        <Form.Item label="其他功能">
+          <Tag style={{ cursor: 'pointer' }} onClick={openLogFile} color="rgb(165, 105, 189)">
+            查看日志
+          </Tag>
+          <Tag style={{ cursor: 'pointer' }} onClick={onCleanLog} color="rgb(215, 189, 226)">
+            清空日志
+          </Tag>
+          <Tag style={{ cursor: 'pointer' }} onClick={onShowConfigOnTerminal} color="rgb(88, 214, 141)">
+            控制台显示当前配置
+          </Tag>
+          <Tag style={{ cursor: 'pointer' }} onClick={() => window.open(GUIDE_CHANGELOG)} color="rgb(244, 208, 63)">
+            更新日志
+          </Tag>
+        </Form.Item>
+        <Form.Item label="APP">
+          <Tag style={{ cursor: 'pointer' }} onClick={closeApp} color="rgb(165, 105, 189)">
+            关闭bproxy
+          </Tag>
         </Form.Item>
       </Form>
-      {/* 配置文件 */}
-      <ConfigModal onCancel={toggleShowConfig} visible={isShowConfig} />
     </div>
   );
 };

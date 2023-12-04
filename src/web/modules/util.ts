@@ -1,6 +1,6 @@
 import * as qs from 'qs';
-import { FilterParams, HttpRequestRequest } from '../../types/web';
 import { get, take, takeRight } from './lodash';
+import { parseJSON } from '../../utils/utils';
 
 export const parseURL = (url) => {
   const a: HTMLAnchorElement = document.createElement('a');
@@ -46,6 +46,7 @@ export const parseRequest = (req: any) => {
 
 export const transformRegExpSymbol = (str = '') => {
   return str
+    .replace(/\\/g, '\\\\')
     .replace(/\./g, '\\.')
     .replace(/\*/g, '\\*')
     .replace(/\//g, '\\/')
@@ -57,9 +58,12 @@ const xhrHeaders = ['x-requested-with', 'sec-fetch'];
 const xhrHeadersReg = new RegExp(`(${xhrHeaders}.join('|'))`);
 const filterStringCache: any = {};
 export const filterValueIncludes = (value = '', filterString = '') => {
+  filterString = filterString.replace(/\|$/, '');
   if (filterString.length === 0) {
     return true;
   }
+  // TODO:性能优化
+  // console.log('filterString',filterString);
   let regx = filterStringCache[filterString];
   if (!regx) {
     regx = new RegExp(`(${transformRegExpSymbol(filterString)})`, 'i');
@@ -67,12 +71,9 @@ export const filterValueIncludes = (value = '', filterString = '') => {
   }
 
   return regx.test(value);
-}
+};
 
-export const filterRequestItem = (
-  request: HttpRequestRequest,
-  filter: FilterParams
-) => {
+export const filterRequestItem = (request: any, filter: any) => {
   const { filterString, filterType, filterContentType, filterRequestMethod } = filter;
   if (filterRequestMethod !== 'all' && request?.custom?.method && filterRequestMethod) {
     return request.custom.method.toLowerCase() === filterRequestMethod;
@@ -107,9 +108,7 @@ export const filterRequestItem = (
     }
     // image
     if (filterContentType === 'image') {
-      return (
-        contentType?.includes(filterContentType) || contentType?.includes('icon')
-      );
+      return contentType?.includes(filterContentType) || contentType?.includes('icon');
     }
     return contentType?.includes(filterContentType);
   }
@@ -117,17 +116,14 @@ export const filterRequestItem = (
   return false;
 };
 
-export const filterRequestList = (
-  list: HttpRequestRequest[],
-  filter: FilterParams
-) => list.filter((item: HttpRequestRequest) => filterRequestItem(item, filter));
+export const filterRequestList = (list: HttpRequestRequest[], filter: FilterParams) =>
+  list.filter((item: HttpRequestRequest) => filterRequestItem(item, filter));
 
 export const rand = (min, max) => {
   return parseInt(Math.random() * (max - min + 1) + min, 10);
 };
 export const getRandStr = (len = 12) => {
-  const base =
-    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const base = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   const max = base.length - 1;
   return Array(len)
     .fill(0)
@@ -171,30 +167,16 @@ export const showResponseType = (type) => {
   const txt = type
     .replace(/^\w+\//, '')
     .replace(/x-javascript/, 'javascript')
+    .replace(/x-icon/, 'icon')
+    .replace(/x-flv/, 'flv')
+    .replace(/x-p2p/, 'p2p')
+    .replace(/svg-xml/, 'svg')
+    .replace('octet-stream', 'stream')
+    .replace('plain-bproxy', 'bproxy')
+    .replace(/font-\w*/, 'font')
     .replace(/(;\s?[\s\S]+)+/g, '');
 
   return txt;
-};
-
-export const findUrlHasImageType = (url) => {
-  return /\.(png|jpg|webp|gif)/i.test(url);
-};
-
-export const findLinkFromString = (str) => {
-  if (!(str && str.replace)) {
-    return str;
-  }
-  const cls = (url) => (findUrlHasImageType(url) ? 'json-viewer-link' : '');
-  return htmlEscape(str).replace(/"(https?:\/\/[^"]+)"/g, (a, b) => {
-    const $cls = cls(b);
-    if ($cls) {
-      return `"<a class="${$cls}" href='${b}' target="_blank">${b}<img src="${b}" /></a>"`.replace(
-        /\n/g,
-        ''
-      );
-    }
-    return `"<a href='${b}' target="_blank">${b}</a>"`;
-  });
 };
 
 export const formatWsSymbol = (str) => {
@@ -204,7 +186,7 @@ export const formatWsSymbol = (str) => {
   };
 
   try {
-    data = JSON.parse(str);
+    data = parseJSON(str);
   } catch (err) {}
 
   return data;
@@ -229,10 +211,6 @@ export const formatWsSymbol = (str) => {
   // };
 };
 
-export const highlight = () => {
-  (window as any)?.PR?.prettyPrint();
-};
-
 export const objectToUrlQueryString = (obj) => {
   return Object.keys(obj)
     .map((key) => `${key}=${obj[key]}`)
@@ -242,7 +220,7 @@ export const objectToUrlQueryString = (obj) => {
 export function decodeURL(str) {
   try {
     return decodeURIComponent(str);
-  } catch(err) {
+  } catch (err) {
     return str;
   }
 }
@@ -257,3 +235,5 @@ export const formatObjectKeyRender = (value) => {
       break;
   }
 };
+
+export const isMac = navigator.userAgent.toLowerCase().includes('mac os x');

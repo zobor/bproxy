@@ -1,45 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function getFileTypeFromSuffix(filepath: string) {
-  const ma = /[^\/^\\^.]+\.(\w+)$/ig.exec(filepath);
-  if (ma && ma.length >= 2) {
-    return ma[1].toLocaleLowerCase();
-  }
-  return '';
-}
-
-export function getResponseContentType(suffix: string) {
-  const mp = {
-    'js': 'text/javascript; charset=UTF-8',
-    'json': 'application/json; charset=UTF-8',
-    'css': 'text/css; charset=utf-8',
-    'scss': 'text/css; charset=utf-8',
-    'svg': 'image/svg+xml',
-    'png': 'image/png',
-    'jpg': 'image/jpg',
-    'jpeg': 'image/jpeg',
-    'gif': 'image/gif',
-    'avif': 'image/ivaf',
-    'webp': 'image/webp',
-    'bmp': 'image/bmp',
-    'mp4': 'video/mp4',
-    'mp3': 'audio/mp3',
-    'ttf': 'font/ttf',
-    'woff2': 'font/woff2',
-  };
-
-  return mp[suffix];
-}
-
 // 判断是文件还是目录
 export function checkStringIsFileOrPath(str: string, cwd?: string) {
   const fp = cwd ? path.resolve(cwd, str) : str;
 
   try {
     fs.accessSync(fp, fs.constants.R_OK);
-  } catch(err) {
-    return ''
+  } catch (err) {
+    return '';
   }
 
   const stat = fs.lstatSync(fp);

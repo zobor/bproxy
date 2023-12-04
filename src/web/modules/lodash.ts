@@ -6,14 +6,6 @@ import take from 'lodash/take';
 import takeRight from 'lodash/takeRight';
 import isArray from 'lodash/isArray';
 import debounce from 'lodash/debounce';
+import cloneDeep from 'lodash/cloneDeep';
 
-export {
-  omit,
-  isString,
-  get,
-  isEmpty,
-  take,
-  takeRight,
-  isArray,
-  debounce,
-}
+export { omit, isString, get, isEmpty, take, takeRight, isArray, debounce, cloneDeep };

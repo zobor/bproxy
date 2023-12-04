@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import { parseFormData, parseJsonData } from '../../proxy/utils/format';
-import { get, isEmpty } from '../modules/lodash';
+import { dayjs, parseFormData, parseJsonData } from '../../utils/format';
+import { cloneDeep, get, isEmpty } from '../modules/lodash';
 import { onRequest } from '../modules/socket';
-import {
-  filterRequestItem,
-  filterRequestList,
-  parseRequest
-} from '../modules/util';
+import { filterRequestItem, filterRequestList, parseRequest } from '../modules/util';
+import { parseJSON } from '../../utils/utils';
 
-const limit = 300;
+const limit = 600;
 
 function parseRequestData(req: any, history: any = {}) {
   const item = parseRequest(req);
@@ -43,7 +40,7 @@ function parseRequestData(req: any, history: any = {}) {
       }
     } else if (contentType.includes('/json')) {
       try {
-        data.postData = JSON.parse(req.requestBody);
+        data.postData = parseJSON(req.requestBody);
       } catch (err) {
         console.error('[error] post data parse fail', err);
       }
@@ -51,7 +48,7 @@ function parseRequestData(req: any, history: any = {}) {
       data.postData = parseFormData(req.requestBody);
     } else {
       try {
-        data.postData = JSON.parse(req.requestBody);
+        data.postData = parseJSON(req.requestBody);
       } catch (err) {
         data.postData = req.requestBody as any;
       }
@@ -61,14 +58,20 @@ function parseRequestData(req: any, history: any = {}) {
   // responseBody
   if (req.responseBody) {
     if (data?.custom?.method === 'ws' || data?.custom?.method === 'wss') {
+      let jsonData: any = '';
+      try {
+        jsonData = parseJSON(req.responseBody);
+        jsonData.time = dayjs(jsonData.time).format('HH:mm:ss:SSS');
+      } catch {}
       if (Array.isArray(data.responseBody)) {
-        data.responseBody.push(req.responseBody);
+        data.responseBody.push(jsonData);
       } else {
-        data.responseBody = [req.responseBody];
+        data.responseBody = [jsonData];
       }
     } else {
       data.responseBody = req.responseBody;
     }
+    data.requestEndTime = Date.now();
   }
 
   // responseHeaders
@@ -92,15 +95,14 @@ function parseRequestData(req: any, history: any = {}) {
   // request time
   if (!isEmpty(history)) {
     data.requestEndTime = data.requestEndTime || Date.now();
-    data.requestStartTime &&
-      (data.time = data.requestEndTime - data.requestStartTime);
+    data.requestStartTime && (data.time = data.requestEndTime - data.requestStartTime);
   }
 
-  return data;
+  return cloneDeep(data);
 }
 
 interface UseRequestReturns {
-  list: HttpRequestRequest[];
+  list: any[];
   clean: () => void;
 }
 
@@ -112,10 +114,10 @@ function useRequest(
   filterRequestMethod: string,
 ): UseRequestReturns {
   {
-    const [list, setList] = useState<HttpRequestRequest[]>([]);
+    const [list, setList] = useState<any[]>([]);
     const clean = () => setList([]);
     useEffect(() => {
-      onRequest((req: InvokeRequestParams) => {
+      onRequest((req: any) => {
         // 过滤开关被关闭
         // 过滤非法请求数据
         if (!proxySwitch || !req || !req.method) {
@@ -129,18 +131,14 @@ function useRequest(
             filterContentType,
             filterRequestMethod,
           });
-          const history = list.find(
-            (item: any) => item?.custom?.requestId === req.requestId
-          );
-          const index = list.findIndex(
-            (item) => item?.custom?.requestId === req.requestId
-          );
+          const history = list.find((item: any) => item?.custom?.requestId === req.requestId);
+          const index = list.findIndex((item) => item?.custom?.requestId === req.requestId);
 
           // append keys to previours
           if (history?.custom?.path) {
             const data = parseRequestData(req, history);
             pre[index] = data;
-            return [...list];
+            return cloneDeep(list);
           }
           // history end
 
@@ -158,11 +156,11 @@ function useRequest(
             // done
             const newList = pre.concat([data]);
             if (pre.length > limit) {
-              return newList.slice(newList.length - limit);
+              return cloneDeep(newList.slice(newList.length - limit));
             }
-            return newList;
+            return cloneDeep(newList);
           }
-          return pre;
+          return cloneDeep(pre);
         });
       });
     }, [proxySwitch, filterType, filterString, filterContentType, filterRequestMethod]);
@@ -182,19 +180,13 @@ function useRequest(
 
         return list;
       });
-    }, [
-      proxySwitch,
-      filterType,
-      filterString,
-      filterContentType,
-      filterRequestMethod,
-    ]);
+    }, [proxySwitch, filterType, filterString, filterContentType, filterRequestMethod]);
 
     return {
       list,
       clean,
     };
-  };
+  }
 }
 
 export default useRequest;

@@ -15,6 +15,8 @@ declare namespace BproxyConfig {
     path?: string;
     redirect?: string;
     rewrite?: (pathname: string) => string;
+    yapi?: string;
+    yapiHost?: string;
     redirectTarget?: string;
     filepath?: string;
     cors?: boolean;
@@ -25,6 +27,8 @@ declare namespace BproxyConfig {
     proxy?: string;
     host?: string;
     excludeResponseHeaders?: string[];
+    followRedirect?: boolean;
+    getRegExp$N?: () => string | undefined | null;
   }
   interface Certificate {
     filename: string;
@@ -45,10 +49,10 @@ declare namespace BproxyConfig {
     publicKey: string;
     serialNumber: string;
     validity: ProxyCertificateValidity;
-    setSubject: Function;
-    setIssuer: Function;
-    setExtensions: Function;
-    sign: Function;
+    setSubject: any;
+    setIssuer: any;
+    setExtensions: any;
+    sign: any;
   }
 
   interface ProxyCertificateInstallResponse {
@@ -77,16 +81,14 @@ declare namespace BproxyConfig {
     provinceName: string;
     localityName: string;
     keySize: number;
-    getDefaultCABasePath: Function;
-    getDefaultCACertPath: Function;
-    getDefaultCAKeyPath: Function;
+    getDefaultCABasePath: () => string;
+    getDefaultCACertPath: () => string;
+    getDefaultCAKeyPath: () => string;
   }
 
   interface Config {
     // 是否是debug模式，debug 模式可以查看控制台日志
     debug?: boolean;
-    // 高性能模式
-    highPerformanceMode?: boolean,
     // 端口
     port?: number;
     // 抓取https包的白名单
@@ -99,6 +101,11 @@ declare namespace BproxyConfig {
     disableCache?: boolean;
     // 延时相应
     delay?: number;
+    // yapi
+    yapi?: {
+      id: number;
+      token: string;
+    }[];
   }
   interface DataSet {
     // 上一次的配置文件目录
@@ -126,6 +133,8 @@ declare namespace BproxyConfig {
     strictSSL?: boolean;
     rejectUnauthorized?: boolean;
     followRedirect?: boolean;
+    followAllRedirects?: boolean;
+    http2?: boolean;
   }
 
   interface ProxyCertificateCreateResponse {

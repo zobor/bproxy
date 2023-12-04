@@ -1,4 +1,5 @@
 @import '../../theme.scss';
+@import '../../mixin.scss';
 
 .install-modal {
   text-align: center;
@@ -15,6 +16,7 @@
 
   .tip-text {
     color: #999;
+    padding: 10px 0;
   }
 
   .url {
@@ -22,14 +24,19 @@
     padding: 5px 0;
   }
   a {
-    color: #F4D03F;
+    color: #f4d03f;
   }
 
   .install-helper {
     font-size: 14px;
     padding: 10px 0;
-    a {
-      color: rgb(26, 188, 156);
+    width: 100%;
+    @include center();
+    justify-content: space-between;
+    a,
+    .bp-icon {
+      color: $iconColor;
+      fill: $iconColor;
     }
   }
 
@@ -40,5 +47,17 @@
   .installTips {
     padding: 10px 0;
     color: red;
+  }
+
+  .qrcode {
+    padding: 10px;
+    background-color: #fff;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    @include center();
+    > img {
+      max-width: 100%;
+    }
   }
 }

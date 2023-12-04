@@ -8,7 +8,10 @@ yarn.lock
 
 # 构建产物
 app-build/
+web-build/
+server-build/
 coverage/*
+release/
 
 # bproxy
 *.tar.gz

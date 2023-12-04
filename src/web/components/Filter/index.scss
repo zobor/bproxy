@@ -1,3 +1,5 @@
+@import '../../theme.scss';
+
 .bp-filter-form-item-content-type {
   .ant-col-15 {
     max-width: 100%;
@@ -16,13 +18,31 @@
             fill: rgb(0, 255, 68);
           }
           &.icon-html {
-            fill: pink;
+            fill: #888;
           }
           &.icon-image {
-            fill: rgb(211, 84, 0);
+            fill: #ccc;
           }
         }
       }
     }
+  }
+}
+
+.bp-filter-item-highlight-tips {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bp-filter-item {
+  .bp-filter-item-tips {
+    color: $highlightTextColor;
+    padding-top: 10px;
+    font-weight: bold;
+  }
+  .bp-matched-item-tips {
+    color: $matchedTextColor;
+    padding-top: 10px;
+    font-weight: bold;
   }
 }

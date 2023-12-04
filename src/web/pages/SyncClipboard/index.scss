@@ -1,0 +1,31 @@
+.SyncClipboard {
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+
+  .showText {
+    font-size: 20px;
+    color: #ccc;
+    outline: none;
+    &:active,
+    &:focus {
+      color: green;
+    }
+  }
+
+  div {
+    color: #666;
+    margin-top: 50px;
+    &:last-child {
+      margin-top: 10px;
+    }
+  }
+}

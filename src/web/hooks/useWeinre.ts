@@ -2,12 +2,9 @@ import { isEmpty } from 'lodash';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { getDebugTargets } from '../modules/bridge';
-import {
-  onDebuggerClientChange,
-  onDebuggerClientChangeUnmount,
-} from '../modules/socket';
+import { onDebuggerClientChange } from '../modules/socket';
 
-export default function useWerine() {
+export default function useWerine(updateFlag?: any) {
   const [clients, setClients] = useState<any>({});
 
   useEffect(() => {
@@ -20,13 +17,13 @@ export default function useWerine() {
         }
       });
     };
-    onDebuggerClientChange(getClients);
+    const evt$ = onDebuggerClientChange(getClients);
     getClients();
 
     return () => {
-      onDebuggerClientChangeUnmount(getClients);
+      evt$.unsubscribe();
     };
-  }, []);
+  }, [updateFlag]);
 
   return {
     clients,

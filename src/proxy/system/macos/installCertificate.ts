@@ -1,4 +1,4 @@
-import config, { env, certificate } from '../../config';
+import { certificate } from '../../config';
 
 export const installMacCertificate = async () => {
   const filepath = certificate?.getDefaultCACertPath();

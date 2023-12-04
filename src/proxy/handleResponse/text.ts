@@ -1,8 +1,12 @@
 import { Readable } from 'stream';
 
-export const responseText = (text: any, res) => {
+export const responseText = (text: any, res?: any) => {
   const s = new Readable();
   s.push(text);
   s.push(null);
-  s.pipe(res);
+  if (res) {
+    s.pipe(res);
+  }
+
+  return s;
 };

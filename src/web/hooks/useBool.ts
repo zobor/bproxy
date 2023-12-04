@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-export default (defaultState: boolean) => {
+export default function useBool(defaultState: boolean) {
   const [state, setState] = useState<boolean>(defaultState || false);
   const toggle = () => {
-    setState(pre => !pre);
+    setState((pre) => !pre);
   };
   const ok = () => {
     setState(true);
@@ -13,4 +13,4 @@ export default (defaultState: boolean) => {
   };
 
   return { toggle, state, ok, no };
-};
+}

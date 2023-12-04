@@ -1,29 +1,33 @@
 import { get } from 'lodash';
+import preload from './configPreload';
 import { matcher } from './matcher';
-import preload from './preloadService';
 
 describe('matcher', () => {
-  it('matcher without regx', () => {
+  it('matcher without regx', async () => {
     const rs = matcher(
-      preload({
-        rules: [{}],
-      } as any).rules,
-      'https://v.qq.com/google'
+      (
+        await preload({
+          rules: [{}],
+        } as any)
+      ).rules,
+      'https://v.qq.com/google',
     );
     expect(rs.matched).toBeFalsy();
   });
   // string
-  it('matcher normal string url', () => {
+  it('matcher normal string url', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: 'google',
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/google'
+      (
+        await preload({
+          rules: [
+            {
+              url: 'google',
+              target: '',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/google',
     );
     expect(rs.matched).toBeTruthy();
     expect(rs.delay).toEqual(0);
@@ -32,17 +36,19 @@ describe('matcher', () => {
   });
 
   // string like regx
-  it('matcher regx like url', () => {
+  it('matcher regx like url', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: 'qq.com',
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com'
+      (
+        await preload({
+          rules: [
+            {
+              url: 'qq.com',
+              target: '',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com',
     );
     expect(rs.matched).toBeTruthy();
     expect(rs.delay).toEqual(0);
@@ -50,17 +56,19 @@ describe('matcher', () => {
     expect(rs?.rule?.target).toEqual('');
   });
 
-  it('matcher regx like url, with *', () => {
+  it('matcher regx like url, with *', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: 'qq.com/*',
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/a.html'
+      (
+        await preload({
+          rules: [
+            {
+              url: 'qq.com/*',
+              target: '',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/a.html',
     );
     expect(rs.matched).toBeTruthy();
     expect(rs.delay).toEqual(0);
@@ -68,17 +76,19 @@ describe('matcher', () => {
     expect(rs?.rule?.target).toEqual('');
   });
 
-  it('matcher regx like url, with *, error case', () => {
+  it('matcher regx like url, with *, error case', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: 'qq.com/*',
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/a/b/c'
+      (
+        await preload({
+          rules: [
+            {
+              url: 'qq.com/*',
+              target: '',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/a/b/c',
     );
     expect(rs.matched).toBeTruthy();
     expect(rs.delay).toEqual(0);
@@ -88,17 +98,19 @@ describe('matcher', () => {
   });
 
   // regx
-  it('matcher regx type', () => {
+  it('matcher regx type', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: /\/google\/(\S+)/,
-            redirect: 'https://qq.com/google/',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/abc/google/index.html'
+      (
+        await preload({
+          rules: [
+            {
+              url: /\/google\/(\S+)/,
+              redirect: 'https://qq.com/google/',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/abc/google/index.html',
     );
     expect(rs.matched).toBeTruthy();
     expect(rs.delay).toEqual(0);
@@ -107,17 +119,19 @@ describe('matcher', () => {
     expect(get(rs, 'rule.redirectTarget')).toEqual('https://qq.com/google/index.html');
   });
 
-  it('matcher regx type error case', () => {
+  it('matcher regx type error case', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: /\/google$/,
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/google/a.html'
+      (
+        await preload({
+          rules: [
+            {
+              url: /\/google$/,
+              target: '',
+            },
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/google/a.html',
     );
     expect(rs.matched).toBeFalsy();
     expect(rs.delay).toEqual(undefined);
@@ -125,19 +139,21 @@ describe('matcher', () => {
     expect(rs.rule === undefined).toBeTruthy();
   });
 
-  it('matcher regx function type', () => {
+  it('matcher regx function type', async () => {
     const rs = matcher(
-      preload({
-        rules: [
-          {
-            url: (url: string) => {
-              return url.includes('/google2');
+      (
+        await preload({
+          rules: [
+            {
+              url: (url: string) => {
+                return url.includes('/google2');
+              },
+              target: '',
             },
-            target: '',
-          },
-        ],
-      }).rules,
-      'https://v.qq.com/google'
+          ],
+        })
+      ).rules,
+      'https://v.qq.com/google',
     );
     expect(rs.matched).toBeFalsy();
     expect(rs.delay).toEqual(undefined);

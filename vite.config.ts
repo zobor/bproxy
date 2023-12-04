@@ -1,57 +1,88 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
-const { getThemeVariables } = require('antd/dist/theme');
 import react from '@vitejs/plugin-react';
 import progress from 'vite-plugin-progress';
 import svgr from 'vite-plugin-svgr';
+import { viteExternalsPlugin } from 'vite-plugin-externals';
+import GlobPlugin from 'vite-plugin-glob';
+// import { createFilter } from '@rollup/pluginutils';
 
-const outDir = './web-build';
+const outDir = resolve(__dirname, './web-build');
+const __BASE_ORIGIN__ = process.env.NODE_ENV === 'dev-web' ? 'http://127.0.0.1:8888' : '';
 
 // for build weinre
 const weinre = defineConfig({
   root: './',
   base: '/web/',
   build: {
-    outDir: './src/web/libs',
+    target: 'chrome61',
+    outDir: './static/dist',
     emptyOutDir: false,
+    minify: true,
     lib: {
       entry: './src/web/inspect.ts',
       name: 'BproxyInspect',
       fileName: 'inspect',
-      formats: ['umd'],
+      formats: ['iife'],
     },
   },
 });
 
 // for build webpage
 const page = defineConfig({
-  root: './',
+  root: './src/web/',
   base: '/web/',
   build: {
     outDir,
     emptyOutDir: true,
   },
-  css: {
-    preprocessorOptions: {
-      less: {
-        modifyVars: getThemeVariables({
-          dark: true,
-          compact: true,
-        }),
-        javascriptEnabled: true,
-      },
-    },
-  },
   server: {
     port: 8889,
+    open: 'http://localhost:8889',
+  },
+  define: {
+    BUILD_VERSION: JSON.stringify(
+      new Date()
+        .toLocaleDateString()
+        .split('/')
+        .map((item) => item.padStart(2, '0'))
+        .join('-'),
+    ),
+  },
+  optimizeDeps: {
+    exclude: ['__BASE_ORIGIN__'],
   },
   plugins: [
-    react(),
     progress(),
+    react(),
+    GlobPlugin({}),
     svgr({
       exportAsDefault: true,
     }),
+    viteExternalsPlugin({
+      react: 'React',
+      'react-dom': 'ReactDOM',
+      'react-dom/client': 'ReactDOM',
+      lazy: ['React', 'lazy'],
+      antd: 'antd',
+      qrcode: 'QRCode',
+    }),
+    htmlTransform({ include: '**/*.html' }),
   ],
 });
+
+function htmlTransform(opts: any = {}) : any{
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html, { server }) {
+      return transformHtmlVars(html);
+    }
+  }
+}
+
+function transformHtmlVars(code) {
+  return code.replace(/__BASE_ORIGIN__/g, __BASE_ORIGIN__);
+}
 
 let config;
 switch (process.env.NODE_ENV) {
