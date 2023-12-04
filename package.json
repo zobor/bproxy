@@ -73,7 +73,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
     "qrcode": "^1.5.1",
-    "qs": "6.10.1",
+    "qs": "6.10.3",
     "react": "^18.2.0",
     "react-error-boundary": "^3.1.4",
     "react-json-view": "^1.21.3",
