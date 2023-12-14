@@ -1,4 +1,3 @@
-import QRcode from 'qrcode';
 import React, { useEffect, useRef, useState } from 'react';
 import { getLocalIP, getProxyPort, installCertificate } from '../../modules/bridge';
 import { copyText } from '../../modules/copy';
@@ -8,7 +7,7 @@ import './index.scss';
 import Icon from '../Icon';
 import { isMac } from '../../modules/util';
 
-const QRCode: any = QRcode;
+const QRCode: any = (window as any).QRCode;
 
 export default () => {
   const $canvas = useRef<HTMLDivElement>(null);

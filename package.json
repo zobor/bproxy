@@ -1,6 +1,6 @@
 {
   "name": "bproxy",
-  "version": "5.2.35",
+  "version": "5.2.36",
   "description": "代理工具",
   "main": "./bin/electron.js",
   "bin": {
@@ -22,17 +22,14 @@
     "build:web": "vite build",
     "build:weinre": "cross-env NODE_ENV=weinre vite build --mode development",
     "build": "npm run build:web && npm run build:server && npm run build:weinre",
-    "pkg:mac": "electron-packager . bproxy --platform=darwin --arch=x64 --icon=./src/web/assets/icon.ico --out=./app-build --overwrite",
-    "pkg:m1": "electron-packager . bproxy --platform=darwin --arch=arm64 --icon=./src/web/assets/icon.ico --out=./app-build --overwrite",
-    "pkg:windows": "electron-packager . bproxy --platform=win32 --arch=x64 --icon=./src/web/assets/icon.ico --out=./app-build --overwrite",
-    "pack": "electron-builder && cp ./src/install.sh ./release/mac"
+    "pack": "electron-builder && cp ./src/install.sh ./release/mac",
+    "release": "npm run build && npm run pack"
   },
   "dependencies": {
     "chalk": "4.1.2",
     "iconv-lite": "0.6.3",
     "licia": "1.34.0",
     "lodash": "4.17.21",
-    "log4js": "6.5.2",
     "mkdirp": "1.0.4",
     "multiparty": "^4.2.3",
     "node-forge": "1.3.1",
@@ -48,7 +45,6 @@
     "@types/jest": "^28.1.6",
     "@types/lodash": "4.14.148",
     "@types/node": "12.19.16",
-    "@types/qrcode": "1.4.1",
     "@types/qs": "6.9.7",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
@@ -58,10 +54,8 @@
     "animate.css": "4.1.1",
     "chobitsu": "1.4.4",
     "classnames": "2.3.1",
-    "copy-to-clipboard": "3.3.1",
     "cross-env": "7.0.3",
-    "electron": "^24.3.0",
-    "electron-packager": "^16.0.0",
+    "electron": "^28.0.0",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^3.4.1",
@@ -69,10 +63,8 @@
     "jest": "^28.1.3",
     "less": "4.1.2",
     "lint-staged": "^13.0.3",
-    "monaco-editor": "^0.34.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
-    "qrcode": "^1.5.1",
     "qs": "6.10.3",
     "react": "^18.2.0",
     "react-error-boundary": "^3.1.4",
@@ -93,7 +85,7 @@
     "url": "https://github.com/zobor/bproxy"
   },
   "keywords": [
-    "代理工具"
+    "前端调试工具"
   ],
   "author": {
     "name": "zobor",

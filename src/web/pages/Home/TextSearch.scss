@@ -1,28 +1,10 @@
-@keyframes start-to-show {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .text-search {
   position: fixed;
-  top: -100vh;
+  top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -10;
-
-
-  &.show {
-    animation-name: start-to-show;
-    animation-duration: 0.4s;
-    animation-timing-function: linear;
-    z-index: 2000;
-    top: 0;
-  }
+  z-index: 100;
 
   &-mask {
     background-color: rgba(0, 0, 255, 0.2);

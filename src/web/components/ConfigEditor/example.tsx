@@ -37,10 +37,10 @@ const example = [
     },
   },
   {
-    label: '科学上网',
+    label: '代理设置',
     value: {
-      url: /(google|googleusercontent|github|youtube|ytimg|googlevideo|discord|twitch|figma|openai)./,
-      proxy: 'http://127.0.0.1:4780',
+      url: /(google|github)./,
+      proxy: 'http://127.0.0.1:1080',
     },
   },
   {
@@ -81,7 +81,7 @@ export default function Example() {
   return (
     <>
       {example.map(({ label, value }, index) => (
-        <div className="example-box">
+        <div className="example-box" key={label}>
           <div className="example-title">
             {index + 1}、{label}
           </div>

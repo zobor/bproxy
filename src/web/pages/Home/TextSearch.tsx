@@ -22,9 +22,10 @@ export default function TextSearch() {
     }
   };
 
-  // if (!state.showTextSearch) {
-  //   return null;
-  // }
+  if (!state.showTextSearch) {
+    return null;
+  }
+
   return (
     <div className={classNames('text-search', {
       show: state.showTextSearch

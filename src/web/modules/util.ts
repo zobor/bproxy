@@ -237,3 +237,20 @@ export const formatObjectKeyRender = (value) => {
 };
 
 export const isMac = navigator.userAgent.toLowerCase().includes('mac os x');
+
+export const loadScript = (src: string) => new Promise((resolve) => {
+  const script:any = document.createElement('script');
+  if (script.readyState) {
+    script.onreadystatechange  = function() {
+      if (script.readyState == "loaded" || this.readyState == 'complete') {
+        resolve(true);
+      }
+    }
+  } else {
+    script.onload = () => {
+      resolve(true);
+    }
+  }
+  script.src = src;
+  document.head.appendChild(script);
+});

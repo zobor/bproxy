@@ -38,6 +38,8 @@ $charColor: rgb(231, 76, 60);
     margin: 0 auto;
     flex-direction: row;
     flex-wrap: wrap;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
     .firstChar {
       width: 32px;
       height: 32px;

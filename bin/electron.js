@@ -1,13 +1,9 @@
 const { app, BrowserWindow } = require('electron');
-const { isMac } = require('../server-build/proxy/system/os');
 const bproxy = require('../server-build/proxy').default;
 const { updateDataSet } = require('../server-build/proxy/dataset');
 const { initElectronApi } = require('../server-build/proxy/api/index');
 
 updateDataSet('platform', 'app');
-
-// 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36';
-const ua = isMac() ? 'Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8) Presto/2.9.168 Version/11.52' : 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.10.229 Version/11.62'
 
 let win;
 
@@ -24,21 +20,17 @@ async function createWindow() {
     },
   });
 
-  win.maximize();
+  // win.maximize();
   win.webContents.session.setProxy({
     model: 'direct',
   });
 
   if (process.env.NODE_ENV === 'dev') {
-    win.loadURL('http://127.0.0.1:8889', {
-      userAgent: ua,
-    });
+    win.loadURL('http://127.0.0.1:8889');
     // 打开开发者工具
     win.webContents.openDevTools();
   } else {
-    win.loadURL('http://127.0.0.1:8888', {
-      userAgent: ua,
-    });
+    win.loadURL('http://127.0.0.1:8888');
   }
 
   // 当 window 被关闭，这个事件会被触发。

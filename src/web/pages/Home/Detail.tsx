@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import copy from 'copy-to-clipboard';
 import { get, isArray, isEmpty, isObject, isString } from 'lodash';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import ReactJson from 'react-json-view';
@@ -10,7 +9,7 @@ import { Button, Modal, Tooltip, message } from '../../components/UI';
 import ViewAll from '../../components/ViewAll';
 import useBool from '../../hooks/useBool';
 import { buffer2string, textDecode } from '../../modules/buffer';
-import { copyText } from '../../modules/copy';
+import { copy, copyText } from '../../modules/copy';
 import { openUrl } from '../../modules/interactive';
 import { formatObjectKeyRender } from '../../modules/util';
 import { Ctx } from '../ctx';

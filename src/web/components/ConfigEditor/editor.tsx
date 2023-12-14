@@ -1,56 +1,42 @@
 import React, { useRef, useState, useEffect, useCallback, forwardRef } from 'react';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import 'monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution';
-
-import './editor.css';
-import theme from './cobat2.json';
-import editorConfig from './editorConfig';
-
-// 定义主题
-monaco.editor.defineTheme('bproxyTheme', theme as any);
-// 使用定义的主题
-monaco.editor.setTheme('bproxyTheme');
-// 代码补全
-// let keywords = [ 'class', 'new', 'string', 'number', 'boolean', 'private', 'public' ];
-// monaco.languages.registerCompletionItemProvider('typescript', {
-//   provideCompletionItems: (model, position) => {
-//       const suggestions = [
-//           ...keywords.map(k => {
-//               return {
-//                   label: k,
-//                   kind: monaco.languages.CompletionItemKind.Keyword,
-//                   insertText: k,
-//               };
-//           })
-//       ];
-//       console.log(suggestions);
-//       return { suggestions: suggestions };
-//   },
-//   triggerCharacters: ['$']
-// });
+import { loadScript } from '../../modules/util';
 
 export default forwardRef(function Editor({ code }: any, ref: any) {
-  const [editor, setEditor] = useState<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoEl: any = useRef(null);
-
+  const editor: any = useRef(null);
+  const [lastUpdate, setLastUpdate] = useState<number>(0);
   useEffect(() => {
-    if (monacoEl && !editor && code) {
-      const $e = monaco.editor.create(monacoEl.current, {
-        ...editorConfig,
-        ...{
-          value: [code].join('\n'),
-          language: 'typescript',
-        },
-      } as any);
-      setEditor($e);
-    }
-
-    return () => editor?.dispose();
-  }, [monacoEl.current, code]);
+    const list: string[] = ['https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/ace/1.4.14/ace.min.js'];
+    Promise.all(
+      list.map((url) => {
+        return loadScript(url);
+      }),
+    ).then(() => {
+      const ace: any = (window as any).ace;
+      ace.config.set('basePath', 'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/ace/1.4.14');
+      editor.current = ace.edit('editor');
+      editor.current.setTheme('ace/theme/monokai');
+      editor.current.setOption('wrap', true);
+      editor.current.setShowPrintMargin(false);
+      editor.current.getSession().setMode('ace/mode/javascript');
+      // editor.current.getSession().on('change', function () {
+      //   const v = editor.current.getSession().getValue();
+      //   console.log(v);
+      // });
+      setLastUpdate(Date.now());
+    });
+  }, []);
 
   ref.current = useCallback(() => {
-    return editor?.getValue();
+    return editor.current.getSession().getValue();
   }, [editor]);
 
-  return <div className="monaco-editor" ref={monacoEl}></div>;
+  useEffect(() => {
+    if (code && editor.current) {
+      editor.current.getSession().setValue(code);
+    }
+  }, [code, lastUpdate]);
+
+  return (
+    <div id="editor" style={{ width: '100%', height: '100%', fontSize: 16 }}></div>
+  );
 });
