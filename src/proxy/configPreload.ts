@@ -6,6 +6,7 @@ import { isFunction, isNumber, isString, uniq } from 'lodash';
 import { checkStringIsFileOrPath } from './utils/file';
 import dataset from './dataset';
 import { appConfigFileName } from './config';
+import logger from './logger';
 
 const REG_IP = /^(\d{1,3}\.){3}\d{1,3}$/;
 
@@ -104,13 +105,17 @@ function fetch(url) {
 }
 
 async function yapiPreload(params) {
+  logger.info('yapiPreload params', params);
   for (const yapi of params?.yapi || []) {
     try {
-      const listURL = `http://yapi.dz11.com/api/interface/list?page=1&limit=100&project_id=${yapi.id}&token=${yapi.token}`;
+      const host = params?.yapiHost ? params.yapiHost : 'http://yapi.dz11.com'
+      const listURL = `${host}/api/interface/list?page=1&limit=100&project_id=${yapi.id}&token=${yapi.token}`;
+      logger.info('yapi list api url:', listURL);
       const rs = (await fetch(listURL)) as string;
       const json = JSON.parse(rs);
       const urlList = (json?.data?.list || []).filter((item) => item.status === 'done');
       urlList.forEach((item: any) => {
+        logger.info(`yapi project: ${yapi.id} item`, item);
         if (!item.path) return;
         params.rules.push({
           url: item.path,

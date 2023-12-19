@@ -7,7 +7,7 @@ import WS from './ws';
 const port = location.port === '8889' ? '8888' : location.port;
 const url = `ws://${location.hostname}:${port}/data`;
 
-export const ws = new WS({ url, autoConnect: location.pathname === '/web/' });
+export const ws = new WS({ url, autoConnect: location.pathname?.includes('/web/') });
 
 const cache: any = {};
 
@@ -67,6 +67,7 @@ export function bridgeInvoke({ api, params = {} }) {
   };
   ws.send(data);
   ws.once('bridge', bridgeInvokeCallback);
+  window.www = ws;
   return new Promise((resolve) => {
     bridgeCallback[uuid] = (data) => {
       resolve(data);

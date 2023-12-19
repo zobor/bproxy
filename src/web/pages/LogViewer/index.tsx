@@ -16,7 +16,7 @@ export default () => {
       <h1>log viewer</h1>
       <div className="logs">
         <code>
-          <pre>{logString}</pre>
+          <pre>{logString.slice(0, 2048 * 10).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
         </code>
       </div>
     </div>

@@ -8,7 +8,9 @@
   color: #fff;
   padding: 20px;
   box-sizing: border-box;
+  overflow-y: auto;
   .logs {
+
     pre {
       word-wrap: break-word;
       word-break: break-all;

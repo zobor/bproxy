@@ -38,6 +38,9 @@ export default () => {
   const [options, setOptions] = useState<any>([]);
   const [updateFlat, setUpdateFlat] = useState<number>(Date.now());
   const { configFilePath } = state;
+  const selectedFilePath = configFilePath?.replace('/bproxy.config.js', '');
+  const selectedItem = options.find(item => item.key === selectedFilePath);
+
   const selectOneConfig = (filepath: string) => {
     dispatch({ type: 'setConfigFilePath', configFilePath: filepath });
     updateConfigFilePath(filepath);
@@ -122,16 +125,29 @@ export default () => {
       </div>
       {options.length ? <div className="title">最近的项目</div> : null}
       <div className="cards">
-        {options.map((item) => {
+        {selectedItem ? <Card
+                key={selectedItem.key}
+                className={classNames({
+                  currentCard: true,
+                })}
+                title={
+                  <>
+                    {selectedItem.alias}
+                  </>
+                }
+                bordered={false}
+              >
+                <div>{selectedItem.key}</div>
+              </Card> : null }
+        {options.filter(item => item.key !== selectedFilePath).map((item) => {
           return (
             <Card
               key={item.key}
               className={classNames({
-                currentCard: configFilePath?.replace('/bproxy.config.js', '') === item.key,
+                currentCard: selectedFilePath === item.key,
               })}
               title={
                 <>
-                  <span className="firstChar">{item.alias.slice(0, 1)}</span>
                   {item.alias}
                   <Icon type="remove" onClick={(e) => onRemove(e, item.key, item.alias)} />
                 </>

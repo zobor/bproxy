@@ -1,20 +1,25 @@
-$bgColor: #2b3467;
-$svgColor: #eb455f;
+$bgColor: rgb(245, 73, 144);
+$svgColor: #fff;
+$activeColor: rgb(240, 30, 118);
 
 .HomeSideBar {
   position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 50px;
   right: 16px;
   background-color: $bgColor;
   border-radius: 10px 0 0 10px;
   overflow: hidden;
+  opacity: 0.2;
+
+  &:hover {
+    opacity: 1;
+  }
 
   .sidebar-item {
     width: 40px;
     height: 40px;
     padding: 8px;
-    border-bottom: solid 1px #555;
+    border-bottom: solid 1px #fff;
     cursor: pointer;
 
     &:last-child {
@@ -22,11 +27,11 @@ $svgColor: #eb455f;
     }
 
     &:hover {
-      background-color: #ffebb7;
+      background-color: $activeColor;
     }
 
     &.actived {
-      background-color: #ffebb7;
+      background-color: $activeColor;
     }
 
     .bp-icon,

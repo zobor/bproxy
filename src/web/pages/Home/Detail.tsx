@@ -268,7 +268,6 @@ const URLViewer = (props) => {
 
   return (
     <div className="detailTop">
-      <Icon type="close" onClick={onClose} />
       {custom ? (
         <div title="点击打开此链接" className="url" onClick={openUrl.bind(null, custom.url)}>
           {custom.statusCode || 'Pendding'} {custom.method} {custom.origin}
@@ -277,6 +276,7 @@ const URLViewer = (props) => {
       ) : (
         ''
       )}
+      <Icon type="close" onClick={onClose} />
     </div>
   );
 };

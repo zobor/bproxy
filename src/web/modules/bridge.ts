@@ -1,7 +1,6 @@
 /**
  * 桥接方法
  */
-import { resolve } from 'dns';
 import bp from './bp';
 import { bridgeInvoke } from './socket';
 

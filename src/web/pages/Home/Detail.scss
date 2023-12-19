@@ -38,11 +38,16 @@ $panelHeight: calc(100% - 85px);
   .detailTop {
     display: flex;
     align-items: center;
+    background-color: rgba(245, 73, 144);
+    border-radius: 6px;
+    width: calc(100% - 20px);
+    margin: 10px auto;
 
     .icon-close {
-      margin-left: 15px;
+      margin-left: 10px;
+      margin-right: 10px;
       cursor: pointer;
-      fill: rgb(241, 196, 15);
+      fill: #fff;
       &:hover {
         fill: rgb(203, 67, 53);
       }
@@ -59,19 +64,18 @@ $panelHeight: calc(100% - 85px);
     color: #fff;
 
     .url {
-      background-color: $boxColor;
-      color: $linkColor;
+      flex: 1;
       height: 40px;
       line-height: 40px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       padding: 0 10px;
+      box-sizing: border-box;
       cursor: pointer;
       font-size: 15px;
       &:hover {
         text-decoration: underline;
-        color: $hoverColor;
       }
     }
 
@@ -79,7 +83,6 @@ $panelHeight: calc(100% - 85px);
       display: flex;
       align-items: center;
       background-color: $detailTabsBackground;
-      // box-shadow: $detailTabsBackground 0px 10px 10px -10px;
       margin: 0 10px;
     }
 

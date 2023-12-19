@@ -20,7 +20,7 @@ async function createWindow() {
     },
   });
 
-  // win.maximize();
+  win.maximize();
   win.webContents.session.setProxy({
     model: 'direct',
   });

@@ -12,6 +12,7 @@ import dataset from './dataset';
 import { getDalay, getPostBody } from './utils/request';
 import { delay } from '../utils/utils';
 import responseByDraft from './handleResponse/draft';
+import logger from './logger';
 
 export default class httpMiddleware {
   static async proxy(req: any, res: any): Promise<number> {
@@ -111,6 +112,7 @@ export default class httpMiddleware {
           const url = `${origin}/${matcherResult.rule.yapi}${
             matchedPath.startsWith('/') ? matchedPath : `/${matchedPath}`
           }`;
+          logger.info('yapi mock origin url:', url);
 
           matcherResult.rule.redirect = url;
 
