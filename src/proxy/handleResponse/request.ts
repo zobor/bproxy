@@ -115,7 +115,11 @@ export async function responseByRequest(
                 (matcherResult as any).rule.response(json);
                 str = JSON.stringify(json);
               } catch (err) {
-                logger.info(err);
+                try {
+                  str = (matcherResult as any).rule.response(str);
+                } catch (error) {
+                  logger.info(error);
+                }
               }
             }
 

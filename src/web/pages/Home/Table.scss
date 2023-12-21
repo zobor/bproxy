@@ -135,9 +135,10 @@
     text-overflow: ellipsis;
     font-style: italic;
     font-weight: bold;
-    color: #999;
+    color: #eee;
   }
   .path {
+    color: #eee;
     .textLimit {
       span {
         &:nth-child(2) {
