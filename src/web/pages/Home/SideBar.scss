@@ -1,6 +1,6 @@
 $bgColor: rgb(245, 73, 144);
 $svgColor: #fff;
-$activeColor: rgb(240, 30, 118);
+$activeColor: rgb(52, 152, 219);
 
 .HomeSideBar {
   position: fixed;
@@ -24,10 +24,6 @@ $activeColor: rgb(240, 30, 118);
 
     &:last-child {
       border-bottom: none;
-    }
-
-    &:hover {
-      background-color: $activeColor;
     }
 
     &.actived {

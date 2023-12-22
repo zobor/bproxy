@@ -13,14 +13,16 @@ async function createWindow() {
   // 创建浏览器窗口。
   await bproxy.start();
   win = new BrowserWindow({
-    width: '100%',
-    height: '100%',
+    width: 1200,
+    height: 800,
     webPreferences: {
       nodeIntegration: false,
     },
+    titleBarStyle: 'hidden',
+    frame: false,
   });
 
-  win.maximize();
+  // win.maximize();
   win.webContents.session.setProxy({
     model: 'direct',
   });
@@ -32,6 +34,31 @@ async function createWindow() {
   } else {
     win.loadURL('http://127.0.0.1:8888');
   }
+
+  // 在窗口加载完成后执行的代码
+  win.webContents.on('did-finish-load', () => {
+    // 添加自定义区域以支持拖动窗口
+    const dragRegion = document.getElementById('drag-region');
+
+    dragRegion.addEventListener('mousedown', (event) => {
+      // 当鼠标按下时，开始捕获窗口移动事件
+      mainWindow.webContents.executeJavaScript(`
+        document.getElementById('drag-region').style.cursor = '-webkit-grabbing';
+      `);
+      mainWindow.webContents.beginFrameSubscription('mousemove', (event) => {
+        // 当鼠标移动时，更新窗口的位置
+        mainWindow.setPosition(event.screenX, event.screenY);
+      });
+
+      document.addEventListener('mouseup', () => {
+        // 当鼠标松开时，停止捕获窗口移动事件
+        mainWindow.webContents.executeJavaScript(`
+          document.getElementById('drag-region').style.cursor = '-webkit-grab';
+        `);
+        mainWindow.webContents.endFrameSubscription();
+      });
+    });
+  });
 
   // 当 window 被关闭，这个事件会被触发。
   win.on('closed', () => {
