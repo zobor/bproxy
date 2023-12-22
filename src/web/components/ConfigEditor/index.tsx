@@ -57,7 +57,7 @@ export default (props) => {
           <EditorToolbar />
         </div>
         <div className="right">
-          <h2>配置文件示例：</h2>
+          <h2>配置文件示例</h2>
           <Example />
         </div>
       </div>

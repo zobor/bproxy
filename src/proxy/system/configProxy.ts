@@ -13,9 +13,15 @@ import storage, { STORAGE_KEYS } from '../storage';
 import logger from '../logger';
 import chalk from 'chalk';
 
+async function saveSystemProxyFlag(v: string) {
+  if (storage?.setItem) {
+    await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, v);
+  }
+}
+
 // 开启系统代理
 export async function setSystemProxyOn() {
-  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '1');
+  await saveSystemProxyFlag('1');
   logger.info(`${chalk.gray('✔ 系统代理开关：已开启')}`);
   if (isMac()) {
     setActiveNetworkProxyStatus('on');
@@ -26,7 +32,7 @@ export async function setSystemProxyOn() {
 
 // 关闭系统代理
 export async function setSystemProxyOff() {
-  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '0');
+  await saveSystemProxyFlag('0');
   logger.info(`${chalk.gray('✔ 系统代理开关：未开启')}`);
   if (isMac()) {
     return setActiveNetworkProxyStatus('off');
@@ -43,7 +49,7 @@ export async function configSystemProxy({
   host?: string;
   port?: string;
 }) {
-  await storage.setItem(STORAGE_KEYS.SYSTEM_PROXY, '1');
+  await saveSystemProxyFlag('1');
   logger.info(`${chalk.gray('✔ 系统代理开关：已开启')}`);
   if (isMac()) {
     setActiveNetworkProxy({ host, port });

@@ -93,6 +93,7 @@ export const selectConfig = () => {
     api: 'selectFilePath',
   });
 };
+
 // 获取调试目标页面
 export const getDebugTargets = () => bridgeInvoke({ api: 'getDebugTargets' });
 
@@ -165,4 +166,8 @@ bp.getRuntimePlatform = getRuntimePlatform;
 
 export const closeApp = () => {
   return bridgeInvoke({ api: 'shutdown' });
+};
+
+export const getAppDataPath = (): Promise<any> => {
+  return bridgeInvoke({ api: 'getAppDataPath' });
 };

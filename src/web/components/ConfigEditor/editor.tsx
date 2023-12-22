@@ -18,10 +18,11 @@ export default forwardRef(function Editor({ code }: any, ref: any) {
       editor.current.setOption('wrap', true);
       editor.current.setShowPrintMargin(false);
       editor.current.getSession().setMode('ace/mode/javascript');
-      // editor.current.getSession().on('change', function () {
-      //   const v = editor.current.getSession().getValue();
-      //   console.log(v);
-      // });
+      editor.current.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+      });
       setLastUpdate(Date.now());
     });
   }, []);

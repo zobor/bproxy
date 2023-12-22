@@ -2,6 +2,30 @@ import React from 'react';
 import ReactJson from 'react-json-view';
 import pageConfig from '../../pageConfig';
 
+// 自定义序列化函数
+
+const formatExample = (data) => {
+  const replacer = (key, value) => {
+    if (value instanceof RegExp) {
+      return `__REGEXP ${value.toString()}`;
+    }
+    if (value instanceof Function) {
+      return `__FUNCTION ${value.toString()}`;
+    }
+    return value;
+  };
+  let res = JSON.stringify(data, replacer, 2)
+    .replace(/"__REGEXP ([^"]+)"/g, '$1');
+
+  if (res.includes('__FUNCTION')) {
+    res = res.replace(/"__FUNCTION ([^"]+)"/g, '$1')
+    .replace(/\\n/g, `
+`);
+  }
+
+  return res;
+};
+
 const example = [
   {
     label: '开启远程调试',
@@ -9,12 +33,48 @@ const example = [
       url: 'https://m.v.qq.com/tvp',
       debug: true,
     },
+    desc: '或者在请求 URL 后面添加参数 ?bproxy=1'
   },
   {
     label: '开启vconsole',
     value: {
       url: 'https://m.v.qq.com/tvp',
       debug: 'vconsole',
+    },
+    desc: '或者在请求 URL 后面添加参数 ?bproxy=2'
+  },
+  {
+    label: '草稿功能 - 响应内容字段快速替换 - JSON',
+    value: {
+      url: 'https://www.qq.com/demo.json',
+      target: function draft(data) {
+        data.data.list[0].time = Date.now();
+      }
+    }
+  },
+  {
+    label: '草稿功能 - 响应内容字段快速替换 - 字符串',
+    value: {
+      url: 'https://www.qq.com/demo.json',
+      target: function draft(data) {
+        // return data.replaceAll(str1, newStr1);
+      }
+    },
+    desc: 'function value: \t return data.replaceAll(str1, newStr1);'
+  },
+  {
+    label: '支持Yapi 项目 mock',
+    value: {
+      disableCache: true,
+      https: true,
+      rules: [],
+      yapiHost: 'https://www.example.com',
+      yapi: [
+        {
+          id: 123,
+          token: 'xxx'
+        }
+      ]
     },
   },
   {
@@ -73,19 +133,24 @@ const example = [
   },
 ];
 
-function View({ data }) {
-  return <ReactJson src={data} {...(pageConfig as any)} collapsed />;
+function View({ data, desc }) {
+  return <>
+    <pre className='config-example-code'>
+      {formatExample(data)}
+    </pre>
+    {desc ? <p>{desc}</p> : null}
+  </>
 }
 
 export default function Example() {
   return (
     <>
-      {example.map(({ label, value }, index) => (
+      {example.map(({ label, value, desc }, index) => (
         <div className="example-box" key={label}>
           <div className="example-title">
             {index + 1}、{label}
           </div>
-          <View data={value} />
+          <View data={value} desc={desc} />
         </div>
       ))}
     </>

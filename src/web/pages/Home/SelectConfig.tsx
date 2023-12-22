@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Card, message } from '../../components/UI';
-import { selectConfig, updateConfigFilePath } from '../../modules/bridge';
+import { getAppDataPath, selectConfig, updateConfigFilePath } from '../../modules/bridge';
 import { isArray, isEmpty, omit } from '../../modules/lodash';
 import { Ctx } from '../ctx';
 import Icon from '../../components/Icon';
@@ -64,6 +64,14 @@ export default () => {
       }
     });
   };
+  const onClickSelectDefault = () => {
+    getAppDataPath().then(rs => {
+      selectOneConfig(rs);
+      setTimeout(() => {
+        onGoback();
+      }, delay);
+    });
+  };
   const onSelectCard = (filepath: string, alias: string) => {
     selectOneConfig(filepath);
     setTimeout(() => {
@@ -114,11 +122,14 @@ export default () => {
       </div>
       <div className="current">
         <span>{configFilePath || '请选择需要调试的项目'}</span>
-        <Button type="primary" onClick={onClickSelect}>
+        <Button type="dashed" onClick={onClickSelect}>
           选择项目目录
         </Button>
+        <Button type="dashed" onClick={onClickSelectDefault} className="selectDefault">
+          选择默认
+        </Button>
         {configFilePath ? (
-          <Button className="cancelSelect" onClick={onGoback}>
+          <Button type="dashed" className="cancelSelect" onClick={onGoback}>
             取消
           </Button>
         ) : null}

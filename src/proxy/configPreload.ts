@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as url from 'url';
 import request from 'request';
-import { isFunction, isNumber, isString, uniq } from 'lodash';
+import { isEmpty, isFunction, isNumber, isString, uniq } from 'lodash';
 import { checkStringIsFileOrPath } from './utils/file';
 import dataset from './dataset';
 import { appConfigFileName } from './config';
@@ -105,7 +105,9 @@ function fetch(url) {
 }
 
 async function yapiPreload(params) {
-  logger.info('yapiPreload params', params);
+  if (!isEmpty(params)) {
+    logger.info('yapiPreload params', params);
+  }
   for (const yapi of params?.yapi || []) {
     try {
       const host = params?.yapiHost ? params.yapiHost : 'http://yapi.dz11.com'
@@ -146,7 +148,12 @@ export default async function preload(params: BproxyConfig.Config): Promise<Bpro
         (params.https as any).push(httpsScheme);
       }
     });
-    params.https = uniq(params.https);
+    params.https = uniq(params.https).map(host => {
+      if (!/:\d+$/.test(host)) {
+        return `${host}:443`;
+      }
+      return host;
+    });
   }
 
   return params;

@@ -54,7 +54,6 @@
 }
 
 .example-box {
-  @include noselect();
   padding-bottom: 5px;
   word-wrap: break-word;
   word-break: break-all;
@@ -65,6 +64,13 @@
     color: rgb(52, 152, 219);
     color: rgb(142, 68, 173);
     padding: 2px 0;
+  }
+
+  .config-example-code {
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
   }
 }
 

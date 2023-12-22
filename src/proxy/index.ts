@@ -52,7 +52,7 @@ export default class LocalServer {
     await this.checkProxyStatus();
 
     // storage ready
-    await storageReady();
+    // await storageReady();
   }
 
   // 启动前先检查一遍系统代理情况，以便关闭bpoxy之后恢复系统代理的配置
@@ -195,7 +195,7 @@ export default class LocalServer {
       process.exit(0);
     }
 
-    if ((await storage.getItem(STORAGE_KEYS.SYSTEM_PROXY)) === '1') {
+    if (storage?.getItem && (await storage.getItem(STORAGE_KEYS.SYSTEM_PROXY)) === '1') {
       // 启动立即开启系统代理
       logger.info(`${chalk.gray('✔ 检查系统代理：已开启')}`);
       this.enableBproxySystemProxy(config.port || 8888);

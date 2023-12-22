@@ -67,7 +67,6 @@ export function bridgeInvoke({ api, params = {} }) {
   };
   ws.send(data);
   ws.once('bridge', bridgeInvokeCallback);
-  window.www = ws;
   return new Promise((resolve) => {
     bridgeCallback[uuid] = (data) => {
       resolve(data);

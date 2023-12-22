@@ -4,7 +4,7 @@ import * as URL from 'url';
 import * as pkg from '../../../package.json';
 import { IS_REG_URL } from '../../utils/constant';
 import { previewTextFile, showBproxyHome, showSelectPath } from '../api';
-import { appInfoLogFilePath } from '../config';
+import { appDataPath, appInfoLogFilePath } from '../config';
 import { updateConfigPathAndWatch } from '../getUserConfig';
 import { matcher } from '../matcher';
 import { channelManager } from './socket';
@@ -164,3 +164,7 @@ export const shutdown = () => {
   console.log('bproxy 已关闭');
   process.exit();
 };
+
+export const getAppDataPath = () => {
+  return appDataPath;
+}
