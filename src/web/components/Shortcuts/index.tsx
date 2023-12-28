@@ -36,6 +36,11 @@ export default function Shortcuts() {
           <div>响应内容搜索</div>
           <div>/</div>
         </li>
+
+        <li>
+          <div>格式化配置</div>
+          <div>Command + shift + F</div>
+        </li>
       </ul>
     </Modal>
   );

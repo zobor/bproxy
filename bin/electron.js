@@ -2,6 +2,7 @@ const { app, BrowserWindow } = require('electron');
 const bproxy = require('../server-build/proxy').default;
 const { updateDataSet } = require('../server-build/proxy/dataset');
 const { initElectronApi } = require('../server-build/proxy/api/index');
+const { isMac } = require('../server-build/proxy/system/os');
 
 updateDataSet('platform', 'app');
 
@@ -12,14 +13,17 @@ initElectronApi();
 async function createWindow() {
   // 创建浏览器窗口。
   await bproxy.start();
+  const mac = isMac();
   win = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: false,
     },
-    titleBarStyle: 'hidden',
-    frame: false,
+    ...(mac ? {
+      titleBarStyle: 'hidden',
+      frame: false
+    } : {}),
   });
 
   // win.maximize();
