@@ -37,7 +37,7 @@
     "pako": "2.0.4",
     "request": "2.88.2",
     "rxjs": "7.5.1",
-    "ws": "8.5.0"
+    "ws": "8.17.1"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.57",
