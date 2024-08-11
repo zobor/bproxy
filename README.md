@@ -1,5 +1,5 @@
 <div style="text-align:center;">
-<img src="https://www.duelpeak.com/pages/bproxy/img/logo.svg" />
+<img src="https://img.duelpeak.com/duelpeak/202406/3b7d0374f460d5f94df9f4433d6a2acb55757064f1f47033383d06b0decb7cc6.webp" />
 </div>
 
 # bproxy
