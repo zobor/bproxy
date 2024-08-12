@@ -22,7 +22,7 @@ bproxy 一款代理工具，为前端开发带来乐趣。配置文件是一个 
 
 ## 官网
 
-**[Documents](https://www.duelpeak.com/pages/bproxy)**
+**[Documents](https://www.hahahehe.cn/pages/bproxy)**
 
 ## 工具箱
 
