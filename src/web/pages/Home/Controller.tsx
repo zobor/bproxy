@@ -266,14 +266,6 @@ const Controller = (props: ControllerProps) => {
         <span>安装证书</span>
       </div>
       <div
-        onClick={() => {
-          window.open(USER_TOOLS);
-        }}
-      >
-        <Icon type="tools" />
-        <span>开发工具</span>
-      </div>
-      <div
         className={classNames({
           ['warn']: isShowSettings,
         })}

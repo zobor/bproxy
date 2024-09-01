@@ -30,6 +30,7 @@ async function createWindow() {
   win.webContents.session.setProxy({
     model: 'direct',
   });
+  win.setMenuBarVisibility(false);
 
   if (process.env.NODE_ENV === 'dev') {
     win.loadURL('http://127.0.0.1:8889');
