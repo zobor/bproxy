@@ -122,17 +122,22 @@ export default class LocalServer {
 
   // 关闭系统代理
   static async disableBproxySystemProxy() {
-    if (this.proxySettingsBeforeStart.proxyStatus === 'off') {
-      return setSystemProxyOff();
-    } else {
-      const server = this.proxySettingsBeforeStart.http.server || this.proxySettingsBeforeStart.https.server;
-      const port = this.proxySettingsBeforeStart.http.port || this.proxySettingsBeforeStart.https.port;
-      console.log(`系统代理已恢复至：Server: ${chalk.magenta(server)},Port: ${chalk.magenta(port)}`);
-      if (server && port) {
-        return configSystemProxy({ host: server, port: `${port}` });
-      }
+    const { proxyStatus, http, https } = this.proxySettingsBeforeStart;
+    if (proxyStatus === 'off') {
       return setSystemProxyOff();
     }
+
+    const server = http.server || https.server;
+    const port = http.port || https.port;
+
+    logger.info(
+      `系统代理已恢复至：Server: ${chalk.magenta(server)}, Port: ${chalk.magenta(port)}`
+    );
+
+    if (server && port) {
+      return configSystemProxy({ host: server, port: String(port) });
+    }
+    return setSystemProxyOff();
   }
 
   // 捕获全局错误
