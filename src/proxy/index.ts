@@ -46,9 +46,6 @@ export default class LocalServer {
 
     // 检查启动前的系统代理配置
     await this.checkProxyStatus();
-
-    // storage ready
-    // await storageReady();
   }
 
   // 启动前先检查一遍系统代理情况，以便关闭bpoxy之后恢复系统代理的配置
