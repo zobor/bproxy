@@ -14,8 +14,26 @@ import { delay } from '../utils/utils';
 import responseByDraft from './handleResponse/draft';
 import logger from './logger';
 
+interface HttpRequest {
+  url: string;
+  method: string;
+  headers: Record<string, string | number | boolean | null>;
+  httpsURL?: string;
+}
+
+interface HttpResponse {
+  setHeader: (name: string, value: string) => void;
+  end: (data?: any) => void;
+}
+
 export default class httpMiddleware {
-  static async proxy(req: any, res: any): Promise<number> {
+  private static async handleDelay(delayTime?: number) {
+    if (delayTime) {
+      await delay(delayTime);
+    }
+  }
+
+  static async proxy(req: HttpRequest, res: HttpResponse): Promise<number> {
     const { config } = dataset;
     const { rules = [] } = config;
     const matcherResult = matcher(rules, req.httpsURL || req.url);
@@ -35,8 +53,13 @@ export default class httpMiddleware {
     }
 
     if (matcherResult.matched) {
-      return new Promise(async () => {
-        if (!matcherResult.rule) return;
+      if (!matcherResult.rule) {
+        await this.handleDelay(delayTime);
+        return responseByRequest(req, res, {}, responseOptions.headers, {}, config, postBodyData, postBodyString);
+      }
+
+      try {
+        // 处理headers
         if (matcherResult?.responseHeaders) {
           responseOptions.headers = {
             ...responseOptions.headers,
@@ -105,22 +128,8 @@ export default class httpMiddleware {
         else if (isString(matcherResult.rule.host)) {
           return responseByHost(responseHandleParams);
         }
-        // yapi
-        else if (matcherResult.rule.yapi) {
-          const origin = matcherResult.rule.yapiHost || 'http://yapi.dz11.com/mock';
-          const matchedPath: string = req.url.match(matcherResult.rule.regx)[0];
-          const url = `${origin}/${matcherResult.rule.yapi}${
-            matchedPath.startsWith('/') ? matchedPath : `/${matchedPath}`
-          }`;
-          logger.info('yapi mock origin url:', url);
-
-          matcherResult.rule.redirect = url;
-
-          return responseByRedirect(responseHandleParams);
-        } else {
-          if (delayTime) {
-            await delay(delayTime);
-          }
+        else {
+          await this.handleDelay(delayTime);
           return responseByRequest(
             req,
             res,
@@ -132,12 +141,16 @@ export default class httpMiddleware {
             postBodyString,
           );
         }
-      });
+      } catch (e) {
+        logger.error('Proxy middleware error:', e);
+        return 500; // 返回500错误状态码
+      }
     }
 
-    if (delayTime) {
-      await delay(delayTime);
-    }
+    await this.handleDelay(delayTime);
     return responseByRequest(req, res, {}, responseOptions.headers, {}, config, postBodyData, postBodyString);
   }
 }
+
+
+

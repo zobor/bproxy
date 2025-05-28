@@ -15,8 +15,6 @@ declare namespace BproxyConfig {
     path?: string;
     redirect?: string;
     rewrite?: (pathname: string) => string;
-    yapi?: string;
-    yapiHost?: string;
     redirectTarget?: string;
     filepath?: string;
     cors?: boolean;
@@ -101,11 +99,6 @@ declare namespace BproxyConfig {
     disableCache?: boolean;
     // 延时相应
     delay?: number;
-    // yapi
-    yapi?: {
-      id: number;
-      token: string;
-    }[];
   }
   interface DataSet {
     // 上一次的配置文件目录
