@@ -83,18 +83,14 @@ jobs:
         run: pnpm add --save-dev dependency-cruiser
 
       - name: Build proxyDir Dependency Graph
-        working-directory: ./src/proxy
+        working-directory: ./
         run: |
-          pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.json --no-config -T json -f ../../proxy-dir-graph.json
-
-      - name: Install dependency-cruiser in web
-        working-directory: ./src/web
-        run: pnpm add --save-dev dependency-cruiser
+          pnpm depcruise ./src/proxy -x '(^dist)|(^node_modules)' --no-config -T json -f ./proxy-dir-graph.json
 
       - name: Build web Dependency Graph
-        working-directory: ./src/web
+        working-directory: ./
         run: |
-          pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.app.json --no-config -T json -f ../../web-dir-graph.json
+          pnpm depcruise ./src/web -x '(^dist)|(^node_modules)' --no-config -T json -f ./../web-dir-graph.json
       # --- 上传所有图谱 ---
       - name: Upload Dependency Graph Artifacts
         uses: actions/upload-artifact@v4
