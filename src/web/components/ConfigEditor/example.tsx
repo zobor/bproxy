@@ -63,21 +63,6 @@ const example = [
     desc: 'function value: \t return data.replaceAll(str1, newStr1);'
   },
   {
-    label: '支持Yapi 项目 mock',
-    value: {
-      disableCache: true,
-      https: true,
-      rules: [],
-      yapiHost: 'https://www.example.com',
-      yapi: [
-        {
-          id: 123,
-          token: 'xxx'
-        }
-      ]
-    },
-  },
-  {
     label: '设置跨域',
     value: {
       url: 'https://m.v.qq.com/tvp',

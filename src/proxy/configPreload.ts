@@ -104,56 +104,33 @@ function fetch(url) {
   });
 }
 
-async function yapiPreload(params) {
-  if (!isEmpty(params)) {
-    logger.info('yapiPreload params', params);
-  }
-  for (const yapi of params?.yapi || []) {
-    try {
-      const host = params?.yapiHost ? params.yapiHost : 'http://yapi.dz11.com'
-      const listURL = `${host}/api/interface/list?page=1&limit=100&project_id=${yapi.id}&token=${yapi.token}`;
-      logger.info('yapi list api url:', listURL);
-      const rs = (await fetch(listURL)) as string;
-      const json = JSON.parse(rs);
-      const urlList = (json?.data?.list || []).filter((item) => item.status === 'done');
-      urlList.forEach((item: any) => {
-        logger.info(`yapi project: ${yapi.id} item`, item);
-        if (!item.path) return;
-        params.rules.push({
-          url: item.path,
-          yapi: yapi.id,
-        });
-      });
-    } catch (err) {}
-  }
-}
-
 export default async function preload(params: BproxyConfig.Config): Promise<BproxyConfig.Config> {
-  await yapiPreload(params);
-  // 遍历所有的规则
-  params.rules = params.rules.map((rule: BproxyConfig.Rule) => checkSingleRule(rule));
+  // 规则预处理
+  params.rules = params.rules.map(checkSingleRule);
 
-  // 兼容老版本
+  // 兼容老版本 https 配置
   if (params.sslAll === true) {
     params.https = true;
     delete params.sslAll;
   }
 
   if (Array.isArray(params.https)) {
-    params.rules.forEach((rule) => {
-      const { regx } = rule;
-      if (isString(regx) && regx.startsWith('https://')) {
-        const { port, hostname } = url.parse(regx);
-        const httpsScheme = `${hostname}:${port || 443}`;
-        (params.https as any).push(httpsScheme);
-      }
-    });
-    params.https = uniq(params.https).map(host => {
-      if (!/:\d+$/.test(host)) {
-        return `${host}:443`;
-      }
-      return host;
-    });
+    const httpsHosts = params.rules
+      .map(rule => {
+        const regx = rule.regx;
+        if (isString(regx) && regx.startsWith('https://')) {
+          const { port, hostname } = url.parse(regx);
+          if (hostname) {
+            return `${hostname}:${port || 443}`;
+          }
+        }
+        return null;
+      })
+      .filter(Boolean) as string[];
+
+    params.https = uniq([...params.https, ...httpsHosts]).map(host =>
+      /:\d+$/.test(host) ? host : `${host}:443`
+    );
   }
 
   return params;

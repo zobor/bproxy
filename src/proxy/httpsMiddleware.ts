@@ -16,18 +16,40 @@ import parseWebSocketMessage from './socket/parseFrame';
 import { ioRequest } from './socket/socket';
 import { isHttpsWithIp } from './utils/ip';
 
-let certInstance;
-
+// 类型定义集中管理
 interface CertConfig {
   certPath: string;
   keyPath: string;
 }
 
+interface WebSocketOptions {
+  host?: string;
+  hostname: string;
+  port: string | number;
+  path: string;
+  headers: http.OutgoingHttpHeaders;
+  method?: string;
+  rejectUnauthorized?: boolean;
+  agent?: boolean;
+}
+
 interface WebOthers {
   originHost?: string;
   originPort?: number;
-  fakeServer?: any;
+  fakeServer?: http.Server | https.Server;
 }
+
+interface LocalServerResponse {
+  port: number;
+  fakeServer: http.Server | https.Server;
+}
+
+// 常量提取
+const LOCALHOST = '127.0.0.1';
+const BPROXY_DEV = 'bproxy.dev';
+const HTTP_VERSION = '1.1';
+
+let certInstance;
 
 export default {
   beforeStart(): CertConfig {
@@ -63,15 +85,15 @@ export default {
         requestHeaders: {},
         requestBody: '',
       });
-      this.web(socket, head, urlParsed.hostname, urlParsed.port, req, {
-        fakeServer: null,
+      this.web(socket, head, urlParsed.hostname || '', urlParsed.port || 443, req, {
+      fakeServer: undefined,
       });
       return;
     }
 
     this.startLocalHttpsServer(urlParsed.hostname, urlParsed.host, urlParsed.port, config, req, socket, head).then(
       ({ port: localHttpsPort, fakeServer }) => {
-        this.web(socket, head, '127.0.0.1', localHttpsPort, req, {
+        this.web(socket, head, LOCALHOST, localHttpsPort, req, {
           originHost: urlParsed.hostname || '',
           originPort: urlParsed.port ? Number(urlParsed.port) : 0,
           fakeServer,
@@ -121,17 +143,14 @@ export default {
   startLocalHttpsServer(
     hostname,
     host,
-    port,
+    port: string | number = 443,
     config: BproxyConfig.Config,
     req,
     socket,
     head,
-  ): Promise<{
-    port: number;
-    fakeServer: any;
-  }> {
+  ): Promise<LocalServerResponse> {
     return new Promise((resolve) => {
-      const isBproxyDev = ['bproxy.dev'].includes(hostname);
+      const isBproxyDev = [BPROXY_DEV].includes(hostname);
       const { certPem, keyPem } = certInstance.createFakeCertificateByDomain(hostname);
       const httpsServerConfig = {
         key: keyPem,
@@ -146,10 +165,10 @@ export default {
           );
         },
       };
-      // TODO
-      // 判断是否用HTTPS不严谨
+
       const useHttps = req?.url?.indexOf(':80') > -1 ? false : true;
       const localServer = useHttps ? new https.Server(httpsServerConfig) : new http.Server();
+
       localServer.listen(0, () => {
         const localAddress = localServer.address();
         if (typeof localAddress === 'string' || !localAddress) {
@@ -162,6 +181,7 @@ export default {
           fakeServer: localServer,
         });
       });
+
       localServer.on('request', (req, res) => {
         const $req = req as any;
         $req.httpsURL = `https://${req.headers.host}${req.url}`;
@@ -171,7 +191,7 @@ export default {
         httpMiddleware.proxy(req, res);
         (localServer as any).$url = $req.httpsURL;
       });
-      // websocket
+
       localServer.on('upgrade', (proxyReq, proxySocket) => {
         if (
           proxyReq.method !== 'GET' ||
@@ -182,20 +202,14 @@ export default {
           return true;
         }
 
-        const upgradeProtocol = proxyReq.headers.origin.indexOf('https:') === 0 || port === '443' ? 'wss://' : 'ws://';
+        const upgradeProtocol = proxyReq.headers.origin?.includes('https:') || port === '443' ? 'wss://' : 'ws://';
         const upgradeURL = `${upgradeProtocol}${port === 443 ? hostname : host}${proxyReq.url}`;
-        const matchResult = (() => {
-          // 5.2.31新特性
-          const matched1 = matcher(config.rules, upgradeURL.replace(':443', '').replace(':80', ''));
-          if (matched1?.matched) {
-            return matched1;
-          }
-          // 兼容老版本
-          const matched2 = matcher(config.rules, upgradeURL);
-          return matched2;
-        })();
+
+        const matchResult = matcher(config.rules, upgradeURL.replace(':443', '').replace(':80', '')) ||
+                          matcher(config.rules, upgradeURL);
+
         logger.info('upgradeURL', matchResult, upgradeURL);
-        const options = {
+        const options: WebSocketOptions = {
           host: hostname,
           hostname,
           port,
@@ -205,44 +219,45 @@ export default {
           agent: false,
           path: proxyReq.url,
         };
-        const target = matchResult?.rule?.redirectTarget || matchResult?.rule?.redirect;
-        const wssProtocol = proxyReq.headers.origin.includes('https:') ? 'wss' : 'ws';
 
-        // 如果wss匹配上了规则，使用目标地址替换当前的请求地址
+        const target = matchResult?.rule?.redirectTarget || matchResult?.rule?.redirect;
         if (matchResult?.matched && target) {
-          const urlParsed = url.parse(target);
-          if (urlParsed?.hostname && urlParsed?.port) {
+          const urlParsed = url.parse(target || '');
+          const defaultPort = urlParsed.protocol === 'https:' ? 443 : 80;
+          if (urlParsed?.hostname) {
             options.host = urlParsed.hostname;
             options.hostname = urlParsed.hostname;
-            options.headers.host = urlParsed.hostname;
-            options.port = urlParsed.port;
+            options.headers.host = urlParsed.hostname || '';
+            options.port = urlParsed.port ? parseInt(urlParsed.port) : defaultPort;
           }
         }
 
-        // 如果是bproxy的 ws 消息
         if (isBproxyDev) {
-          options.host = '127.0.0.1';
-          options.hostname = '127.0.0.1';
-          options.headers.host = '127.0.0.1';
+          options.host = LOCALHOST;
+          options.hostname = LOCALHOST;
+          options.headers.host = LOCALHOST;
           options.port = dataset.config.port;
         }
+
         proxyReq.$requestId = proxyReq.$requestId || guid();
         if (!isBproxyDev) {
           ioRequest({
             url: upgradeURL,
-            method: wssProtocol,
+            method: proxyReq.headers.origin?.includes('https:') ? 'wss' : 'ws',
             requestHeaders: proxyReq.headers,
             requestId: proxyReq.$requestId,
           });
         }
-        const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.indexOf('https:') === 0 && !isBproxyDev;
+
+        const proxyWsHTTPS = (target || proxyReq.headers?.origin)?.includes('https:') && !isBproxyDev;
         const proxyWsServices = proxyWsHTTPS ? https : http;
         const wsRequest = proxyWsServices.request(options);
+
         const sendToWeb = (data: string) => {
           ioRequest({
             requestId: proxyReq.$requestId,
             url: upgradeURL,
-            method: proxyReq.headers.origin.includes('https:') ? 'wss' : 'ws',
+            method: proxyReq.headers.origin?.includes('https:') ? 'wss' : 'ws',
             requestHeaders: proxyReq.headers,
             responseBody: JSON.stringify({
               time: +Date.now(),
@@ -256,7 +271,7 @@ export default {
         };
 
         wsRequest.on('upgrade', (r1, s1, h1) => {
-          const writeStream = createHttpHeader(`HTTP/${req.httpVersion} 101 Switching Protocols`, r1.headers);
+          const writeStream = createHttpHeader(`HTTP/${HTTP_VERSION} 101 Switching Protocols`, r1.headers);
           if (!isBproxyDev) {
             const output: any = [];
             s1.on('data', (frame) => {
@@ -267,29 +282,32 @@ export default {
           proxySocket.write(h1);
           s1.pipe(proxySocket).pipe(s1);
         });
+
         wsRequest.on('error', (err) => {
           logger.error('wsRequest error', upgradeURL, err);
         });
         wsRequest.end();
       });
+
       localServer.on('error', () => {
         logger.error(`[local server error]: ${hostname}`);
         localServer.close();
       });
+
       localServer.on('clientError', () => {
         localServer.close();
       });
     });
   },
 
-  // 代理ws
   ws(req, socket, head) {
     const wsUrl = req.url.replace('http://', 'ws://');
     const urlParse = url.parse(req.url);
-    const options = {
-      hostname: urlParse.hostname,
-      port: urlParse.port,
-      path: urlParse.path,
+    const defaultPort = urlParse.protocol === 'https:' ? 443 : 80;
+    const options: WebSocketOptions = {
+      hostname: urlParse.hostname || 'localhost',
+      port: urlParse.port ? parseInt(urlParse.port) : defaultPort,
+      path: urlParse.path || '/',
       headers: {
         ...req.headers,
       },
@@ -298,7 +316,7 @@ export default {
     const reqProxy = http.request(options);
     reqProxy.on('upgrade', (r1, s1, h1) => {
       logger.info('upgrade', r1.statusCode, wsUrl);
-      const writeStream = createHttpHeader(`HTTP/${req.httpVersion} ${r1.statusCode} Switching Protocols`, r1.headers);
+      const writeStream = createHttpHeader(`HTTP/${HTTP_VERSION} ${r1.statusCode} Switching Protocols`, r1.headers);
       socket.write(writeStream);
       socket.write(h1);
       s1.pipe(socket).pipe(s1);
@@ -309,3 +327,6 @@ export default {
     reqProxy.end();
   },
 };
+
+
+

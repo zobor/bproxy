@@ -35,17 +35,3 @@ export async function showSelectPath() {
     return electronApi?.showSelectPathDialog();
   }
 }
-
-export async function showUpgrade(data: { version: string; changeLog: string[] }) {
-  if (!(data && data.version)) {
-    return;
-  }
-  if (isApp()) {
-    return electronApi?.showUpgradeDialog({ changeLog: data?.changeLog || [] });
-  }
-
-  console.log(chalk.redBright('########################################'));
-  console.log(chalk.redBright(`bproxy有新版本（${data.version}）可以升级，请尽快升级`));
-  console.log(chalk.redBright('########################################'));
-  process.exit();
-}

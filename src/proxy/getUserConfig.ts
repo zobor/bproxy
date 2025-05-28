@@ -45,57 +45,46 @@ const loadUserConfigOrCreate = async (configFilePath: string): Promise<BproxyCon
 };
 
 // 设置配置文件目录
-export const updateConfigPathAndWatch = async (params: { configPath: string }): Promise<void> => {
-  const { configPath } = params;
-  let lastAvailableConfigContent;
-
-  logger.info('{updateConfigPathAndWatch}:', configPath);
-
-  // 参数异常，配置文件路劲没有
+export const updateConfigPathAndWatch = async ({ configPath }: { configPath: string }): Promise<void> => {
   if (!configPath) {
     logger.error('updateConfigPathAndWatch(configPath), configPath is empty');
     throw new Error('updateConfigPathAndWatch(configPath), configPath is empty');
   }
 
-  // 配置文件目录不存在
-  if (fs.existsSync(configPath)) {
-    updateDataSet('currentConfigPath', configPath);
-    const fullFilePath = path.resolve(configPath, appConfigFileName);
-    let userConfig;
+  if (!fs.existsSync(configPath)) {
+    logger.error(`Config path does not exist: ${configPath}`);
+    throw new Error(`Config path does not exist: ${configPath}`);
+  }
+
+  updateDataSet('currentConfigPath', configPath);
+  const fullFilePath = path.resolve(configPath, appConfigFileName);
+  let lastAvailableConfigContent: string | undefined;
+  let userConfig: BproxyConfig.Config | undefined;
+
+  const loadAndUpdateConfig = async () => {
     try {
       userConfig = await loadUserConfigOrCreate(fullFilePath);
-      // 更新最近成功加载的配置内容
       lastAvailableConfigContent = fs.readFileSync(fullFilePath, 'utf-8');
+      updateDataSet('config', userConfig);
+      onConfigFileChange();
     } catch (err) {
+      logger.error(`Failed to load config: ${(err as Error).message}`);
       if (lastAvailableConfigContent) {
         fs.writeFileSync(fullFilePath, lastAvailableConfigContent);
       }
     }
+  };
 
-    // 切换配置，需要取消上一次配置文件的监听
-    if (watcher?.close) {
-      watcher.close();
-    }
-    // 监听配置文件变化，变化了更新bproxy的临时配置数据
-    watcher = fs.watchFile(fullFilePath, { interval: 3000 }, async () => {
-      logger.info(`配置文件变更: ${fullFilePath}`);
-      try {
-        userConfig = await loadUserConfigOrCreate(fullFilePath);
-        // ws 广播消息通知
-        onConfigFileChange();
-        // 更新最近成功加载的配置内容
-        lastAvailableConfigContent = fs.readFileSync(fullFilePath, 'utf-8');
-      } catch (err) {
-        if (lastAvailableConfigContent) {
-          fs.writeFileSync(fullFilePath, lastAvailableConfigContent);
-        }
-      }
-    });
-
-    if (userConfig) {
-      updateDataSet('config', userConfig);
-    }
-
-    logger.info(`✔ 当前运行的配置文件：${fullFilePath}`);
+  // Stop previous watcher if exists
+  if (watcher?.close) {
+    watcher.close();
   }
+
+  // Initial load
+  await loadAndUpdateConfig();
+
+  // Watch for changes
+  watcher = fs.watchFile(fullFilePath, { interval: 3000 }, loadAndUpdateConfig);
+
+  logger.info(`✔ 当前运行的配置文件：${fullFilePath}`);
 };
