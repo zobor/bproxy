@@ -73,39 +73,27 @@ jobs:
 
       # --- 处理 proxy部分 ---
       - name: Install proxyDir Dependencies
-        # 指定工作目录为 proxy
-        working-directory: ./src/proxy
-        run: pnpm install --frozen-lockfile
+        # 指定工作目录为 .
+        working-directory: ./
+        run: pnpm install
 
       - name: Install dependency-cruiser in proxy
-        working-directory: ./src/proxy
+        working-directory: ./
         # 在 web 内部安装，避免版本冲突或干扰 frontend
         run: pnpm add --save-dev dependency-cruiser
 
       - name: Build proxyDir Dependency Graph
         working-directory: ./src/proxy
         run: |
-          # 在 koa-server 目录下运行，分析当前目录 '.' (即 koa-server)
-          # 将输出重定向到工作区根目录下的 koa-server-graph.json
           pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.json --no-config -T json -f ../../proxy-dir-graph.json
-      # --- 处理 frontend ---
-      - name: Install frontend Dependencies
-        # 指定工作目录为 frontend
-        working-directory: ./src/web
-        run: pnpm install --frozen-lockfile
 
       - name: Install dependency-cruiser in web
         working-directory: ./src/web
-        # 在 web 内部安装
         run: pnpm add --save-dev dependency-cruiser
 
       - name: Build web Dependency Graph
         working-directory: ./src/web
         run: |
-          # 在 web 目录下运行，分析当前目录 '.' (即 frontend)
-          # 将输出重定向到工作区根目录下的 frontend-graph.json
-          # 注意: frontend 项目可能有不同的源码目录 (如 src)，如果 '.' 太宽泛，可以调整为 'src' 或其他
-          # 同时可能需要排除更多文件/目录，例如 dist, public 等
           pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.app.json --no-config -T json -f ../../web-dir-graph.json
       # --- 上传所有图谱 ---
       - name: Upload Dependency Graph Artifacts
