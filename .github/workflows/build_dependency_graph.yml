@@ -1,0 +1,121 @@
+# .github/workflows/build_dependency_graph.yml
+
+# Workflow 的名称，会显示在 GitHub Actions 页面
+name: Build Code Dependency Graphs (Frontend & Backend)
+
+# 触发 Workflow 的事件
+on:
+  # 当有代码推送到 main 分支时触发 (可以根据你的主分支名称修改)
+  push:
+    branches: [dev] # 或者 [ master ]
+
+  # 当有 Pull Request 指向 main 分支时触发
+  pull_request:
+    branches: [master] # 或者 [ master ]
+    # 可以更精确地指定路径，例如只在 koa-server 或 frontend 目录变化时触发
+    paths:
+      - "src/proxy/**"
+      - "src/web/**"
+
+  # 允许手动或通过 API 触发
+  workflow_dispatch:
+    inputs:
+      # 定义一个输入参数 'ref'，用于指定要分析的分支、标签或 commit SHA
+      ref:
+        description: "The branch, tag or SHA to checkout for analysis"
+        required: true
+        # 默认值可以是主分支或当前触发的 commit
+        default: "master" # 或者使用 github.ref, github.sha 等动态变量
+
+# 定义一个或多个 'job' (工作任务)
+jobs:
+  # 定义一个名为 'build-graphs' 的 job
+  build-graphs:
+    # 指定运行这个 job 的环境，'ubuntu-latest' 是常用的 Linux 环境
+    runs-on: ubuntu-latest
+
+    # 定义这个 job 要执行的一系列步骤 (steps)
+    steps:
+      # 第一步：检出代码
+      # 使用官方提供的 actions/checkout action 来获取仓库代码
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # 如果是 workflow_dispatch 触发，使用输入的 ref；否则使用默认的 ref (触发事件的 ref)
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.ref }}
+          # 可选：获取完整历史记录，某些分析工具可能需要
+          # fetch-depth: 0
+
+      # --- START: 针对特定语言的设置 ---
+
+      # 先安装 pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3 # 使用官方的 pnpm setup action
+        with:
+          version: 10 # <--- 重新添加 version 参数，指定主版本 10
+          run_install: false # 我们将在下一步手动运行 install
+
+      # 再设置 Node.js 环境，并让它配置 pnpm 缓存
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # 指定你项目需要的 Node.js 版本
+          # cache: "pnpm" # <--- 删除或注释掉这一行
+
+      # 示例：设置 Python 环境 (用于 Python 项目)
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.10' # 指定你项目需要的 Python 版本
+      #     cache: 'pip' # 启用 pip 依赖缓存
+
+      # --- END: 针对特定语言的设置 ---
+
+      # --- 处理 proxy部分 ---
+      - name: Install proxyDir Dependencies
+        # 指定工作目录为 proxy
+        working-directory: ./src/proxy
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dependency-cruiser in proxy
+        working-directory: ./src/proxy
+        # 在 web 内部安装，避免版本冲突或干扰 frontend
+        run: pnpm add --save-dev dependency-cruiser
+
+      - name: Build proxyDir Dependency Graph
+        working-directory: ./src/proxy
+        run: |
+          # 在 koa-server 目录下运行，分析当前目录 '.' (即 koa-server)
+          # 将输出重定向到工作区根目录下的 koa-server-graph.json
+          pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.json --no-config -T json -f ../../proxy-dir-graph.json
+      # --- 处理 frontend ---
+      - name: Install frontend Dependencies
+        # 指定工作目录为 frontend
+        working-directory: ./src/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dependency-cruiser in web
+        working-directory: ./src/web
+        # 在 web 内部安装
+        run: pnpm add --save-dev dependency-cruiser
+
+      - name: Build web Dependency Graph
+        working-directory: ./src/web
+        run: |
+          # 在 web 目录下运行，分析当前目录 '.' (即 frontend)
+          # 将输出重定向到工作区根目录下的 frontend-graph.json
+          # 注意: frontend 项目可能有不同的源码目录 (如 src)，如果 '.' 太宽泛，可以调整为 'src' 或其他
+          # 同时可能需要排除更多文件/目录，例如 dist, public 等
+          pnpm depcruise . -x '(^dist)|(^node_modules)' --ts-config ../../tsconfig.app.json --no-config -T json -f ../../web-dir-graph.json
+      # --- 上传所有图谱 ---
+      - name: Upload Dependency Graph Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          # 产物名称可以保持不变或更新
+          name: dependency-graphs
+          # 使用多行路径上传两个 JSON 文件
+          path: |
+            proxy-dir-graph.json
+            web-dir-graph.json
+          # 如果任何一个文件没找到，则报错
+          if-no-files-found: error
