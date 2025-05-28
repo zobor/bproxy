@@ -3,7 +3,7 @@ import * as dns from 'dns';
 import * as fs from 'fs';
 import { isEmpty } from 'lodash';
 import { delay } from '../utils/utils';
-import { showError, showUpgrade } from './api';
+import { showError } from './api';
 import { appConfigFilePath, appDataPath, configModuleTemplate } from './config';
 import dataset, { isApp, updateDataSet } from './dataset';
 import { updateConfigPathAndWatch } from './getUserConfig';
@@ -11,9 +11,8 @@ import httpsMiddleware from './httpsMiddleware';
 import logger from './logger';
 import { afterLocalServerStartSuccess, startLocalServer } from './proxyServer';
 import { ioInit } from './socket/socket';
+import storage, { STORAGE_KEYS } from './storage';
 import { configSystemProxy, getNetWorkProxyStatus, getNetworkProxyInfo, setSystemProxyOff } from './system/configProxy';
-import { checkUpgrade } from './utils/request';
-import storage, { STORAGE_KEYS, storageReady } from './storage';
 
 (dns as any).setDefaultResultOrder && (dns as any).setDefaultResultOrder('ipv4first');
 
@@ -44,9 +43,6 @@ export default class LocalServer {
 
     // 检查 app 环境的配置
     this.checkAppLastTimeConfig();
-
-    // 检查是否最新版本
-    this.checkUpgrade();
 
     // 检查启动前的系统代理配置
     await this.checkProxyStatus();
@@ -89,13 +85,6 @@ export default class LocalServer {
     this.proxySettingsBeforeStart.https.status = currentDetail.https.Enabled === 'Yes' ? 'on' : 'off';
     this.proxySettingsBeforeStart.https.server = currentDetail.https.Server;
     this.proxySettingsBeforeStart.https.port = currentDetail.https.Port;
-  }
-
-  // 检查版本更新
-  static async checkUpgrade() {
-    checkUpgrade().then((data: any) => {
-      showUpgrade(data);
-    });
   }
 
   // 检查配置默认配置文件
